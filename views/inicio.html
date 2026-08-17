@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Balsas - Inicio</title>
+<link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body>
+  <header class="cabecera-app">
+    <h1>Balsas Picarral</h1>
+    <button class="enlace" id="botonCerrarSesion">Cerrar sesión</button>
+  </header>
+
+  <div class="contenedor">
+    <div id="avisoPartidoEnCurso" class="aviso oculto">
+      Tienes un partido en curso.
+      <div style="margin-top: 0.5rem;">
+        <a id="enlaceReanudar" class="boton primario ancho" style="display:block; text-align:center;">Reanudar partido</a>
+      </div>
+    </div>
+
+    <div class="tarjeta tarjeta-nav" onclick="location.href='partidos.html'">
+      <div class="tarjeta-nav-info">
+        <img class="icono-titulo" src="../assets/partido.svg" alt="">
+        <h2 class="titulo-inicio">Partidos</h2>
+      </div>
+      <img src="../assets/delante.svg" class="icono-cabecera" alt="icono entrar">
+    </div>
+
+    <div class="tarjeta tarjeta-nav" onclick="location.href='plantilla.html'">
+      <div class="tarjeta-nav-info">
+        <img class="icono-titulo" src="../assets/plantilla.svg" alt="">
+        <h2 class="titulo-inicio">Plantilla</h2>
+      </div>
+      <img src="../assets/delante.svg" class="icono-cabecera" alt="icono entrar">
+    </div>
+
+    <div class="tarjeta tarjeta-nav" onclick="location.href='estadisticas.html'">
+      <div class="tarjeta-nav-info">
+        <img class="icono-titulo" src="../assets/estadisticas.svg" alt="">
+        <h2 class="titulo-inicio">Estadisticas</h2>
+      </div>
+      <img src="../assets/delante.svg" class="icono-cabecera" alt="icono entrar">
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabaseClient.js"></script>
+  <script src="../js/comun.js"></script>
+  <script src="../js/inicio.js"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Balsas - Plantilla</title>
+<link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body>
+  <header class="cabecera-app">
+    <a href="inicio.html">
+      <img src="../assets/volver.svg" class="icono-cabecera" alt="icono para volver">
+    </a>
+    <h1>Plantilla</h1>
+    <span></span>
+  </header>
+
+  <div class="contenedor">
+    <button class="primario ancho" id="botonNuevoJugador">+ Añadir jugador</button>
+
+    <div id="formularioJugador" class="tarjeta oculto" style="margin-top:0.75rem;">
+      <input type="hidden" id="jugadorId" />
+      <label for="nombreJugador">Nombre</label>
+      <input type="text" id="nombreJugador" />
+      <label for="dorsalJugador">Dorsal</label>
+      <input type="number" id="dorsalJugador" min="1" />
+      <label for="posicionJugador">Posición habitual</label>
+      <select id="posicionJugador"></select>
+      <div class="fila-botones">
+        <button class="primario ancho" id="botonGuardarJugador">Guardar</button>
+        <button class="ancho" id="botonCancelarJugador">Cancelar</button>
+      </div>
+    </div>
+
+    <h2>Jugadores activos</h2>
+    <div class="tarjeta">
+      <table id="tablaJugadores">
+        <thead><tr><th>Dorsal</th><th>Nombre</th><th>Posición</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="modalConfirmarBorrado" class="superposicion oculto">
+    <div class="hoja-modal">
+      <p style="font-weight:600;">¿Seguro que quieres borrar este jugador?</p>
+      <div class="fila-botones">
+        <button class="ancho peligro" id="botonConfirmarBorrado">Borrar</button>
+        <button class="ancho" id="botonCancelarBorrado">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabaseClient.js"></script>
+  <script src="../js/comun.js"></script>
+  <script src="../js/formaciones.js"></script>
+  <script src="../js/plantilla.js"></script>
+</body>
+</html>

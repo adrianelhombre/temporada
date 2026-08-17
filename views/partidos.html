@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Balsas - Partidos</title>
+<link rel="stylesheet" href="../css/styles.css" />
+<link rel="stylesheet" href="../css/estadisticas.css" />
+</head>
+<body>
+  <header class="cabecera-app cabecera-page">
+    <a href="inicio.html">
+      <img src="../assets/volver.svg" class="icono-cabecera" alt="icono para volver">
+    </a>
+    <h1>Partidos</h1>
+    <span></span>
+  </header>
+
+  <main class="contenedor contenedor-partidos">
+    <!-- FILTROS -->
+    <div class="fila-botones" style="display: flex; gap: 0.5rem; margin: 0.75rem 0; flex-wrap: wrap;">
+      <button class="ancho btn-equipo activo" data-tipo="todos" style="flex:1; min-width:60px;">Todos</button>
+      <button class="ancho btn-equipo" data-tipo="Liga" style="flex:1; min-width:60px;">Liga</button>
+      <button class="ancho btn-equipo" data-tipo="Amistoso" style="flex:1; min-width:60px;">Amistosos</button>
+      <button class="ancho btn-equipo" data-tipo="Copa" style="flex:1; min-width:60px;">Copa</button>
+      <button class="ancho btn-equipo" data-tipo="Torneo" style="flex:1; min-width:60px;">Torneos</button>
+    </div>
+
+    <h2>Pendientes</h2>
+    <div class="tarjeta lista-partidos" id="listaPendientes"></div>
+
+    <h2>Jugados</h2>
+    <div class="tarjeta lista-partidos lista-jugados-scroll" id="listaJugados"></div>
+
+    <!-- Botón fijo abajo -->
+    <div class="boton-nuevo-partido-wrapper">
+      <button class="primario btn-nuevo-partido" id="botonNuevoPartido" type="button">+</button>
+    </div>
+  </main>
+
+  <!-- MODAL PARA CREAR/EDITAR PARTIDO -->
+  <div id="modalFormularioPartido" class="superposicion oculto" role="dialog" aria-modal="true" aria-labelledby="tituloFormularioPartido">
+    <div class="hoja-modal" style="max-width: 550px; max-height: 95vh; overflow-y: auto; padding: 20px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h2 id="tituloFormularioPartido" style="margin:0;">Nuevo partido</h2>
+        <button id="botonCerrarModalPartido" type="button" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
+      </div>
+      
+      <p id="avisoEdicionPartido" class="oculto" style="font-size:.85rem;color:var(--texto-secundario);"></p>
+      
+      <form id="formularioPartido" novalidate>
+        <!-- Fila 1: Tipo + Jornada -->
+        <div class="fila-campos-modal">
+          <div class="campo-modal">
+            <label for="tipoPartido">Tipo de partido</label>
+            <select id="tipoPartido">
+              <option value="Amistoso">Amistoso</option>
+              <option value="Liga">Liga</option>
+              <option value="Copa">Copa</option>
+              <option value="Torneo">Torneo</option>
+            </select>
+          </div>
+          <div class="campo-modal">
+            <label for="jornadaPartido">Jornada</label>
+            <select id="jornadaPartido">
+              <!-- Se genera desde JS -->
+            </select>
+          </div>
+        </div>
+
+        <!-- Fila 2: Rival + Fecha (Rival primero) -->
+        <div class="fila-campos-modal">
+          <div class="campo-modal">
+            <label for="rivalPartido">Rival</label>
+            <input type="text" id="rivalPartido" maxlength="80" required />
+          </div>
+          <div class="campo-modal">
+            <label for="fechaPartido">Fecha</label>
+            <input type="date" id="fechaPartido" required />
+          </div>
+        </div>
+
+        <!-- Fila 3: Condición + Duración + Formación -->
+        <div class="fila-campos-modal-3">
+          <div class="campo-modal">
+            <label for="condicionPartido">Condición</label>
+            <select id="condicionPartido">
+              <option value="local">Local</option>
+              <option value="visitante">Visitante</option>
+            </select>
+          </div>
+          <div class="campo-modal">
+            <label for="duracionPartido">Duración (min)</label>
+            <select id="duracionPartido">
+              <option value="20">20</option>
+              <option value="25">25</option>
+              <option value="30">30</option>
+              <option value="35" selected>35</option>
+              <option value="40">40</option>
+              <option value="45">45</option>
+            </select>
+          </div>
+          <div class="campo-modal">
+            <label for="formacionPartido">Formación</label>
+            <select id="formacionPartido">
+              <option value="4-3-3">4-3-3</option>
+              <option value="4-2-3-1">4-2-3-1</option>
+              <option value="3-5-2">3-5-2</option>
+              <option value="4-4-2">4-4-2</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Convocatoria -->
+        <div style="margin-top:10px; border-top:1px solid var(--borde-tabla); padding-top:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <label style="font-weight:bold; font-size:0.9rem;">Convocatoria</label>
+            <span id="contadorConvocados" style="font-size:0.8rem; color:var(--texto-secundario);">0 / 0</span>
+          </div>
+          <p style="font-size:0.75rem; color:var(--texto-secundario); margin-bottom:8px;">
+            Haz click en un jugador para convocar/desconvocar. 
+            <span style="color:#4CAF50;">✓</span> Convocado | 
+            <span style="color:#F44336;">✕</span> Desconvocado
+          </p>
+          <div id="listaConvocados" style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; padding:10px 0;">
+            <!-- Se genera desde JS -->
+          </div>
+        </div>
+
+        <div class="fila-botones" style="margin-top:10px;">
+          <button class="primario ancho" id="botonCrearPartido" type="submit">Crear</button>
+          <button class="ancho" id="botonCancelarPartido" type="button">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL ELIMINAR -->
+  <div id="modalEliminarPartido" class="superposicion oculto" role="dialog" aria-modal="true" aria-labelledby="tituloEliminarPartido">
+    <div class="hoja-modal">
+      <p id="tituloEliminarPartido" style="font-weight:600;">Eliminar partido</p>
+      <p id="textoEliminarPartido"></p>
+      <div class="fila-botones">
+        <button class="ancho peligro" id="botonConfirmarEliminar" type="button">Eliminar</button>
+        <button class="ancho" id="botonCancelarEliminar" type="button">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ACCIONES -->
+  <div id="modalAccionesPartido" class="superposicion oculto" role="dialog" aria-modal="true" aria-labelledby="tituloAccionesPartido">
+    <div class="hoja-modal">
+      <p class="titulo-acciones-partido" id="tituloAccionesPartido" style="font-weight:600;">Acciones del partido</p>
+      <div class="fila-botones" style="display: flex; gap: 0.5rem; margin: 1.5rem 0;">
+        <button class="ancho btn-accion-modal editar" id="botonEditarPartido" type="button" style="flex: 1;">Editar</button>
+        <button class="ancho btn-accion-modal cancelar" id="botonEliminarDesdeMenu" type="button" style="flex: 1;">Borrar</button>
+      </div>
+      <button class="ancho" id="botonCerrarAcciones" type="button">Cancelar</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabaseClient.js"></script>
+  <script src="../js/comun.js"></script>
+  <script src="../js/partidos.js"></script>
+</body>
+</html>

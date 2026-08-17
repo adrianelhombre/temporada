@@ -1,0 +1,58 @@
+// Coordenadas en porcentaje sobre el contenedor .campo (media cancha)
+// y = 90 -> junto a nuestra portería, y = 8 -> hacia el centro del campo
+const FORMACIONES = {
+  "4-3-3": [
+    { id: "por", etiqueta: "POR", x: 50, y: 88 },
+    { id: "lti", etiqueta: "LTI", x: 12, y: 72 },
+    { id: "dfc1", etiqueta: "DFC", x: 32, y: 78 },
+    { id: "dfc2", etiqueta: "DFC", x: 68, y: 78 },
+    { id: "ltd", etiqueta: "LTD", x: 88, y: 72 },
+    { id: "mc1", etiqueta: "MC", x: 30, y: 47 },
+    { id: "mc2", etiqueta: "MCD", x: 50, y: 54 },
+    { id: "mc3", etiqueta: "MC", x: 70, y: 47 },
+    { id: "ei", etiqueta: "EI", x: 18, y: 23 },
+    { id: "dc", etiqueta: "DC", x: 50, y: 16 },
+    { id: "ed", etiqueta: "ED", x: 82, y: 23 },
+  ],
+  "4-2-3-1": [
+    { id: "por", etiqueta: "POR", x: 50, y: 88 },
+    { id: "lti", etiqueta: "LTI", x: 12, y: 72 },
+    { id: "dfc1", etiqueta: "DFC", x: 32, y: 78 },
+    { id: "dfc2", etiqueta: "DFC", x: 68, y: 78 },
+    { id: "ltd", etiqueta: "LTD", x: 88, y: 72 },
+    { id: "mcd1", etiqueta: "MCD", x: 35, y: 55 },
+    { id: "mcd2", etiqueta: "MCD", x: 65, y: 55 },
+    { id: "ei", etiqueta: "EI", x: 18, y: 35 },
+    { id: "mco", etiqueta: "MCO", x: 50, y: 35 },
+    { id: "ed", etiqueta: "ED", x: 82, y: 35 },
+    { id: "dc", etiqueta: "DC", x: 50, y: 14 },
+  ],
+  "3-5-2": [
+    { id: "por", etiqueta: "POR", x: 50, y: 90 },
+    { id: "dfc1", etiqueta: "DFC", x: 25, y: 68 },
+    { id: "dfc2", etiqueta: "DFC", x: 50, y: 70 },
+    { id: "dfc3", etiqueta: "DFC", x: 75, y: 68 },
+    { id: "lti", etiqueta: "LTI", x: 8, y: 45 },
+    { id: "mc1", etiqueta: "MC", x: 35, y: 50 },
+    { id: "mc2", etiqueta: "MC", x: 50, y: 35 },
+    { id: "mc3", etiqueta: "MC", x: 65, y: 50 },
+    { id: "ltd", etiqueta: "LTD", x: 92, y: 45 },
+    { id: "dc1", etiqueta: "DC", x: 35, y: 18 },
+    { id: "dc2", etiqueta: "DC", x: 65, y: 18 },
+  ],
+  "4-4-2": [
+    { id: "por", etiqueta: "POR", x: 50, y: 88 },
+    { id: "lti", etiqueta: "LTI", x: 12, y: 72 },
+    { id: "dfc1", etiqueta: "DFC", x: 32, y: 78 },
+    { id: "dfc2", etiqueta: "DFC", x: 68, y: 78 },
+    { id: "ltd", etiqueta: "LTD", x: 88, y: 72 },
+    { id: "ei", etiqueta: "EI", x: 15, y: 37 },
+    { id: "mc1", etiqueta: "MC", x: 40, y: 50 },
+    { id: "mc2", etiqueta: "MC", x: 60, y: 50 },
+    { id: "ed", etiqueta: "ED", x: 85, y: 37 },
+    { id: "dc1", etiqueta: "DC", x: 35, y: 18 },
+    { id: "dc2", etiqueta: "DC", x: 65, y: 18 },
+  ],
+};
+
+const POSICIONES_JUGADOR = ["POR", "LTI", "LTD", "DFC", "MC", "MCD", "MCO", "EI", "ED", "DC"];

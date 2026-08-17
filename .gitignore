@@ -1,0 +1,4 @@
+/.agents
+/README.md
+/supabase_esquema.sql
+/supabase_migracion_estabilizacion.sql

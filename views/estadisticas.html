@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Balsas - Estadísticas</title>
+<link rel="stylesheet" href="../css/styles.css" />
+<link rel="stylesheet" href="../css/estadisticas.css" />
+</head>
+<body>
+  <header class="cabecera-app">
+    <a href="inicio.html">
+      <img src="../assets/volver.svg" class="icono-cabecera" alt="icono para volver">
+    </a>
+    <h1>Estadísticas</h1>
+    <span></span>
+  </header>
+
+  <div class="contenedor">    
+    <!-- Botones de selección -->
+    <div class="fila-botones" style="display: flex; gap: 0.5rem; margin-bottom: 1.2rem;">
+      <button class="ancho btn-equipo activo" id="btnJugadores" type="button" style="flex: 1; font-size:1.2rem">Jugadores</button>
+      <button class="ancho btn-equipo" id="btnEquipo" type="button" style="flex: 1; font-size:1.2rem">Equipo</button>
+    </div>
+
+    <!-- Contenedor para estadísticas de equipo -->
+    <div id="vistaEquipo" style="display:none;">
+      <div class="tarjeta estadisticas-equipo-tarjeta">
+        <div id="estadisticasEquipo"></div>
+      </div>
+    </div>
+
+    <!-- Contenedor para estadísticas de jugadores -->
+    <div id="vistaJugadores">
+      <div class="tarjeta" style="overflow-x:auto; padding:10px;">
+        <div id="estadisticasJugadores"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabaseClient.js"></script>
+  <script src="../js/comun.js"></script>
+  <script src="../js/estadisticas/equipo.js"></script>
+  <script src="../js/estadisticas/jugadores.js"></script>
+  <script src="../js/estadisticas/main.js"></script>
+</body>
+</html>

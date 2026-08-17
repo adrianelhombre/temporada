@@ -1,0 +1,196 @@
+/* ============================================
+   ESTADÍSTICAS - ESTILOS ESPECÍFICOS
+   ============================================ */
+
+/* ---------- EQUIPO ---------- */
+.estadisticas-equipo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  text-align: center;
+}
+
+.estadisticas-equipo-valor {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--primario);
+}
+
+.estadisticas-equipo-valor-ganados {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #4CAF50;
+}
+
+.estadisticas-equipo-valor-empatados {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #FFC107;
+}
+
+.estadisticas-equipo-valor-perdidos {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #F44336;
+}
+
+.estadisticas-equipo-valor-amarillas {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #FFEB3B;
+}
+
+.estadisticas-equipo-valor-rojas {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #F44336;
+}
+
+.estadisticas-equipo-etiqueta {
+  font-size: 0.7rem;
+  color: var(--texto-secundario);
+}
+
+.estadisticas-equipo-diferencia {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--texto-secundario);
+}
+
+.estadisticas-equipo-tarjeta {
+  padding: 20px;
+}
+
+.estadisticas-vacio {
+  text-align: center;
+  color: var(--texto-secundario);
+}
+
+/* ---------- JUGADORES (VISTA LISTA) ---------- */
+.estadisticas-jugador-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.estadisticas-jugador-fila {
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.estadisticas-jugador-fila:not(:first-child) {
+  border-top: 1px solid var(--borde-tabla, #e0e0e0);
+}
+
+/* Nombre y dorsal */
+.estadisticas-jugador-nombre {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 120px;
+}
+
+.estadisticas-jugador-dorsal {
+  font-size: 1rem;
+  font-weight: 700;
+  background: #333;
+  color: #fff;
+  padding: 5px 0;
+  border-radius: 8px;
+  display: inline-block;
+  min-width: 30px;
+  text-align: center;
+}
+
+.estadisticas-jugador-nombre-texto {
+  font-weight: bold;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+
+/* Datos */
+.estadisticas-jugador-datos {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.estadisticas-jugador-item {
+  text-align: center;
+  min-width: 35px;
+}
+
+.estadisticas-jugador-item-minutos {
+  text-align: center;
+  min-width: 50px;
+}
+
+.estadisticas-jugador-item-porcentaje {
+  text-align: center;
+  min-width: 50px;
+}
+
+.estadisticas-jugador-valor {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.estadisticas-jugador-valor-goles {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--primario);
+}
+
+.estadisticas-jugador-valor-porcentaje {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--primario);
+}
+
+.estadisticas-jugador-etiqueta {
+  font-size: 0.55rem;
+  color: var(--texto-secundario);
+}
+
+/* Contenedor de tarjetas (amarillas/rojas) */
+.estadisticas-jugador-tarjetas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Tarjetas individuales */
+.estadisticas-tarjeta-amarilla {
+  font-size: 1.3rem;
+  font-weight: bold;
+  background: #ffeb3b;
+  color: #333;
+  border-radius: 3px;
+  padding: 0 6px;
+  display: inline-block;
+}
+
+.estadisticas-tarjeta-roja {
+  font-size: 1.3rem;
+  font-weight: bold;
+  background: #f44336;
+  color: white;
+  border-radius: 3px;
+  padding: 0 6px;
+  display: inline-block;
+}
+
+/* ---------- RESUMEN TEMPORADA ---------- */
+.estadisticas-resumen {
+  margin-top: 15px;
+  padding: 10px 0;
+  border-top: 1px solid var(--borde-tabla, #e0e0e0);
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--texto-secundario);
+}
