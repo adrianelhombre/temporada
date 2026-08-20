@@ -865,6 +865,14 @@ th {
   color: var(--negro);
 }
 
+/* Chip de doble amarilla en la cabecera */
+.chip-tarjeta.chip-doble-amarilla {
+  background: var(--rojo);
+  color: white;
+  font-weight: bold;
+  border: 1px solid #cc4444;
+}
+
 .badge-entra {
   position: absolute;
   top: -8px;

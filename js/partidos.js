@@ -398,7 +398,7 @@ async function cargarPartidos() {
   let query = supabaseClient
     .from("partidos")
     .select("id, fecha, rival, condicion, duracion_parte_minutos, formacion, estado, estado_directo, tipo_partido, jornada, convocados")
-    .order("fecha", { ascending: false });
+    .order("fecha", { ascending: true });
   
   // Aplicar filtro si no es 'todos'
   if (filtroActual !== 'todos') {

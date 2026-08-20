@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <title>Balsas - Plantilla</title>
 <link rel="stylesheet" href="../css/styles.css" />
+<link rel="stylesheet" href="../css/plantilla.css" />
 </head>
 <body>
   <header class="cabecera-app">
@@ -24,18 +25,28 @@
       <input type="text" id="nombreJugador" />
       <label for="dorsalJugador">Dorsal</label>
       <input type="number" id="dorsalJugador" min="1" />
-      <label for="posicionJugador">Posición habitual</label>
-      <select id="posicionJugador"></select>
+      
+      <label>Posición principal</label>
+      <div class="selector-posiciones" id="selectorPrincipal"></div>
+      
+      <label>Posiciones secundarias (opcional)</label>
+      <div class="selector-posiciones" id="selectorSecundario"></div>
+      
       <div class="fila-botones">
         <button class="primario ancho" id="botonGuardarJugador">Guardar</button>
         <button class="ancho" id="botonCancelarJugador">Cancelar</button>
       </div>
     </div>
 
-    <h2>Jugadores activos</h2>
-    <div class="tarjeta">
+    <div class="tarjeta" style="overflow-x:auto; padding:10px; margin-top: 20px;">
       <table id="tablaJugadores">
-        <thead><tr><th>Dorsal</th><th>Nombre</th><th>Posición</th><th></th></tr></thead>
+        <thead>
+          <tr>
+            <th>Jugador</th>
+            <th>Posiciones</th>
+            <th style="text-align:right;">Acciones</th>
+          </tr>
+        </thead>
         <tbody></tbody>
       </table>
     </div>

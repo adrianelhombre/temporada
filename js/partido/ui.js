@@ -55,10 +55,12 @@ function pintarTarjetasCabecera(esLocal) {
 
   const html = (grupo) => Object.entries(grupo).map(([dorsal, info]) => {
     let salida = "";
-    if (info.roja) salida += `<span class="chip-tarjeta chip-roja">${escaparHTML(dorsal)}</span>`;
-    if (info.amarillas > 0) {
-      const doble = info.amarillas >= 2 ? " chip-doble-amarilla" : "";
-      salida += `<span class="chip-tarjeta chip-amarilla${doble}">${escaparHTML(dorsal)}</span>`;
+    if (info.roja) {
+      salida += `<span class="chip-tarjeta chip-roja">${escaparHTML(dorsal)}</span>`;
+    } else if (info.amarillas >= 2) {
+      salida += `<span class="chip-tarjeta chip-doble-amarilla">${escaparHTML(dorsal)}</span>`;
+    } else if (info.amarillas === 1) {
+      salida += `<span class="chip-tarjeta chip-amarilla">${escaparHTML(dorsal)}</span>`;
     }
     return salida;
   }).join("");
@@ -91,7 +93,9 @@ function pintarCampo() {
     if (jugadorId) {
       const j = jugadorPorId(jugadorId);
       const expulsado = estaExpulsado(jugadorId);
-      const amarillas = amarillasJugador(jugadorId);
+      const amarillas = eventosPartido.filter(e => e.jugador_id === jugadorId && e.tipo === "amarilla").length;
+      const tieneRoja = eventosPartido.some(e => e.jugador_id === jugadorId && e.tipo === "roja");
+      const expulsadoPorDobleAmarilla = expulsado && amarillas >= 2 && !tieneRoja;
       
       const estaSeleccionado = seleccion && seleccion.origen === "campo" && seleccion.slotId === slot.id;
       const estaSeleccionadoBanquillo = seleccion && seleccion.origen === "banquillo" && seleccion.jugadorId === jugadorId;
@@ -108,6 +112,9 @@ function pintarCampo() {
       ficha.classList.toggle("seleccionado", resaltar);
       ficha.classList.toggle("pendiente-cambio", pendienteCambio);
       ficha.classList.toggle("expulsado", expulsado);
+      if (expulsadoPorDobleAmarilla) {
+        ficha.classList.add("expulsado-doble-amarilla");
+      }
       ficha.dataset.jugador = jugadorId;
       
       const mins = estadoDirecto.minutos[jugadorId] || 0;
@@ -133,23 +140,31 @@ function pintarCampo() {
         `;
       }
       
+      let badgesHTML = "";
+      if (amarillas || expulsado) {
+        badgesHTML = `<div class="badges-tarjetas-campo">`;
+        if (expulsado) {
+          badgesHTML += `<div class="badge-roja" title="Expulsado${expulsadoPorDobleAmarilla ? ' por doble amarilla' : ''}"></div>`;
+        } else if (amarillas === 1) {
+          badgesHTML += `<div class="badge-amarilla" title="1 tarjeta amarilla"></div>`;
+        }
+        badgesHTML += `</div>`;
+      }
+      
       ficha.innerHTML = `
         <div class="circulo" style="${expulsado ? "opacity:0.45;" : ""}">${j ? j.dorsal : "?"}</div>
         ${badgeEntra}
-        ${amarillas || expulsado ? `<div class="badges-tarjetas-campo">
-          ${amarillas ? `<div class="badge-amarilla"></div>` : ""}
-          ${expulsado ? '<div class="badge-roja"></div>' : ""}
-        </div>` : ""}
+        ${badgesHTML}
         <div class="minutos">${formatoMMSS(mins)}</div>
         ${botonEliminar}
       `;
       ficha.style.position = "absolute";
     } else {
-      // Hueco vacío - verificar si hay convocados disponibles
       const hayConvocadosDisponibles = jugadores.some(j => 
         jugadorActivo(j) && 
         !idsEnCampo.has(j.id) && 
-        setConvocados.has(j.id)
+        setConvocados.has(j.id) &&
+        !estaExpulsado(j.id)
       );
       
       if (hayConvocadosDisponibles) {
@@ -161,19 +176,16 @@ function pintarCampo() {
         ficha.style.position = "absolute";
         ficha.style.cursor = "default";
         ficha.title = "No hay jugadores convocados disponibles";
-        // No añadir event listener
       }
     }
 
-    // Solo añadir event listener si hay jugador y estamos en condiciones
-    if (jugadorId && !antesDeEmpezar) {
+    if (jugadorId && !antesDeEmpezar && !estaExpulsado(jugadorId)) {
       ficha.addEventListener("click", () => manejarClicCampo(slot.id, jugadorId));
     }
 
     campo.appendChild(ficha);
   });
 
-  // Listener para botones de eliminar (event delegation)
   if (antesDeEmpezar) {
     campo.querySelectorAll(".btn-eliminar-jugador").forEach((btn) => {
       btn.addEventListener("click", (e) => {
@@ -189,11 +201,9 @@ function pintarCampo() {
 function pintarBanquillo() {
   const idsEnCampo = new Set(Object.values(estadoDirecto.huecos).filter(Boolean));
   
-  // Obtener los IDs de jugadores convocados (del partido)
   const convocados = partido.convocados || [];
   const setConvocados = new Set(convocados);
   
-  // Filtrar: solo jugadores activos, que NO estén en campo, y que ESTÉN CONVOCADOS
   const suplentes = jugadores.filter((j) => 
     jugadorActivo(j) && 
     !idsEnCampo.has(j.id) &&
@@ -207,7 +217,9 @@ function pintarBanquillo() {
   suplentes.forEach((j) => {
     const ficha = document.createElement("div");
     const expulsado = estaExpulsado(j.id);
-    const amarillas = amarillasJugador(j.id);
+    const amarillas = eventosPartido.filter(e => e.jugador_id === j.id && e.tipo === "amarilla").length;
+    const tieneRoja = eventosPartido.some(e => e.jugador_id === j.id && e.tipo === "roja");
+    const expulsadoPorDobleAmarilla = expulsado && amarillas >= 2 && !tieneRoja;
     const pendienteCambio = cambiosPendientes.some((c) => c.entraJugadorId === j.id);
     
     const estaSeleccionado = seleccion && seleccion.origen === "banquillo" && seleccion.jugadorId === j.id;
@@ -216,23 +228,40 @@ function pintarBanquillo() {
 
     ficha.className = "ficha-jugador-banquillo" + (resaltar ? " seleccionado" : "");
     ficha.classList.toggle("expulsado", expulsado);
+    if (expulsadoPorDobleAmarilla) {
+      ficha.classList.add("expulsado-doble-amarilla");
+    }
     ficha.classList.toggle("pendiente-cambio", pendienteCambio);
     ficha.dataset.jugador = j.id;
 
     const mins = estadoDirecto.minutos[j.id] || 0;
     
+    let badgesHTML = "";
+    if (amarillas || expulsado) {
+      badgesHTML = `<div class="badges-tarjetas-banquillo">`;
+      if (expulsado) {
+        badgesHTML += `<div class="badge-roja" title="Expulsado${expulsadoPorDobleAmarilla ? ' por doble amarilla' : ''}"></div>`;
+      } else if (amarillas === 1) {
+        badgesHTML += `<div class="badge-amarilla" title="1 tarjeta amarilla"></div>`;
+      }
+      badgesHTML += `</div>`;
+    }
+    
     ficha.innerHTML = `
       <div class="circulo" style="${expulsado ? "opacity:0.45;" : ""}">${j.dorsal}</div>
-      ${amarillas || expulsado ? `<div class="badges-tarjetas-banquillo">
-        ${amarillas ? `<div class="badge-amarilla"></div>` : ""}
-        ${expulsado ? '<div class="badge-roja"></div>' : ""}
-      </div>` : ""}
+      ${badgesHTML}
       <div class="nombre-banquillo">${j.nombre}</div>
       <div class="minutos">${formatoMMSS(mins)}</div>
     `;
 
     if (!antesDeEmpezar) {
-      ficha.addEventListener("click", () => manejarClicBanquillo(j.id));
+      ficha.addEventListener("click", () => {
+        if (estaExpulsado(j.id)) {
+          mostrarNotificacion("Este jugador está expulsado.", "error");
+          return;
+        }
+        manejarClicBanquillo(j.id);
+      });
     } else {
       ficha.style.cursor = "default";
       ficha.title = "Los suplentes no pueden registrar eventos antes del inicio";
@@ -251,7 +280,6 @@ function pintarCambiosPendientes() {
   
   let html = '';
   
-  // Mostrar cada cambio pendiente con su botón de cancelar individual
   cambiosPendientes.forEach((c, index) => {
     const sale = jugadorPorId(c.saleJugadorId);
     const entra = jugadorPorId(c.entraJugadorId);
@@ -272,7 +300,6 @@ function pintarCambiosPendientes() {
     `;
   });
   
-  // Información del jugador seleccionado actualmente
   let infoSeleccion = "";
   if (seleccion) {
     const j = jugadorPorId(seleccion.jugadorId);
@@ -297,7 +324,6 @@ function pintarCambiosPendientes() {
     </div>
   `;
   
-  // Listeners para cancelar cambios individuales
   box.querySelectorAll('.btn-cancelar-cambio').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -324,11 +350,9 @@ function pintarControles() {
   const parte1 = estadoDirecto.parte === 1;
   const parte2 = estadoDirecto.parte === 2;
 
-  // Pausar/Reanudar
   document.getElementById("botonPausar").classList.toggle("oculto", !enCurso);
   document.getElementById("botonReanudar").classList.toggle("oculto", !pausado);
 
-  // Lógica de botones según parte
   if (enCurso) {
     if (parte1) {
       document.getElementById("botonDescanso").classList.remove("oculto");
@@ -349,7 +373,6 @@ function pintarControles() {
     document.getElementById("botonEmpezar2aParte").classList.add("oculto");
   }
 
-  // --- DESHABILITAR ACCIONES RÁPIDAS EN DESCANSO Y AL FINALIZAR ---
   const accionesRapidas = [
     "botonTiroPuerta",
     "botonTiroFuera",
@@ -367,15 +390,9 @@ function pintarControles() {
     }
   });
 
-  // Modo cambio: habilitado en descanso (solo deshabilitado si no iniciado o finalizado)
   document.getElementById("botonModoCambio").disabled = finalizado || estadoDirecto.estado === "no_iniciado";
-  
-  // Gol rival: deshabilitado en descanso
   document.getElementById("botonGolRival").disabled = finalizado || estadoDirecto.estado === "no_iniciado" || enDescanso;
-  
-  // Tarjeta rival: siempre habilitada (incluso en descanso) excepto si no iniciado o finalizado
   document.getElementById("botonTarjetaRival").disabled = finalizado || estadoDirecto.estado === "no_iniciado";
-  
   document.getElementById("selectFormacion").disabled = finalizado;
 }
 

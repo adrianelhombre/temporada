@@ -6,6 +6,14 @@ let jugadorMenuActual = null;
 let menuSuplenteAbierto = false;
 let jugadorSuplenteActual = null;
 
+// ---------- Funciones auxiliares de posiciones ----------
+function obtenerPosicionesJugador(jugador) {
+  return {
+    principal: jugador?.posicion || null,
+    secundarias: jugador?.posiciones_secundarias || []
+  };
+}
+
 // Función auxiliar para generar UUID
 function generarUUID() {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -59,6 +67,11 @@ function manejarClicCampo(slotId, jugadorId) {
   }
 
   // --- MODO CAMBIO ---
+  if (estaExpulsado(jugadorId)) {
+    mostrarNotificacion("Un jugador expulsado no puede participar en cambios.", "error");
+    return;
+  }
+
   if (jugadorEnCambiosPendientes(jugadorId)) {
     mostrarNotificacion("Este jugador ya está involucrado en un cambio pendiente.", "error");
     return;
@@ -89,8 +102,12 @@ function manejarClicCampo(slotId, jugadorId) {
   }
 
   if (seleccion.origen === "banquillo") {
-    if (jugadorEnCambiosPendientes(jugadorId)) {
-      mostrarNotificacion("El jugador que sale ya está involucrado en otro cambio.", "error");
+    if (estaExpulsado(jugadorId)) {
+      mostrarNotificacion("El jugador que sale está expulsado y no puede ser sustituido.", "error");
+      return;
+    }
+    if (estaExpulsado(seleccion.jugadorId)) {
+      mostrarNotificacion("El jugador que entra está expulsado y no puede jugar.", "error");
       return;
     }
     if (jugadorEnCambiosPendientes(seleccion.jugadorId)) {
@@ -109,6 +126,11 @@ function manejarClicBanquillo(jugadorId) {
   // Antes de empezar, no hacer nada
   if (estadoDirecto.estado === "no_iniciado") {
     mostrarNotificacion("No se pueden registrar eventos antes de empezar.", "error");
+    return;
+  }
+
+  if (estaExpulsado(jugadorId)) {
+    mostrarNotificacion("Un jugador expulsado no puede ser seleccionado.", "error");
     return;
   }
 
@@ -142,6 +164,14 @@ function manejarClicBanquillo(jugadorId) {
   }
 
   if (seleccion.origen === "campo") {
+    if (estaExpulsado(seleccion.jugadorId)) {
+      mostrarNotificacion("El jugador que sale está expulsado y no puede ser sustituido.", "error");
+      return;
+    }
+    if (estaExpulsado(jugadorId)) {
+      mostrarNotificacion("El jugador que entra está expulsado y no puede jugar.", "error");
+      return;
+    }
     if (jugadorEnCambiosPendientes(seleccion.jugadorId)) {
       mostrarNotificacion("El jugador que sale ya está involucrado en otro cambio.", "error");
       return;
@@ -246,7 +276,6 @@ async function registrarEventoDesdeMenu(tipo) {
     return;
   }
 
-  // --- CORRECCIÓN: Determinar la parte del evento ---
   let parteEvento = estadoDirecto.parte;
   if (estadoDirecto.estado === "descanso") {
     if (tipo === "gol" || tipo === "asistencia") {
@@ -264,18 +293,40 @@ async function registrarEventoDesdeMenu(tipo) {
     }
   }
 
+  // Si es amarilla, verificar si es segunda amarilla
+  if (tipo === "amarilla") {
+    const amarillasActuales = eventosPartido.filter(
+      e => e.jugador_id === jugadorId && e.tipo === "amarilla"
+    ).length;
+    
+    if (amarillasActuales >= 1) {
+      await registrarExpulsionPorSegundaAmarilla(jugadorId, parteEvento);
+      return;
+    }
+  }
+
+  if (tipo === "roja") {
+    const { error } = await supabaseClient.from("eventos_partido").insert({
+      partido_id: partidoId, jugador_id: jugadorId, tipo, parte: parteEvento, momento: new Date().toISOString(),
+    });
+    if (error) {
+      notificarError(error, "No se pudo registrar el evento.");
+      return;
+    }
+    estadoDirecto.expulsados = estadoDirecto.expulsados || [];
+    if (!estadoDirecto.expulsados.includes(jugadorId)) estadoDirecto.expulsados.push(jugadorId);
+    await persistirEstadoDirecto();
+    await cargarEventos();
+    pintarTodo();
+    return;
+  }
+
   const { error } = await supabaseClient.from("eventos_partido").insert({
     partido_id: partidoId, jugador_id: jugadorId, tipo, parte: parteEvento, momento: new Date().toISOString(),
   });
   if (error) {
     notificarError(error, "No se pudo registrar el evento.");
     return;
-  }
-
-  if (tipo === "roja") {
-    estadoDirecto.expulsados = estadoDirecto.expulsados || [];
-    if (!estadoDirecto.expulsados.includes(jugadorId)) estadoDirecto.expulsados.push(jugadorId);
-    await persistirEstadoDirecto();
   }
 
   await cargarEventos();
@@ -371,16 +422,42 @@ async function registrarEventoSuplente(tipo) {
     return;
   }
 
-  // Solo permitir tarjetas para suplentes
   if (tipo !== "amarilla" && tipo !== "roja") {
     notificarError("Los suplentes solo pueden recibir tarjetas.", "error");
     return;
   }
 
-  // --- CORRECCIÓN: Determinar la parte del evento ---
   let parteEvento = estadoDirecto.parte;
   if (estadoDirecto.estado === "descanso") {
     parteEvento = 0;
+  }
+
+  // Si es amarilla, verificar si es segunda amarilla
+  if (tipo === "amarilla") {
+    const amarillasActuales = eventosPartido.filter(
+      e => e.jugador_id === jugadorId && e.tipo === "amarilla"
+    ).length;
+    
+    if (amarillasActuales >= 1) {
+      await registrarExpulsionPorSegundaAmarilla(jugadorId, parteEvento);
+      return;
+    }
+  }
+
+  if (tipo === "roja") {
+    const { error } = await supabaseClient.from("eventos_partido").insert({
+      partido_id: partidoId, jugador_id: jugadorId, tipo, parte: parteEvento, momento: new Date().toISOString(),
+    });
+    if (error) {
+      notificarError(error, "No se pudo registrar la tarjeta.");
+      return;
+    }
+    estadoDirecto.expulsados = estadoDirecto.expulsados || [];
+    if (!estadoDirecto.expulsados.includes(jugadorId)) estadoDirecto.expulsados.push(jugadorId);
+    await persistirEstadoDirecto();
+    await cargarEventos();
+    pintarTodo();
+    return;
   }
 
   const { error } = await supabaseClient.from("eventos_partido").insert({
@@ -389,12 +466,6 @@ async function registrarEventoSuplente(tipo) {
   if (error) {
     notificarError(error, "No se pudo registrar la tarjeta.");
     return;
-  }
-
-  if (tipo === "roja") {
-    estadoDirecto.expulsados = estadoDirecto.expulsados || [];
-    if (!estadoDirecto.expulsados.includes(jugadorId)) estadoDirecto.expulsados.push(jugadorId);
-    await persistirEstadoDirecto();
   }
 
   await cargarEventos();
@@ -421,6 +492,20 @@ async function confirmarCambios() {
     return;
   }
 
+  // Verificar que ningún jugador involucrado esté expulsado
+  for (const c of cambiosPendientes) {
+    if (estaExpulsado(c.saleJugadorId)) {
+      const sale = jugadorPorId(c.saleJugadorId);
+      mostrarNotificacion(`El jugador que sale (${sale ? sale.dorsal + ' - ' + sale.nombre : '?'}) está expulsado.`, "error");
+      return;
+    }
+    if (estaExpulsado(c.entraJugadorId)) {
+      const entra = jugadorPorId(c.entraJugadorId);
+      mostrarNotificacion(`El jugador que entra (${entra ? entra.dorsal + ' - ' + entra.nombre : '?'}) está expulsado.`, "error");
+      return;
+    }
+  }
+
   const ahora = new Date().toISOString();
   const eventos = [];
   const sustituciones = [];
@@ -428,8 +513,6 @@ async function confirmarCambios() {
   const bloqueId = generarUUID();
   const segundoActual = Math.floor(segundosMarcador());
   
-  // --- CORRECCIÓN: Detectar si estamos en descanso ---
-  // Si el estado es descanso, la parte para el cambio debe ser 0
   let parteCambio = estadoDirecto.parte;
   if (estadoDirecto.estado === "descanso") {
     parteCambio = 0;
@@ -511,15 +594,15 @@ function abrirSelectorHuecoVacio(slotId) {
   const convocados = partido.convocados || [];
   const setConvocados = new Set(convocados);
   
-  // Solo mostrar jugadores CONVOCADOS que no están en el campo
+  // Excluir jugadores expulsados
   const suplentes = jugadores.filter((j) => 
     jugadorActivo(j) && 
     !idsEnCampo.has(j.id) && 
-    setConvocados.has(j.id)
+    setConvocados.has(j.id) &&
+    !estaExpulsado(j.id)
   );
   
   const cont = document.getElementById("listaHuecoVacio");
-
   cont.innerHTML = "";
 
   const slotInfo = FORMACIONES[partido.formacion].find(s => s.id === slotId);
@@ -528,23 +611,35 @@ function abrirSelectorHuecoVacio(slotId) {
   if (suplentes.length === 0) {
     cont.innerHTML = `<p class="mensaje-vacio">No hay jugadores convocados disponibles.</p>`;
   } else {
+    // Ordenar: primero los que tienen la posición como principal, luego secundaria, luego otros
     const suplentesOrdenados = [...suplentes].sort((a, b) => {
       if (!puestoBuscado) return a.dorsal - b.dorsal;
       
-      const puestoA = a.posicion || a.puesto || '';
-      const puestoB = b.posicion || b.puesto || '';
+      const posA = obtenerPosicionesJugador(a);
+      const posB = obtenerPosicionesJugador(b);
       
-      const coincideA = puestoA === puestoBuscado;
-      const coincideB = puestoB === puestoBuscado;
+      const esPrincipalA = posA.principal === puestoBuscado;
+      const esPrincipalB = posB.principal === puestoBuscado;
+      const esSecundariaA = posA.secundarias.includes(puestoBuscado);
+      const esSecundariaB = posB.secundarias.includes(puestoBuscado);
       
-      if (coincideA && !coincideB) return -1;
-      if (!coincideA && coincideB) return 1;
+      const prioridadA = esPrincipalA ? 0 : (esSecundariaA ? 1 : 2);
+      const prioridadB = esPrincipalB ? 0 : (esSecundariaB ? 1 : 2);
+      
+      if (prioridadA !== prioridadB) return prioridadA - prioridadB;
       
       return a.dorsal - b.dorsal;
     });
     
-    const recomendados = suplentesOrdenados.filter(j => (j.posicion || j.puesto || '') === puestoBuscado);
-    const otros = suplentesOrdenados.filter(j => (j.posicion || j.puesto || '') !== puestoBuscado);
+    // Separar en grupos
+    const recomendados = suplentesOrdenados.filter(j => {
+      const pos = obtenerPosicionesJugador(j);
+      return pos.principal === puestoBuscado || pos.secundarias.includes(puestoBuscado);
+    });
+    const otros = suplentesOrdenados.filter(j => {
+      const pos = obtenerPosicionesJugador(j);
+      return pos.principal !== puestoBuscado && !pos.secundarias.includes(puestoBuscado);
+    });
     
     const titulo = document.createElement('div');
     titulo.className = 'titulo-hueco';
@@ -566,9 +661,13 @@ function abrirSelectorHuecoVacio(slotId) {
       recomendados.forEach((j) => {
         const btn = document.createElement('button');
         btn.className = 'btn-jugador-hueco recomendado';
+        const pos = obtenerPosicionesJugador(j);
+        const esPrincipal = pos.principal === puestoBuscado;
+        const esSecundaria = pos.secundarias.includes(puestoBuscado);
+        const indicador = esPrincipal ? ' ★' : (esSecundaria ? ' ⧫' : '');
         btn.innerHTML = `
-          <span><span class="dorsal">${j.dorsal}</span> - <span class="nombre">${j.nombre}</span></span>
-          <span class="puesto-tag">${j.posicion || j.puesto || 'Sin puesto'}</span>
+          <span><span class="dorsal">${j.dorsal}</span> - <span class="nombre">${j.nombre}</span><span style="color:var(--texto-secundario);font-size:0.7rem;">${indicador}</span></span>
+          <span class="puesto-tag">${pos.principal || 'Sin principal'}${pos.secundarias.length > 0 ? ` +${pos.secundarias.length}` : ''}</span>
         `;
         btn.addEventListener('click', () => asignarJugadorAHueco(j.id));
         grupo.appendChild(btn);
@@ -589,9 +688,10 @@ function abrirSelectorHuecoVacio(slotId) {
       otros.forEach((j) => {
         const btn = document.createElement('button');
         btn.className = 'btn-jugador-hueco otro';
+        const pos = obtenerPosicionesJugador(j);
         btn.innerHTML = `
           <span><span class="dorsal">${j.dorsal}</span> - <span class="nombre">${j.nombre}</span></span>
-          <span class="puesto-tag">${j.posicion || j.puesto || 'Sin puesto'}</span>
+          <span class="puesto-tag">${pos.principal || 'Sin principal'}${pos.secundarias.length > 0 ? ` +${pos.secundarias.length}` : ''}</span>
         `;
         btn.addEventListener('click', () => asignarJugadorAHueco(j.id));
         grupo.appendChild(btn);
@@ -603,7 +703,7 @@ function abrirSelectorHuecoVacio(slotId) {
     if (recomendados.length === 0 && puestoBuscado) {
       const aviso = document.createElement('div');
       aviso.className = 'aviso-sin-recomendados';
-      aviso.textContent = `⚠️ No hay jugadores con puesto ${puestoBuscado}. Puedes seleccionar cualquier suplente.`;
+      aviso.textContent = `⚠️ No hay jugadores con puesto ${puestoBuscado} (principal o secundario). Puedes seleccionar cualquier suplente.`;
       cont.appendChild(aviso);
     }
   }
@@ -613,6 +713,13 @@ function abrirSelectorHuecoVacio(slotId) {
 
 async function asignarJugadorAHueco(jugadorId) {
   document.getElementById("modalHuecoVacio").classList.add("oculto");
+  
+  // No permitir asignar un jugador expulsado
+  if (estaExpulsado(jugadorId)) {
+    mostrarNotificacion("No se puede asignar un jugador expulsado.", "error");
+    return;
+  }
+  
   estadoDirecto.huecos[slotHuecoActual] = jugadorId;
   if (estadoDirecto.minutos[jugadorId] === undefined) estadoDirecto.minutos[jugadorId] = 0;
 

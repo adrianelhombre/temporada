@@ -23,6 +23,15 @@
       <button class="ancho btn-equipo" id="btnEquipo" type="button" style="flex: 1; font-size:1.2rem">Equipo</button>
     </div>
 
+    <!-- FILTROS DE TIPO DE PARTIDO -->
+    <div class="fila-botones" style="display: flex; gap: 0.5rem; margin: 0 0 1.2rem 0; flex-wrap: wrap;">
+      <button class="ancho btn-equipo activo" data-tipo="todos" style="flex:1; min-width:60px; font-size:1rem;">Todos</button>
+      <button class="ancho btn-equipo" data-tipo="Liga" style="flex:1; min-width:60px; font-size:1rem;">Liga</button>
+      <button class="ancho btn-equipo" data-tipo="Amistoso" style="flex:1; min-width:60px; font-size:1rem;">Amistosos</button>
+      <button class="ancho btn-equipo" data-tipo="Copa" style="flex:1; min-width:60px; font-size:1rem;">Copa</button>
+      <button class="ancho btn-equipo" data-tipo="Torneo" style="flex:1; min-width:60px; font-size:1rem;">Torneos</button>
+    </div>
+
     <!-- Contenedor para estadísticas de equipo -->
     <div id="vistaEquipo" style="display:none;">
       <div class="tarjeta estadisticas-equipo-tarjeta">

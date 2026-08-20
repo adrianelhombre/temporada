@@ -1,13 +1,19 @@
-async function cargarEstadisticasEquipo() {
+async function cargarEstadisticasEquipo(filtroTipo = 'todos') {
   const container = document.getElementById('estadisticasEquipo');
   container.innerHTML = '<p>Cargando estadísticas de equipo...</p>';
 
   try {
-    // Obtenemos los partidos finalizados
-    const { data: partidosFinalizados, error: errorPartidos } = await supabaseClient
+    // Construir query con filtro
+    let query = supabaseClient
       .from("partidos")
-      .select("id, estado_directo, rival, condicion")
+      .select("id, estado_directo, rival, condicion, tipo_partido")
       .eq("estado", "finalizado");
+    
+    if (filtroTipo !== 'todos') {
+      query = query.eq("tipo_partido", filtroTipo);
+    }
+    
+    const { data: partidosFinalizados, error: errorPartidos } = await query;
 
     if (errorPartidos) {
       notificarError(errorPartidos, "No se pudieron cargar las estadísticas de equipo.");
@@ -15,7 +21,7 @@ async function cargarEstadisticasEquipo() {
     }
 
     if (partidosFinalizados.length === 0) {
-      container.innerHTML = '<p class="estadisticas-vacio">No hay partidos finalizados aún.</p>';
+      container.innerHTML = '<p class="estadisticas-vacio">No hay partidos finalizados con este filtro.</p>';
       return;
     }
 

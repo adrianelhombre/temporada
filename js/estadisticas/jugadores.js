@@ -1,4 +1,4 @@
-async function cargarEstadisticasJugadores() {
+async function cargarEstadisticasJugadores(filtroTipo = 'todos') {
   const container = document.getElementById('estadisticasJugadores');
   container.innerHTML = '<p>Cargando estadísticas de jugadores...</p>';
 
@@ -8,13 +8,30 @@ async function cargarEstadisticasJugadores() {
       .select("*")
       .order("dorsal");
 
-    const { data: partidosFinalizados, error: errorPartidos } = await supabaseClient
-      .from("partidos")
-      .select("id, estado_directo")
-      .eq("estado", "finalizado");
+    if (errorJugadores) {
+      notificarError(errorJugadores, "No se pudieron cargar los jugadores.");
+      return;
+    }
 
-    if (errorJugadores || errorPartidos) {
-      notificarError(errorJugadores || errorPartidos, "No se pudieron cargar las estadísticas.");
+    // Construir query con filtro
+    let query = supabaseClient
+      .from("partidos")
+      .select("id, estado_directo, convocados, tipo_partido")
+      .eq("estado", "finalizado");
+    
+    if (filtroTipo !== 'todos') {
+      query = query.eq("tipo_partido", filtroTipo);
+    }
+    
+    const { data: partidosFinalizados, error: errorPartidos } = await query;
+
+    if (errorPartidos) {
+      notificarError(errorPartidos, "No se pudieron cargar las estadísticas.");
+      return;
+    }
+
+    if (partidosFinalizados.length === 0) {
+      container.innerHTML = '<p style="text-align:center; color:var(--texto-secundario);">No hay partidos finalizados con este filtro.</p>';
       return;
     }
 
@@ -32,8 +49,8 @@ async function cargarEstadisticasJugadores() {
         rojas: 0,
         titular: 0,
         suplente: 0,
+        partidosConvocados: 0,
         partidosJugados: 0,
-        // Para calcular el porcentaje: guardamos los minutos de cada partido
         minutosPorPartido: []
       };
     });
@@ -54,17 +71,23 @@ async function cargarEstadisticasJugadores() {
         const titulares = p.estado_directo?.titulares || [];
         const suplentes = p.estado_directo?.suplentes || [];
         const duracionPartido = p.estado_directo?.duracion_partido || 70;
+        const convocados = p.convocados || [];
+
+        convocados.forEach(jugadorId => {
+          if (acumulado[jugadorId]) {
+            acumulado[jugadorId].partidosConvocados++;
+            const minutosJugados = (minutosPartido[jugadorId] || 0) / 60;
+            acumulado[jugadorId].minutosPorPartido.push({
+              minutosJugados: minutosJugados,
+              totalPartido: duracionPartido
+            });
+          }
+        });
 
         Object.entries(minutosPartido).forEach(([jugadorId, segundos]) => {
           if (acumulado[jugadorId]) {
-            const minutosJugados = segundos / 60;
             acumulado[jugadorId].minutos += segundos;
             acumulado[jugadorId].partidosJugados++;
-            // Guardamos los minutos jugados en este partido
-            acumulado[jugadorId].minutosPorPartido.push({
-              minutos: minutosJugados,
-              totalPartido: duracionPartido
-            });
           }
         });
 
@@ -90,7 +113,7 @@ async function cargarEstadisticasJugadores() {
       });
     }
 
-    // Renderizar como tarjetas individuales
+    // Renderizar
     container.innerHTML = '';
     
     const listaJugadores = document.createElement('div');
@@ -102,7 +125,6 @@ async function cargarEstadisticasJugadores() {
         const card = document.createElement('div');
         card.className = 'estadisticas-jugador-fila';
         
-        // Nombre y dorsal
         const nombreDiv = document.createElement('div');
         nombreDiv.className = 'estadisticas-jugador-nombre';
         nombreDiv.innerHTML = `
@@ -111,16 +133,13 @@ async function cargarEstadisticasJugadores() {
         `;
         card.appendChild(nombreDiv);
 
-        // Datos en línea
         const datosDiv = document.createElement('div');
         datosDiv.className = 'estadisticas-jugador-datos';
         
-        // Contenedor de tarjetas (solo si tiene alguna)
         if (j.amarillas > 0 || j.rojas > 0) {
           const tarjetasDiv = document.createElement('div');
           tarjetasDiv.className = 'estadisticas-jugador-tarjetas';
           
-          // Tarjeta amarilla
           if (j.amarillas > 0) {
             const amarSpan = document.createElement('span');
             amarSpan.className = 'estadisticas-tarjeta-amarilla';
@@ -128,7 +147,6 @@ async function cargarEstadisticasJugadores() {
             tarjetasDiv.appendChild(amarSpan);
           }
           
-          // Tarjeta roja
           if (j.rojas > 0) {
             const rojSpan = document.createElement('span');
             rojSpan.className = 'estadisticas-tarjeta-roja';
@@ -139,16 +157,16 @@ async function cargarEstadisticasJugadores() {
           datosDiv.appendChild(tarjetasDiv);
         }
         
-        // Partidos Jugados
-        const pjDiv = document.createElement('div');
-        pjDiv.className = 'estadisticas-jugador-item';
-        pjDiv.innerHTML = `
-          <div class="estadisticas-jugador-valor">${j.partidosJugados}</div>
-          <div class="estadisticas-jugador-etiqueta">PJ</div>
+        // PC: Partidos Convocados
+        const pcDiv = document.createElement('div');
+        pcDiv.className = 'estadisticas-jugador-item';
+        pcDiv.innerHTML = `
+          <div class="estadisticas-jugador-valor">${j.partidosConvocados}</div>
+          <div class="estadisticas-jugador-etiqueta">PC</div>
         `;
-        datosDiv.appendChild(pjDiv);
+        datosDiv.appendChild(pcDiv);
         
-        // Partidos Titular
+        // PT: Partidos Titular (número simple)
         const ptDiv = document.createElement('div');
         ptDiv.className = 'estadisticas-jugador-item';
         ptDiv.innerHTML = `
@@ -156,6 +174,18 @@ async function cargarEstadisticasJugadores() {
           <div class="estadisticas-jugador-etiqueta">PT</div>
         `;
         datosDiv.appendChild(ptDiv);
+        
+        // % TIT: porcentaje de titularidad (con ancho fijo)
+        const pctTitDiv = document.createElement('div');
+        pctTitDiv.className = 'estadisticas-jugador-item-porcentaje';
+        const pctTitularidad = j.partidosConvocados > 0 
+          ? Math.round((j.titular / j.partidosConvocados) * 100) 
+          : 0;
+        pctTitDiv.innerHTML = `
+          <div class="estadisticas-jugador-valor-porcentaje" style="color: var(--amarillo);">${pctTitularidad}%</div>
+          <div class="estadisticas-jugador-etiqueta">% TIT</div>
+        `;
+        datosDiv.appendChild(pctTitDiv);
         
         // Goles
         const golDiv = document.createElement('div');
@@ -185,22 +215,22 @@ async function cargarEstadisticasJugadores() {
         `;
         datosDiv.appendChild(minDiv);
         
-        // Porcentaje: calcular sobre los partidos que ha jugado
-        let porcentaje = 0;
+        // Porcentaje de tiempo jugado (sobre convocados)
+        let porcentajeTiempo = 0;
         if (j.minutosPorPartido.length > 0) {
           let totalJugado = 0;
           let totalPosible = 0;
           j.minutosPorPartido.forEach(partido => {
-            totalJugado += partido.minutos;
+            totalJugado += partido.minutosJugados;
             totalPosible += partido.totalPartido;
           });
-          porcentaje = totalPosible > 0 ? Math.round((totalJugado / totalPosible) * 100) : 0;
+          porcentajeTiempo = totalPosible > 0 ? Math.round((totalJugado / totalPosible) * 100) : 0;
         }
         
         const pctDiv = document.createElement('div');
         pctDiv.className = 'estadisticas-jugador-item-porcentaje';
         pctDiv.innerHTML = `
-          <div class="estadisticas-jugador-valor-porcentaje">${porcentaje}%</div>
+          <div class="estadisticas-jugador-valor-porcentaje" style="color: var(--amarillo);">${porcentajeTiempo}%</div>
           <div class="estadisticas-jugador-etiqueta">TIEMPO</div>
         `;
         datosDiv.appendChild(pctDiv);
@@ -211,7 +241,6 @@ async function cargarEstadisticasJugadores() {
 
     container.appendChild(listaJugadores);
 
-    // Añadir resumen de temporada
     const resumen = document.createElement('div');
     resumen.className = 'estadisticas-resumen';
     resumen.innerHTML = `

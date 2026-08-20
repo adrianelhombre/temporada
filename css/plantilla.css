@@ -1,0 +1,230 @@
+/* ============================================
+   PLANTILLA - ESTILOS ESPECÍFICOS
+   ============================================ */
+
+/* ---------- TABLA JUGADORES ---------- */
+#tablaJugadores {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#tablaJugadores thead th {
+  text-align: left;
+  padding: 0.5rem 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--texto-secundario);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--borde);
+}
+
+#tablaJugadores tbody td {
+  padding: 0.5rem 0.4rem;
+  border-bottom: 1px solid var(--borde);
+  vertical-align: middle;
+}
+
+/* Dorsal - Mismo estilo que en estadísticas */
+.jugador-dorsal {
+  font-size: 1rem;
+  font-weight: 700;
+  background: #333;
+  color: #fff;
+  padding: 5px 0;
+  border-radius: 8px;
+  display: inline-block;
+  min-width: 30px;
+  text-align: center;
+}
+
+/* Nombre - Mismo estilo que en estadísticas */
+.jugador-nombre {
+  font-weight: bold;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  color: var(--texto);
+}
+
+/* Celda de dorsal y nombre combinados */
+.celda-jugador {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+/* Posiciones - estilo tipo badges */
+.jugador-posiciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.jugador-posicion-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--texto);
+  background: var(--gris-200);
+  padding: 2px 8px;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+.jugador-posicion-tag.principal {
+  background: var(--amarillo);
+  color: var(--negro);
+  font-weight: 700;
+}
+
+/* Botones de acción en la tabla */
+.acciones-jugador {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.acciones-jugador .btn-editar {
+  background: none;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--texto-secundario);
+  cursor: pointer;
+  transition: var(--transicion);
+}
+
+.acciones-jugador .btn-editar:hover {
+  border-color: var(--amarillo);
+  color: var(--texto);
+  background: var(--amarillo-claro);
+}
+
+.acciones-jugador .btn-borrar {
+  background: none;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--rojo);
+  cursor: pointer;
+  transition: var(--transicion);
+}
+
+.acciones-jugador .btn-borrar:hover {
+  background: var(--rojo-claro);
+  border-color: var(--rojo);
+}
+
+/* Filas hover */
+#tablaJugadores tbody tr:hover {
+  background: var(--gris-100);
+  border-radius: var(--radio);
+}
+
+#tablaJugadores tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ---------- SELECTOR DE POSICIONES (botones tipo chip) ---------- */
+.selector-posiciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 12px 0;
+}
+
+.selector-posiciones .chip-posicion {
+  padding: 6px 14px;
+  border: 2px solid var(--borde);
+  border-radius: 20px;
+  background: var(--superficie);
+  color: var(--texto-secundario);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transicion);
+  user-select: none;
+  font-family: inherit;
+}
+
+.selector-posiciones .chip-posicion:hover {
+  border-color: var(--gris-400);
+  background: var(--gris-100);
+}
+
+.selector-posiciones .chip-posicion.seleccionado {
+  border-color: var(--amarillo);
+  background: var(--amarillo);
+  color: var(--negro);
+}
+
+.selector-posiciones .chip-posicion.seleccionado.principal {
+  border-color: var(--amarillo-oscuro);
+  background: var(--amarillo-oscuro);
+  color: var(--blanco);
+  box-shadow: 0 0 0 2px var(--amarillo);
+}
+
+.selector-posiciones .chip-posicion.secundaria {
+  border-style: dashed;
+}
+
+.selector-posiciones .chip-posicion.seleccionado.secundaria {
+  border-style: solid;
+  background: var(--amarillo-claro);
+  border-color: var(--amarillo);
+  color: var(--negro);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 500px) {
+  .celda-jugador {
+    gap: 8px;
+  }
+  
+  .jugador-dorsal {
+    font-size: 0.85rem;
+    min-width: 26px;
+    padding: 4px 0;
+  }
+  
+  .jugador-nombre {
+    font-size: 1rem;
+  }
+  
+  .acciones-jugador {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .acciones-jugador .btn-editar,
+  .acciones-jugador .btn-borrar {
+    width: 100%;
+    text-align: center;
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+
+  .selector-posiciones .chip-posicion {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+  }
+}
+
+
+/* Posición en banquillo */
+.posicion-banquillo {
+  font-size: 0.5rem;
+  color: var(--texto-secundario);
+  margin-top: -2px;
+  max-width: 44px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}

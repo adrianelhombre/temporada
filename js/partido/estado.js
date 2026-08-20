@@ -14,7 +14,7 @@ let contadorTick = 0;
 let slotHuecoActual = null;
 let operacionEnCurso = false;
 
-// --- NUEVO: Timestamp global de inicio del partido (NUNCA cambia) ---
+// Timestamp global de inicio del partido (NUNCA cambia)
 let inicioPartidoTimestamp = null;
 
 // ---------- Helpers ----------
@@ -56,7 +56,6 @@ function segundosParteActual() {
   return estadoDirecto.segundosAcumulados || 0;
 }
 
-// --- NUEVO: Obtener segundos desde el inicio del partido ---
 function segundosDesdeInicio(momentoISO) {
   if (!inicioPartidoTimestamp) return 0;
   const momento = new Date(momentoISO).getTime();
@@ -64,7 +63,6 @@ function segundosDesdeInicio(momentoISO) {
   return Math.max(0, (momento - inicio) / 1000);
 }
 
-// --- NUEVO: Obtener timestamp a partir de segundos desde inicio ---
 function timestampDesdeSegundos(segundos) {
   if (!inicioPartidoTimestamp) return new Date().toISOString();
   const inicio = new Date(inicioPartidoTimestamp).getTime();
@@ -94,7 +92,6 @@ async function cargarPartido() {
     };
   }
   
-  // Recuperar inicioPartidoTimestamp si existe
   if (partido.inicio_timestamp) {
     inicioPartidoTimestamp = partido.inicio_timestamp;
   }
@@ -149,10 +146,26 @@ async function cargarEventos() {
   eventosRival = er || [];
   sustituciones = su || [];
 
-  const expulsadosActuales = eventosPartido
+  // Calcular expulsados (rojas directas + segunda amarilla)
+  const rojasDirectas = eventosPartido
     .filter(e => e.tipo === "roja")
     .map(e => e.jugador_id);
-  estadoDirecto.expulsados = [...new Set(expulsadosActuales)];
+  
+  // Jugadores con 2 o más amarillas (segunda amarilla)
+  const conteoAmarillas = {};
+  eventosPartido
+    .filter(e => e.tipo === "amarilla")
+    .forEach(e => {
+      conteoAmarillas[e.jugador_id] = (conteoAmarillas[e.jugador_id] || 0) + 1;
+    });
+  
+  const segundasAmarillas = Object.entries(conteoAmarillas)
+    .filter(([_, count]) => count >= 2)
+    .map(([id, _]) => id);
+  
+  // Unión de ambos grupos
+  const expulsadosActuales = [...new Set([...rojasDirectas, ...segundasAmarillas])];
+  estadoDirecto.expulsados = expulsadosActuales;
 }
 
 // ---------- Persistencia ----------

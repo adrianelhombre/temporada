@@ -70,6 +70,42 @@ function abrirModalAccionJugador(jugadorId) {
   document.getElementById("modalAccionJugador").classList.remove("oculto");
 }
 
+// --- NUEVA FUNCIÓN: Registrar expulsión por segunda amarilla ---
+
+// Registrar expulsión por segunda amarilla (sin confirmación)
+async function registrarExpulsionPorSegundaAmarilla(jugadorId, parteEvento) {
+  const ahora = new Date().toISOString();
+  
+  // 1. Registrar la segunda amarilla
+  const { error: errorAmarilla } = await supabaseClient.from("eventos_partido").insert({
+    partido_id: partidoId, jugador_id: jugadorId, tipo: "amarilla", parte: parteEvento, momento: ahora,
+  });
+  if (errorAmarilla) {
+    notificarError(errorAmarilla, "No se pudo registrar la segunda amarilla.");
+    return;
+  }
+
+  // 2. Registrar la roja automática
+  const { error: errorRoja } = await supabaseClient.from("eventos_partido").insert({
+    partido_id: partidoId, jugador_id: jugadorId, tipo: "roja", parte: parteEvento, momento: ahora,
+  });
+  if (errorRoja) {
+    notificarError(errorRoja, "No se pudo registrar la expulsión.");
+    return;
+  }
+
+  // 3. Marcar como expulsado
+  estadoDirecto.expulsados = estadoDirecto.expulsados || [];
+  if (!estadoDirecto.expulsados.includes(jugadorId)) estadoDirecto.expulsados.push(jugadorId);
+  
+  await persistirEstadoDirecto();
+  await cargarEventos();
+  pintarTodo();
+  
+  const j = jugadorPorId(jugadorId);
+  mostrarNotificacion(`🔴 ${j ? j.nombre : 'Jugador'} (dorsal ${j ? j.dorsal : '?'}) expulsado por segunda amarilla.`, "exito");
+}
+
 async function registrarEventoJugador(tipo) {
   const jugadorId = jugadorModalActual;
   document.getElementById("modalAccionJugador").classList.add("oculto");
@@ -102,6 +138,36 @@ async function registrarEventoJugador(tipo) {
     }
   }
 
+  // Si es amarilla, verificar si es segunda amarilla
+  if (tipo === "amarilla") {
+    const amarillasActuales = eventosPartido.filter(
+      e => e.jugador_id === jugadorId && e.tipo === "amarilla"
+    ).length;
+    
+    if (amarillasActuales >= 1) {
+      await registrarExpulsionPorSegundaAmarilla(jugadorId, parteEvento);
+      return;
+    }
+  }
+
+  // Si es roja, registrar normalmente
+  if (tipo === "roja") {
+    const { error } = await supabaseClient.from("eventos_partido").insert({
+      partido_id: partidoId, jugador_id: jugadorId, tipo, parte: parteEvento, momento: new Date().toISOString(),
+    });
+    if (error) {
+      notificarError(error, "No se pudo registrar el evento.");
+      return;
+    }
+    estadoDirecto.expulsados = estadoDirecto.expulsados || [];
+    if (!estadoDirecto.expulsados.includes(jugadorId)) estadoDirecto.expulsados.push(jugadorId);
+    await persistirEstadoDirecto();
+    await cargarEventos();
+    pintarTodo();
+    return;
+  }
+
+  // Registro normal para otros eventos (gol, asistencia, etc.)
   const { error } = await supabaseClient.from("eventos_partido").insert({
     partido_id: partidoId, jugador_id: jugadorId, tipo, parte: parteEvento, momento: new Date().toISOString(),
   });
@@ -110,15 +176,10 @@ async function registrarEventoJugador(tipo) {
     return;
   }
 
-  if (tipo === "roja") {
-    estadoDirecto.expulsados = estadoDirecto.expulsados || [];
-    if (!estadoDirecto.expulsados.includes(jugadorId)) estadoDirecto.expulsados.push(jugadorId);
-    await persistirEstadoDirecto();
-  }
-
   await cargarEventos();
   pintarTodo();
 }
+
 
 // ---------- Eventos genéricos ----------
 
@@ -151,7 +212,7 @@ function actualizarCampoJugadorEventoGenerico(equipo) {
   
   if (equipo === 'favor') {
     const idsEnCampo = new Set(Object.values(estadoDirecto.huecos).filter(Boolean));
-    const jugadoresEnCampo = jugadores.filter(j => idsEnCampo.has(j.id) && jugadorActivo(j));
+    const jugadoresEnCampo = jugadores.filter(j => idsEnCampo.has(j.id) && jugadorActivo(j) && !estaExpulsado(j.id));
     
     if (jugadoresEnCampo.length === 0) {
       cont.innerHTML = `<p style="color: var(--texto-secundario); text-align: center; padding: 0.5rem 0;">No hay jugadores en el campo</p>`;
@@ -208,6 +269,11 @@ async function confirmarEventoGenerico() {
     const idsEnCampo = new Set(Object.values(estadoDirecto.huecos).filter(Boolean));
     if (!idsEnCampo.has(jugadorId)) {
       mostrarNotificacion("Este jugador ya no está en el campo.", "error");
+      return;
+    }
+    
+    if (estaExpulsado(jugadorId)) {
+      mostrarNotificacion("Este jugador está expulsado.", "error");
       return;
     }
     
@@ -342,7 +408,6 @@ async function empezar1aParte() {
     return;
   }
 
-  // --- NUEVO: Guardar timestamp de inicio ---
   inicioPartidoTimestamp = new Date().toISOString();
   
   estadoDirecto.estado = "en_curso";
@@ -356,7 +421,6 @@ async function empezar1aParte() {
     if (estadoDirecto.minutos[jugadorId] === undefined) estadoDirecto.minutos[jugadorId] = 0;
   });
 
-  // Guardar timestamp de inicio en el partido
   if (!await persistirPartido({ estado: "en_juego", inicio_timestamp: inicioPartidoTimestamp })) return;
   if (!await persistirEstadoDirecto()) return;
   
@@ -401,7 +465,6 @@ async function irADescanso() {
   const ahora = new Date();
   let tiempoJugado = estadoDirecto.segundosAcumulados || 0;
   
-  // Cerrar tramo actual
   if (estadoDirecto.inicioParteTimestamp) {
     const inicio = new Date(estadoDirecto.inicioParteTimestamp);
     const duracionTramo = (ahora.getTime() - inicio.getTime()) / 1000;
@@ -416,7 +479,6 @@ async function irADescanso() {
     estadoDirecto.inicioParteTimestamp = null;
   }
   
-  // Completar a 35' (si es menor)
   const tiempoObjetivo = partido.duracion_parte_minutos * 60;
   if (tiempoJugado < tiempoObjetivo) {
     const faltante = tiempoObjetivo - tiempoJugado;

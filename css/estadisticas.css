@@ -166,22 +166,22 @@
 
 /* Tarjetas individuales */
 .estadisticas-tarjeta-amarilla {
-  font-size: 1.3rem;
+  font-size: 1rem;
   font-weight: bold;
   background: #ffeb3b;
   color: #333;
   border-radius: 3px;
-  padding: 0 6px;
+  padding: 6px 8px;
   display: inline-block;
 }
 
 .estadisticas-tarjeta-roja {
-  font-size: 1.3rem;
+  font-size: 1rem;
   font-weight: bold;
   background: #f44336;
   color: white;
   border-radius: 3px;
-  padding: 0 6px;
+  padding: 6px 8px;
   display: inline-block;
 }
 
