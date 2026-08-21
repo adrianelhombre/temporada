@@ -198,10 +198,15 @@ function abrirModalEventoGenerico(tipo, label) {
   }
   
   eventoGenericoActual = tipo;
-  equipoGenericoActual = null;
+  equipoGenericoActual = 'favor'; // Por defecto seleccionar Balsas
   
   document.getElementById("tituloEventoGenerico").textContent = `¿${label}?`;
-  actualizarCampoJugadorEventoGenerico(null);
+  
+  // Activar visualmente el botón de Balsas
+  document.getElementById("botonEventoFavor").classList.add("activo");
+  document.getElementById("botonEventoContra").classList.remove("activo");
+  
+  actualizarCampoJugadorEventoGenerico('favor');
   
   document.getElementById("modalEventoGenerico").classList.remove("oculto");
 }
@@ -220,12 +225,44 @@ function actualizarCampoJugadorEventoGenerico(equipo) {
       return;
     }
     
-    cont.innerHTML = `
-      <label for="selectJugadorEventoGenerico">Jugador de Balsas (en campo)</label>
-      <select id="selectJugadorEventoGenerico">
-        ${jugadoresEnCampo.map(j => `<option value="${j.id}">${j.dorsal} - ${j.nombre}</option>`).join('')}
-      </select>
-    `;
+    // Crear listado de jugadores en formato lista vertical
+    let html = `<div class="lista-jugadores-evento">`;
+    
+    jugadoresEnCampo.forEach(j => {
+      const amarillas = eventosPartido.filter(e => e.jugador_id === j.id && e.tipo === "amarilla").length;
+      const expulsado = estaExpulsado(j.id);
+      
+      let badge = '';
+      if (expulsado) {
+        badge = `<span class="badge-jugador-evento badge-roja">🔴</span>`;
+      } else if (amarillas === 1) {
+        badge = `<span class="badge-jugador-evento badge-amarilla">🟨</span>`;
+      }
+      
+      html += `
+        <button class="btn-jugador-evento" data-jugador="${j.id}" ${expulsado ? 'disabled' : ''}>
+          <span class="btn-jugador-evento-dorsal">${j.dorsal}</span>
+          <span class="btn-jugador-evento-nombre">${j.nombre}</span>
+          ${badge}
+        </button>
+      `;
+    });
+    
+    html += `</div>`;
+    cont.innerHTML = html;
+    
+    // Añadir event listeners a los botones
+    cont.querySelectorAll('.btn-jugador-evento:not([disabled])').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Deseleccionar todos
+        cont.querySelectorAll('.btn-jugador-evento').forEach(b => b.classList.remove('seleccionado'));
+        // Seleccionar este
+        btn.classList.add('seleccionado');
+        // Guardar el jugador seleccionado
+        btn.dataset.seleccionado = 'true';
+      });
+    });
+    
     document.getElementById("botonConfirmarEventoGenerico").style.opacity = '1';
     
   } else if (equipo === 'contra') {
@@ -260,7 +297,14 @@ async function confirmarEventoGenerico() {
   let error;
   
   if (equipo === 'favor') {
-    const jugadorId = document.getElementById("selectJugadorEventoGenerico").value;
+    // Obtener el jugador seleccionado del listado de botones
+    const btnSeleccionado = document.querySelector('#campoJugadorEventoGenerico .btn-jugador-evento.seleccionado');
+    if (!btnSeleccionado) {
+      mostrarNotificacion("Selecciona un jugador.", "error");
+      return;
+    }
+    
+    const jugadorId = btnSeleccionado.dataset.jugador;
     if (!jugadorId) {
       mostrarNotificacion("Selecciona un jugador.", "error");
       return;
@@ -461,39 +505,28 @@ async function irADescanso() {
     mostrarNotificacion("Solo se puede ir a descanso durante la 1ª parte.", "error");
     return;
   }
-  
-  const ahora = new Date();
-  let tiempoJugado = estadoDirecto.segundosAcumulados || 0;
-  
-  if (estadoDirecto.inicioParteTimestamp) {
-    const inicio = new Date(estadoDirecto.inicioParteTimestamp);
-    const duracionTramo = (ahora.getTime() - inicio.getTime()) / 1000;
-    tiempoJugado += duracionTramo;
-    
-    estadoDirecto.tramos = estadoDirecto.tramos || [];
-    estadoDirecto.tramos.push({
-      parte: 1,
-      inicio: estadoDirecto.inicioParteTimestamp,
-      fin: ahora.toISOString(),
-    });
-    estadoDirecto.inicioParteTimestamp = null;
+
+  const objetivo = partido.duracion_parte_minutos * 60;
+  const jugado = estadoDirecto.segundosAcumulados || 0;
+
+  // Si acaba antes de tiempo, completar únicamente a los jugadores que están en el campo
+  if (jugado < objetivo) {
+    const faltante = objetivo - jugado;
+
+    Object.values(estadoDirecto.huecos)
+      .filter(Boolean)
+      .forEach((jugadorId) => {
+        if (estaExpulsado(jugadorId)) return;
+        estadoDirecto.minutos[jugadorId] =
+          (estadoDirecto.minutos[jugadorId] || 0) + faltante;
+      });
   }
-  
-  const tiempoObjetivo = partido.duracion_parte_minutos * 60;
-  if (tiempoJugado < tiempoObjetivo) {
-    const faltante = tiempoObjetivo - tiempoJugado;
-    Object.values(estadoDirecto.huecos).filter(Boolean).forEach((jugadorId) => {
-      if (estaExpulsado(jugadorId)) return;
-      estadoDirecto.minutos[jugadorId] = (estadoDirecto.minutos[jugadorId] || 0) + faltante;
-    });
-    tiempoJugado = tiempoObjetivo;
-  }
-  
-  estadoDirecto.segundosAcumulados = tiempoJugado;
+
+  // El descanso SIEMPRE comienza en el minuto oficial (35:00)
+  estadoDirecto.segundosAcumulados = objetivo;
   estadoDirecto.estado = "descanso";
-  
+
   await persistirEstadoDirecto();
-  await cargarEventos();
   pintarTodo();
   mostrarNotificacion("Descanso. Prepara la 2ª parte.", "exito");
 }
@@ -503,52 +536,77 @@ async function empezar2aParte() {
     mostrarNotificacion("El partido no está en descanso.", "error");
     return;
   }
-  
+
+  // La segunda parte siempre empieza desde 0 segundos internos.
+  // El marcador mostrará 35:00 gracias a segundosMarcador().
   estadoDirecto.estado = "en_curso";
   estadoDirecto.parte = 2;
   estadoDirecto.segundosAcumulados = 0;
-  estadoDirecto.inicioParteTimestamp = new Date().toISOString();
-  
+
   await persistirEstadoDirecto();
-  
-  if (typeof sincronizarTick === 'function') {
+
+  if (typeof sincronizarTick === "function") {
     sincronizarTick();
   }
-  
+
   pintarTodo();
   mostrarNotificacion("Comienza la 2ª parte.", "exito");
 }
 
 function finalizarPartido() {
   if (partido.estado === "finalizado" || estadoDirecto.estado === "no_iniciado") return;
-  
+
   if (estadoDirecto.estado === "descanso") {
-    mostrarNotificacion("La 1ª parte ya ha terminado. Empieza y termina la 2ª parte antes de finalizar el partido.", "error");
+    mostrarNotificacion(
+      "La 1ª parte ya ha terminado. Empieza y termina la 2ª parte antes de finalizar el partido.",
+      "error"
+    );
     return;
   }
-  
+
   if (estadoDirecto.parte === 1) {
-    mostrarNotificacion("No puedes finalizar el partido hasta terminar la 1ª parte (ir a descanso).", "error");
+    mostrarNotificacion(
+      "No puedes finalizar el partido hasta terminar la 1ª parte (ir a descanso).",
+      "error"
+    );
     return;
   }
-  
+
   mostrarConfirmacion("¿Finalizar el partido?", async () => {
     cerrarConfirmacion();
-    cerrarTramoActual(true);
-    estadoDirecto.segundosAcumulados = Math.floor(estadoDirecto.segundosAcumulados || 0);
+
+    const objetivo = partido.duracion_parte_minutos * 60;
+    const jugado = estadoDirecto.segundosAcumulados || 0;
+
+    // Si acaba antes del 70, completar el tiempo únicamente a los jugadores en el campo
+    if (jugado < objetivo) {
+      const faltante = objetivo - jugado;
+
+      Object.values(estadoDirecto.huecos)
+        .filter(Boolean)
+        .forEach((jugadorId) => {
+          if (estaExpulsado(jugadorId)) return;
+          estadoDirecto.minutos[jugadorId] =
+            (estadoDirecto.minutos[jugadorId] || 0) + faltante;
+        });
+
+      estadoDirecto.segundosAcumulados = objetivo;
+    }
+
+    // Si hay descuento, NO tocar los minutos de los jugadores.
+    // El marcador conservará el tiempo real (72:30, 73:10, etc.)
+
     estadoDirecto.estado = "finalizado";
-    
-    const ok = await guardarPartidoSeguro({
-      estado: "finalizado",
-      estado_directo: estadoDirecto,
-    });
-    
+
+    const ok = await persistirEstadoDirecto();
     if (!ok) return;
-    
-    await cargarPartido();
-    await cargarEventos();
+
+    const okPartido = await persistirPartido({ estado: "finalizado" });
+    if (!okPartido) return;
+
+    partido.estado = "finalizado";
     pintarTodo();
-    
+
     mostrarNotificacion("Partido finalizado correctamente.", "exito");
   });
 }

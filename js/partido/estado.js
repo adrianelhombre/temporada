@@ -38,6 +38,7 @@ function amarillasJugador(jugadorId) {
 function estadoVacio(formacion) {
   const huecos = {};
   FORMACIONES[formacion].forEach((slot) => (huecos[slot.id] = null));
+
   return {
     estado: "no_iniciado",
     parte: 1,
@@ -45,29 +46,20 @@ function estadoVacio(formacion) {
     huecos,
     minutos: {},
     expulsados: [],
-    titulares: [],
-    tramos: [],
+    titulares: []
   };
 }
 
 // ---------- Cálculo de tiempo ----------
 
 function segundosParteActual() {
+  // En descanso, devolvemos 0 para que el marcador muestre 35:00
+  if (estadoDirecto.estado === "descanso") {
+    return 0;
+  }
   return estadoDirecto.segundosAcumulados || 0;
 }
 
-function segundosDesdeInicio(momentoISO) {
-  if (!inicioPartidoTimestamp) return 0;
-  const momento = new Date(momentoISO).getTime();
-  const inicio = new Date(inicioPartidoTimestamp).getTime();
-  return Math.max(0, (momento - inicio) / 1000);
-}
-
-function timestampDesdeSegundos(segundos) {
-  if (!inicioPartidoTimestamp) return new Date().toISOString();
-  const inicio = new Date(inicioPartidoTimestamp).getTime();
-  return new Date(inicio + segundos * 1000).toISOString();
-}
 
 // ---------- Carga ----------
 
@@ -88,7 +80,6 @@ async function cargarPartido() {
       minutos: partido.estado_directo.minutos || {},
       expulsados: Array.isArray(partido.estado_directo.expulsados) ? partido.estado_directo.expulsados : [],
       titulares: Array.isArray(partido.estado_directo.titulares) ? partido.estado_directo.titulares : [],
-      tramos: Array.isArray(partido.estado_directo.tramos) ? partido.estado_directo.tramos : [],
     };
   }
   

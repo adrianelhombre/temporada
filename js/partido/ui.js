@@ -82,6 +82,9 @@ function pintarCampo() {
   const setConvocados = new Set(convocados);
   const idsEnCampo = new Set(Object.values(estadoDirecto.huecos).filter(Boolean));
 
+  // Identificar al portero (slot "por")
+  const porteroId = estadoDirecto.huecos && estadoDirecto.huecos.por ? estadoDirecto.huecos.por : null;
+
   slots.forEach((slot) => {
     const jugadorId = estadoDirecto.huecos[slot.id];
     const ficha = document.createElement("div");
@@ -96,6 +99,7 @@ function pintarCampo() {
       const amarillas = eventosPartido.filter(e => e.jugador_id === jugadorId && e.tipo === "amarilla").length;
       const tieneRoja = eventosPartido.some(e => e.jugador_id === jugadorId && e.tipo === "roja");
       const expulsadoPorDobleAmarilla = expulsado && amarillas >= 2 && !tieneRoja;
+      const esPortero = jugadorId === porteroId;
       
       const estaSeleccionado = seleccion && seleccion.origen === "campo" && seleccion.slotId === slot.id;
       const estaSeleccionadoBanquillo = seleccion && seleccion.origen === "banquillo" && seleccion.jugadorId === jugadorId;
@@ -112,6 +116,9 @@ function pintarCampo() {
       ficha.classList.toggle("seleccionado", resaltar);
       ficha.classList.toggle("pendiente-cambio", pendienteCambio);
       ficha.classList.toggle("expulsado", expulsado);
+      if (esPortero) {
+        ficha.classList.add("portero");
+      }
       if (expulsadoPorDobleAmarilla) {
         ficha.classList.add("expulsado-doble-amarilla");
       }
@@ -204,17 +211,42 @@ function pintarBanquillo() {
   const convocados = partido.convocados || [];
   const setConvocados = new Set(convocados);
   
+  // Identificar al portero titular (slot "por")
+  const porteroTitularId = estadoDirecto.huecos && estadoDirecto.huecos.por ? estadoDirecto.huecos.por : null;
+  
   const suplentes = jugadores.filter((j) => 
     jugadorActivo(j) && 
     !idsEnCampo.has(j.id) &&
     setConvocados.has(j.id)
   );
   
+  // Separar porteros y resto de jugadores
+  const porteros = [];
+  const resto = [];
+  
+  suplentes.forEach(j => {
+    const posJugador = obtenerPosicionesJugador(j);
+    const esPortero = posJugador.principal === "POR" || posJugador.secundarias.includes("POR");
+    if (esPortero) {
+      porteros.push(j);
+    } else {
+      resto.push(j);
+    }
+  });
+  
+  // Ordenar porteros por dorsal (para mantener consistencia)
+  porteros.sort((a, b) => a.dorsal - b.dorsal);
+  // Ordenar resto por dorsal
+  resto.sort((a, b) => a.dorsal - b.dorsal);
+  
+  // Combinar: primero porteros, luego el resto
+  const suplentesOrdenados = [...porteros, ...resto];
+  
   const cont = document.getElementById("banquillo");
   cont.innerHTML = "";
   const antesDeEmpezar = estadoDirecto.estado === "no_iniciado";
 
-  suplentes.forEach((j) => {
+  suplentesOrdenados.forEach((j) => {
     const ficha = document.createElement("div");
     const expulsado = estaExpulsado(j.id);
     const amarillas = eventosPartido.filter(e => e.jugador_id === j.id && e.tipo === "amarilla").length;
@@ -222,12 +254,19 @@ function pintarBanquillo() {
     const expulsadoPorDobleAmarilla = expulsado && amarillas >= 2 && !tieneRoja;
     const pendienteCambio = cambiosPendientes.some((c) => c.entraJugadorId === j.id);
     
+    // Verificar si este jugador es portero (tiene la posición "POR" en sus posiciones)
+    const posJugador = obtenerPosicionesJugador(j);
+    const esPortero = posJugador.principal === "POR" || posJugador.secundarias.includes("POR");
+    
     const estaSeleccionado = seleccion && seleccion.origen === "banquillo" && seleccion.jugadorId === j.id;
     const estaSeleccionadoCampo = seleccion && seleccion.origen === "campo" && Object.values(estadoDirecto.huecos).includes(seleccion.jugadorId) && seleccion.jugadorId === j.id;
     const resaltar = (modoCambio && estaSeleccionado) || (modoCambio && estaSeleccionadoCampo);
 
     ficha.className = "ficha-jugador-banquillo" + (resaltar ? " seleccionado" : "");
     ficha.classList.toggle("expulsado", expulsado);
+    if (esPortero) {
+      ficha.classList.add("portero");
+    }
     if (expulsadoPorDobleAmarilla) {
       ficha.classList.add("expulsado-doble-amarilla");
     }

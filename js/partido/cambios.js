@@ -588,6 +588,8 @@ function cancelarCambios() {
 
 // ---------- Rellenar un hueco vacío ----------
 
+// ---------- Rellenar un hueco vacío ----------
+
 function abrirSelectorHuecoVacio(slotId) {
   slotHuecoActual = slotId;
   const idsEnCampo = new Set(Object.values(estadoDirecto.huecos).filter(Boolean));
@@ -632,9 +634,13 @@ function abrirSelectorHuecoVacio(slotId) {
     });
     
     // Separar en grupos
-    const recomendados = suplentesOrdenados.filter(j => {
+    const principales = suplentesOrdenados.filter(j => {
       const pos = obtenerPosicionesJugador(j);
-      return pos.principal === puestoBuscado || pos.secundarias.includes(puestoBuscado);
+      return pos.principal === puestoBuscado;
+    });
+    const secundarios = suplentesOrdenados.filter(j => {
+      const pos = obtenerPosicionesJugador(j);
+      return pos.principal !== puestoBuscado && pos.secundarias.includes(puestoBuscado);
     });
     const otros = suplentesOrdenados.filter(j => {
       const pos = obtenerPosicionesJugador(j);
@@ -645,29 +651,27 @@ function abrirSelectorHuecoVacio(slotId) {
     titulo.className = 'titulo-hueco';
     titulo.innerHTML = `
       <span>Puesto: <strong>${puestoBuscado || 'Cualquier posición'}</strong></span>
-      <span class="info">${recomendados.length} recomendado${recomendados.length !== 1 ? 's' : ''} · ${suplentes.length} suplente${suplentes.length !== 1 ? 's' : ''}</span>
+      <span class="info">${principales.length} principal${principales.length !== 1 ? 'es' : ''} · ${secundarios.length} secundario${secundarios.length !== 1 ? 's' : ''} · ${suplentes.length} suplente${suplentes.length !== 1 ? 's' : ''}</span>
     `;
     cont.appendChild(titulo);
     
-    if (recomendados.length > 0 && puestoBuscado) {
+    // Grupo 1: Posición principal (recomendados)
+    if (principales.length > 0 && puestoBuscado) {
       const grupo = document.createElement('div');
       grupo.className = 'grupo-recomendados';
       
       const label = document.createElement('div');
       label.className = 'label';
-      label.textContent = `🎯 Recomendados para ${puestoBuscado}`;
+      label.textContent = `🎯 ${puestoBuscado} (principal)`;
       grupo.appendChild(label);
       
-      recomendados.forEach((j) => {
+      principales.forEach((j) => {
         const btn = document.createElement('button');
         btn.className = 'btn-jugador-hueco recomendado';
         const pos = obtenerPosicionesJugador(j);
-        const esPrincipal = pos.principal === puestoBuscado;
-        const esSecundaria = pos.secundarias.includes(puestoBuscado);
-        const indicador = esPrincipal ? ' ★' : (esSecundaria ? ' ⧫' : '');
         btn.innerHTML = `
-          <span><span class="dorsal">${j.dorsal}</span> - <span class="nombre">${j.nombre}</span><span style="color:var(--texto-secundario);font-size:0.7rem;">${indicador}</span></span>
-          <span class="puesto-tag">${pos.principal || 'Sin principal'}${pos.secundarias.length > 0 ? ` +${pos.secundarias.length}` : ''}</span>
+          <span><span class="dorsal">${j.dorsal}</span> - <span class="nombre">${j.nombre}</span> <span style="color:var(--texto-secundario);font-size:0.7rem;">★</span></span>
+          <span class="puesto-tag">${pos.principal || 'Sin principal'}</span>
         `;
         btn.addEventListener('click', () => asignarJugadorAHueco(j.id));
         grupo.appendChild(btn);
@@ -676,6 +680,32 @@ function abrirSelectorHuecoVacio(slotId) {
       cont.appendChild(grupo);
     }
     
+    // Grupo 2: Posición secundaria (recomendados secundarios)
+    if (secundarios.length > 0 && puestoBuscado) {
+      const grupo = document.createElement('div');
+      grupo.className = 'grupo-recomendados-secundarios';
+      
+      const label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = `🔄 ${puestoBuscado} (secundario)`;
+      grupo.appendChild(label);
+      
+      secundarios.forEach((j) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-jugador-hueco secundario';
+        const pos = obtenerPosicionesJugador(j);
+        btn.innerHTML = `
+          <span><span class="dorsal">${j.dorsal}</span> - <span class="nombre">${j.nombre}</span> <span style="color:var(--texto-secundario);font-size:0.7rem;">⧫</span></span>
+          <span class="puesto-tag">${pos.principal || 'Sin principal'} +${pos.secundarias.length}</span>
+        `;
+        btn.addEventListener('click', () => asignarJugadorAHueco(j.id));
+        grupo.appendChild(btn);
+      });
+      
+      cont.appendChild(grupo);
+    }
+    
+    // Grupo 3: Otros jugadores
     if (otros.length > 0) {
       const grupo = document.createElement('div');
       grupo.className = 'grupo-otros';
@@ -700,7 +730,7 @@ function abrirSelectorHuecoVacio(slotId) {
       cont.appendChild(grupo);
     }
     
-    if (recomendados.length === 0 && puestoBuscado) {
+    if (principales.length === 0 && secundarios.length === 0 && puestoBuscado) {
       const aviso = document.createElement('div');
       aviso.className = 'aviso-sin-recomendados';
       aviso.textContent = `⚠️ No hay jugadores con puesto ${puestoBuscado} (principal o secundario). Puedes seleccionar cualquier suplente.`;

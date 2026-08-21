@@ -262,10 +262,9 @@
       <p style="font-weight:600;">Tarjeta rival</p>
       <label for="dorsalRival">Dorsal del rival</label>
       <input type="number" inputmode="numeric" id="dorsalRival" />
-      <div class="fila-botones">
-        <button class="ancho" id="botonRivalAmarilla"
-          style="background:var(--amarillo); color:var(--amarillo-texto); font-weight:600;">Amarilla</button>
-        <button class="ancho peligro" id="botonRivalRoja">Roja</button>
+      <div class="fila-botones" style="gap: 0.5rem;">
+        <button class="ancho" id="botonRivalAmarilla" style="background:var(--amarillo); color:var(--amarillo-texto); font-weight:600; flex: 1;">Amarilla</button>
+        <button class="ancho peligro" id="botonRivalRoja" style="flex: 1;">Roja</button>
       </div>
       <button class="ancho" id="botonCerrarModalRival" style="margin-top:0.5rem;">Cancelar</button>
     </div>
@@ -284,24 +283,24 @@
     </div>
   </div>
 
-  <!-- Modal Evento Genérico -->
-  <div id="modalEventoGenerico" class="superposicion oculto">
-    <div class="hoja-modal hoja-modal-evento-generico">
-      <p id="tituloEventoGenerico" style="font-weight:600; margin-bottom: 1rem; text-align: center;"></p>
-      
-      <div class="fila-botones" style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
-        <button class="ancho btn-equipo activo" id="botonEventoFavor" style="flex: 1;">Balsas</button>
-        <button class="ancho btn-equipo" id="botonEventoContra" style="flex: 1;">Rival</button>
-      </div>
-      
-      <div id="campoJugadorEventoGenerico" style="margin-bottom: 0.75rem;"></div>
-      
-      <div class="fila-botones" style="display: flex; gap: 0.5rem;">
-        <button class="ancho btn-accion-modal confirmar" id="botonConfirmarEventoGenerico" style="flex: 1;">Confirmar</button>
-        <button class="ancho btn-accion-modal cancelar" id="botonCerrarEventoGenerico" style="flex: 1;">Cancelar</button>
-      </div>
+<!-- Modal Evento Genérico -->
+<div id="modalEventoGenerico" class="superposicion oculto">
+  <div class="hoja-modal hoja-modal-evento-generico" style="max-height: 95vh;">
+    <p id="tituloEventoGenerico" style="font-weight:600; margin-bottom: 1rem; text-align: center;"></p>
+    
+    <div class="fila-botones" style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+      <button class="ancho btn-equipo activo" id="botonEventoFavor" style="flex: 1;">Balsas</button>
+      <button class="ancho btn-equipo" id="botonEventoContra" style="flex: 1;">Rival</button>
+    </div>
+    
+    <div id="campoJugadorEventoGenerico" style="margin-bottom: 0.75rem;"></div>
+    
+    <div class="fila-botones" style="display: flex; gap: 0.5rem;">
+      <button class="ancho btn-accion-modal confirmar" id="botonConfirmarEventoGenerico" style="flex: 1;">Confirmar</button>
+      <button class="ancho btn-accion-modal cancelar" id="botonCerrarEventoGenerico" style="flex: 1;">Cancelar</button>
     </div>
   </div>
+</div>
 
   <!-- Modal Historial -->
   <div id="modalHistorial" class="superposicion oculto">
