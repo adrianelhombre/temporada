@@ -7,24 +7,24 @@ function abrirModalAccionJugador(jugadorId) {
     mostrarNotificacion("No se pueden registrar eventos antes de empezar el partido.", "error");
     return;
   }
-  
+
   if (estadoDirecto.estado === "finalizado") {
     mostrarNotificacion("El partido ya ha finalizado.", "error");
     return;
   }
-  
+
   if (estadoDirecto.estado === "descanso") {
     mostrarNotificacion("Durante el descanso solo se pueden registrar tarjetas.", "error");
     const btnGol = document.querySelector('#modalAccionJugador [data-accion="gol"]');
     const btnAsistencia = document.querySelector('#modalAccionJugador [data-accion="asistencia"]');
     const btnAmarilla = document.querySelector('#modalAccionJugador [data-accion="amarilla"]');
     const btnRoja = document.querySelector('#modalAccionJugador [data-accion="roja"]');
-    
+
     btnGol.style.display = 'none';
     btnAsistencia.style.display = 'none';
     btnAmarilla.style.display = 'block';
     btnRoja.style.display = 'block';
-    
+
     const j = jugadorPorId(jugadorId);
     if (!j) {
       mostrarNotificacion("Jugador no encontrado.", "error");
@@ -36,23 +36,23 @@ function abrirModalAccionJugador(jugadorId) {
     document.getElementById("modalAccionJugador").classList.remove("oculto");
     return;
   }
-  
+
   const j = jugadorPorId(jugadorId);
   if (!j) {
     mostrarNotificacion("Jugador no encontrado.", "error");
     return;
   }
-  
+
   const enCampo = Object.values(estadoDirecto.huecos).includes(jugadorId);
-  
+
   jugadorModalActual = jugadorId;
   document.getElementById("tituloModalJugador").textContent = `Dorsal ${j.dorsal} - ${j.nombre}`;
-  
+
   const btnGol = document.querySelector('#modalAccionJugador [data-accion="gol"]');
   const btnAsistencia = document.querySelector('#modalAccionJugador [data-accion="asistencia"]');
   const btnAmarilla = document.querySelector('#modalAccionJugador [data-accion="amarilla"]');
   const btnRoja = document.querySelector('#modalAccionJugador [data-accion="roja"]');
-  
+
   if (enCampo) {
     btnGol.style.display = 'block';
     btnAsistencia.style.display = 'block';
@@ -66,17 +66,14 @@ function abrirModalAccionJugador(jugadorId) {
     btnRoja.style.display = 'block';
     document.getElementById("subtituloModalJugador").textContent = "Jugador en el banquillo (solo tarjetas)";
   }
-  
+
   document.getElementById("modalAccionJugador").classList.remove("oculto");
 }
 
-// --- NUEVA FUNCIÓN: Registrar expulsión por segunda amarilla ---
-
-// Registrar expulsión por segunda amarilla (sin confirmación)
+// --- Registrar expulsión por segunda amarilla (sin confirmación) ---
 async function registrarExpulsionPorSegundaAmarilla(jugadorId, parteEvento) {
   const ahora = new Date().toISOString();
-  
-  // 1. Registrar la segunda amarilla
+
   const { error: errorAmarilla } = await supabaseClient.from("eventos_partido").insert({
     partido_id: partidoId, jugador_id: jugadorId, tipo: "amarilla", parte: parteEvento, momento: ahora,
   });
@@ -85,7 +82,6 @@ async function registrarExpulsionPorSegundaAmarilla(jugadorId, parteEvento) {
     return;
   }
 
-  // 2. Registrar la roja automática
   const { error: errorRoja } = await supabaseClient.from("eventos_partido").insert({
     partido_id: partidoId, jugador_id: jugadorId, tipo: "roja", parte: parteEvento, momento: ahora,
   });
@@ -94,14 +90,16 @@ async function registrarExpulsionPorSegundaAmarilla(jugadorId, parteEvento) {
     return;
   }
 
-  // 3. Marcar como expulsado
+  // El jugador expulsado deja de correr su reloj de minutos AHORA MISMO.
+  consolidarJugador(jugadorId);
+
   estadoDirecto.expulsados = estadoDirecto.expulsados || [];
   if (!estadoDirecto.expulsados.includes(jugadorId)) estadoDirecto.expulsados.push(jugadorId);
-  
+
   await persistirEstadoDirecto();
   await cargarEventos();
   pintarTodo();
-  
+
   const j = jugadorPorId(jugadorId);
   mostrarNotificacion(`🔴 ${j ? j.nombre : 'Jugador'} (dorsal ${j ? j.dorsal : '?'}) expulsado por segunda amarilla.`, "exito");
 }
@@ -138,19 +136,17 @@ async function registrarEventoJugador(tipo) {
     }
   }
 
-  // Si es amarilla, verificar si es segunda amarilla
   if (tipo === "amarilla") {
     const amarillasActuales = eventosPartido.filter(
       e => e.jugador_id === jugadorId && e.tipo === "amarilla"
     ).length;
-    
+
     if (amarillasActuales >= 1) {
       await registrarExpulsionPorSegundaAmarilla(jugadorId, parteEvento);
       return;
     }
   }
 
-  // Si es roja, registrar normalmente
   if (tipo === "roja") {
     const { error } = await supabaseClient.from("eventos_partido").insert({
       partido_id: partidoId, jugador_id: jugadorId, tipo, parte: parteEvento, momento: new Date().toISOString(),
@@ -159,6 +155,7 @@ async function registrarEventoJugador(tipo) {
       notificarError(error, "No se pudo registrar el evento.");
       return;
     }
+    consolidarJugador(jugadorId);
     estadoDirecto.expulsados = estadoDirecto.expulsados || [];
     if (!estadoDirecto.expulsados.includes(jugadorId)) estadoDirecto.expulsados.push(jugadorId);
     await persistirEstadoDirecto();
@@ -167,7 +164,6 @@ async function registrarEventoJugador(tipo) {
     return;
   }
 
-  // Registro normal para otros eventos (gol, asistencia, etc.)
   const { error } = await supabaseClient.from("eventos_partido").insert({
     partido_id: partidoId, jugador_id: jugadorId, tipo, parte: parteEvento, momento: new Date().toISOString(),
   });
@@ -191,54 +187,52 @@ function abrirModalEventoGenerico(tipo, label) {
     mostrarNotificacion("No se pueden registrar eventos antes de empezar el partido.", "error");
     return;
   }
-  
+
   if (estadoDirecto.estado === "finalizado") {
     mostrarNotificacion("El partido ya ha finalizado.", "error");
     return;
   }
-  
+
   eventoGenericoActual = tipo;
-  equipoGenericoActual = 'favor'; // Por defecto seleccionar Balsas
-  
+  equipoGenericoActual = 'favor';
+
   document.getElementById("tituloEventoGenerico").textContent = `¿${label}?`;
-  
-  // Activar visualmente el botón de Balsas
+
   document.getElementById("botonEventoFavor").classList.add("activo");
   document.getElementById("botonEventoContra").classList.remove("activo");
-  
+
   actualizarCampoJugadorEventoGenerico('favor');
-  
+
   document.getElementById("modalEventoGenerico").classList.remove("oculto");
 }
 
 function actualizarCampoJugadorEventoGenerico(equipo) {
   const cont = document.getElementById("campoJugadorEventoGenerico");
   equipoGenericoActual = equipo;
-  
+
   if (equipo === 'favor') {
     const idsEnCampo = new Set(Object.values(estadoDirecto.huecos).filter(Boolean));
     const jugadoresEnCampo = jugadores.filter(j => idsEnCampo.has(j.id) && jugadorActivo(j) && !estaExpulsado(j.id));
-    
+
     if (jugadoresEnCampo.length === 0) {
       cont.innerHTML = `<p style="color: var(--texto-secundario); text-align: center; padding: 0.5rem 0;">No hay jugadores en el campo</p>`;
       document.getElementById("botonConfirmarEventoGenerico").style.opacity = '0.5';
       return;
     }
-    
-    // Crear listado de jugadores en formato lista vertical
+
     let html = `<div class="lista-jugadores-evento">`;
-    
+
     jugadoresEnCampo.forEach(j => {
       const amarillas = eventosPartido.filter(e => e.jugador_id === j.id && e.tipo === "amarilla").length;
       const expulsado = estaExpulsado(j.id);
-      
+
       let badge = '';
       if (expulsado) {
         badge = `<span class="badge-jugador-evento badge-roja">🔴</span>`;
       } else if (amarillas === 1) {
         badge = `<span class="badge-jugador-evento badge-amarilla">🟨</span>`;
       }
-      
+
       html += `
         <button class="btn-jugador-evento" data-jugador="${j.id}" ${expulsado ? 'disabled' : ''}>
           <span class="btn-jugador-evento-dorsal">${j.dorsal}</span>
@@ -247,31 +241,27 @@ function actualizarCampoJugadorEventoGenerico(equipo) {
         </button>
       `;
     });
-    
+
     html += `</div>`;
     cont.innerHTML = html;
-    
-    // Añadir event listeners a los botones
+
     cont.querySelectorAll('.btn-jugador-evento:not([disabled])').forEach(btn => {
       btn.addEventListener('click', () => {
-        // Deseleccionar todos
         cont.querySelectorAll('.btn-jugador-evento').forEach(b => b.classList.remove('seleccionado'));
-        // Seleccionar este
         btn.classList.add('seleccionado');
-        // Guardar el jugador seleccionado
         btn.dataset.seleccionado = 'true';
       });
     });
-    
+
     document.getElementById("botonConfirmarEventoGenerico").style.opacity = '1';
-    
+
   } else if (equipo === 'contra') {
     cont.innerHTML = `
       <label for="dorsalEventoGenerico">Dorsal del rival</label>
       <input type="number" inputmode="numeric" id="dorsalEventoGenerico" placeholder="Ej: 7" />
     `;
     document.getElementById("botonConfirmarEventoGenerico").style.opacity = '1';
-    
+
   } else {
     cont.innerHTML = `<p style="color: var(--texto-secundario); text-align: center; padding: 0.5rem 0;">Selecciona un equipo primero</p>`;
     document.getElementById("botonConfirmarEventoGenerico").style.opacity = '0.5';
@@ -283,44 +273,43 @@ async function confirmarEventoGenerico() {
     mostrarNotificacion("Selecciona un evento y un equipo.", "error");
     return;
   }
-  
+
   const tipo = eventoGenericoActual;
   const equipo = equipoGenericoActual;
   const tipoEvento = `${tipo}_${equipo}`;
   const ahora = new Date().toISOString();
-  
+
   let parteEvento = estadoDirecto.parte;
   if (estadoDirecto.estado === "descanso") {
     parteEvento = 0;
   }
-  
+
   let error;
-  
+
   if (equipo === 'favor') {
-    // Obtener el jugador seleccionado del listado de botones
     const btnSeleccionado = document.querySelector('#campoJugadorEventoGenerico .btn-jugador-evento.seleccionado');
     if (!btnSeleccionado) {
       mostrarNotificacion("Selecciona un jugador.", "error");
       return;
     }
-    
+
     const jugadorId = btnSeleccionado.dataset.jugador;
     if (!jugadorId) {
       mostrarNotificacion("Selecciona un jugador.", "error");
       return;
     }
-    
+
     const idsEnCampo = new Set(Object.values(estadoDirecto.huecos).filter(Boolean));
     if (!idsEnCampo.has(jugadorId)) {
       mostrarNotificacion("Este jugador ya no está en el campo.", "error");
       return;
     }
-    
+
     if (estaExpulsado(jugadorId)) {
       mostrarNotificacion("Este jugador está expulsado.", "error");
       return;
     }
-    
+
     ({ error } = await supabaseClient.from("eventos_partido").insert({
       partido_id: partidoId, jugador_id: jugadorId, tipo: tipoEvento, parte: parteEvento, momento: ahora,
     }));
@@ -334,20 +323,20 @@ async function confirmarEventoGenerico() {
       partido_id: partidoId, tipo: tipoEvento, dorsal: dorsal, parte: parteEvento, momento: ahora,
     }));
   }
-  
+
   if (error) {
     notificarError(error, `No se pudo registrar el evento.`);
     return;
   }
-  
+
   document.getElementById("modalEventoGenerico").classList.add("oculto");
   eventoGenericoActual = null;
   equipoGenericoActual = null;
-  
+
   await persistirEstadoDirecto();
   await cargarEventos();
   pintarTodo();
-  
+
   const labels = {
     'tiro_puerta': 'Tiro a puerta',
     'tiro_fuera': 'Tiro fuera',
@@ -363,26 +352,26 @@ async function confirmarEventoGenerico() {
 async function golRival() {
   const dorsal = document.getElementById("dorsalGolRival").value.trim();
   document.getElementById("modalGolRival").classList.add("oculto");
-  
+
   if (!dorsal) {
     mostrarNotificacion("Debes introducir un dorsal.", "error");
     return;
   }
-  
+
   if (estadoDirecto.estado === "descanso") {
     mostrarNotificacion("No se pueden registrar goles durante el descanso.", "error");
     return;
   }
-  
+
   const { error } = await supabaseClient.from("eventos_rival").insert({
     partido_id: partidoId, tipo: "gol", dorsal: dorsal, parte: estadoDirecto.parte, momento: new Date().toISOString(),
   });
-  
+
   if (error) {
     notificarError(error, "No se pudo registrar el gol rival.");
     return;
   }
-  
+
   document.getElementById("dorsalGolRival").value = "";
   await persistirEstadoDirecto();
   await cargarEventos();
@@ -393,12 +382,12 @@ async function golRival() {
 async function tarjetaRival(tipo) {
   const dorsal = document.getElementById("dorsalRival").value.trim();
   document.getElementById("modalTarjetaRival").classList.add("oculto");
-  
+
   let parteEvento = estadoDirecto.parte;
   if (estadoDirecto.estado === "descanso") {
     parteEvento = 0;
   }
-  
+
   const { error } = await supabaseClient.from("eventos_rival").insert({
     partido_id: partidoId, tipo, dorsal: dorsal || null, parte: parteEvento, momento: new Date().toISOString(),
   });
@@ -412,35 +401,11 @@ async function tarjetaRival(tipo) {
 }
 
 // ---------- Control de partes ----------
-
-function cerrarTramoActual(completarParte = false) {
-  const tiempoObjetivo = partido.duracion_parte_minutos * 60;
-  let tiempoJugado = estadoDirecto.segundosAcumulados || 0;
-
-  if (!completarParte) {
-    estadoDirecto.segundosAcumulados = tiempoJugado;
-    return;
-  }
-
-  if (tiempoJugado < tiempoObjetivo) {
-    const faltante = tiempoObjetivo - tiempoJugado;
-    const esParte1 = estadoDirecto.parte === 1;
-    
-    Object.values(estadoDirecto.huecos).filter(Boolean).forEach((jugadorId) => {
-      if (estaExpulsado(jugadorId)) return;
-      const antes = estadoDirecto.minutos[jugadorId] || 0;
-      if (esParte1 && antes >= tiempoObjetivo) return;
-      let mins = antes + faltante;
-      if (esParte1) {
-        mins = Math.min(mins, tiempoObjetivo);
-      }
-      estadoDirecto.minutos[jugadorId] = mins;
-    });
-    estadoDirecto.segundosAcumulados = tiempoObjetivo;
-  } else {
-    estadoDirecto.segundosAcumulados = tiempoJugado;
-  }
-}
+//
+// Principio de esta sección: TODA mutación síncrona de estadoDirecto (estado, parte,
+// segundosAcumulados, inicioTramoTimestamp, minutos, inicioJugador) se hace ANTES de
+// cualquier `await`. Así, si el intervalo de tick.js se dispara mientras esperamos a
+// Supabase, ya encuentra el estado consistente y no hay carrera posible.
 
 async function empezar1aParte() {
   if (estadoDirecto.estado !== "no_iniciado" || partido.estado === "finalizado") return;
@@ -453,32 +418,32 @@ async function empezar1aParte() {
   }
 
   inicioPartidoTimestamp = new Date().toISOString();
-  
+
   estadoDirecto.estado = "en_curso";
   estadoDirecto.parte = 1;
   estadoDirecto.segundosAcumulados = 0;
-  estadoDirecto.tramos = [];
 
   const titulares = Object.values(estadoDirecto.huecos).filter(Boolean);
   estadoDirecto.titulares = titulares;
-  titulares.forEach((jugadorId) => {
-    if (estadoDirecto.minutos[jugadorId] === undefined) estadoDirecto.minutos[jugadorId] = 0;
-  });
+
+  // Arrancamos el reloj del tramo y el de cada titular, todo síncrono.
+  arrancarTramo();
+  titulares.forEach((jugadorId) => arrancarJugador(jugadorId));
 
   if (!await persistirPartido({ estado: "en_juego", inicio_timestamp: inicioPartidoTimestamp })) return;
   if (!await persistirEstadoDirecto()) return;
-  
-  if (typeof sincronizarTick === 'function') {
-    sincronizarTick();
-  }
-  
+
   pintarTodo();
 }
 
 async function pausar() {
   if (estadoDirecto.estado !== "en_curso") return;
-  cerrarTramoActual();
+
+  // Consolidar (parar) el reloj del tramo y el de todos los jugadores en campo, síncrono.
+  consolidarTramo();
+  consolidarTodosLosJugadoresEnCampo();
   estadoDirecto.estado = "pausado";
+
   await persistirEstadoDirecto();
   pintarTodo();
 }
@@ -488,14 +453,15 @@ async function reanudar() {
     mostrarNotificacion("El partido no está pausado.", "error");
     return;
   }
-  
+
   estadoDirecto.estado = "en_curso";
+
+  // Arrancar de nuevo el tramo y los jugadores en campo desde el acumulado consolidado.
+  arrancarTramo();
+  arrancarTodosLosJugadoresEnCampo();
+
   await persistirEstadoDirecto();
-  
-  if (typeof sincronizarTick === 'function') {
-    sincronizarTick();
-  }
-  
+
   pintarTodo();
   mostrarNotificacion("Partido reanudado.", "exito");
 }
@@ -507,9 +473,13 @@ async function irADescanso() {
   }
 
   const objetivo = partido.duracion_parte_minutos * 60;
+
+  // Consolidamos el tramo con su valor REAL en este instante (puede incluir descuento).
+  consolidarTramo();
   const jugado = estadoDirecto.segundosAcumulados || 0;
 
-  // Si acaba antes de tiempo, completar únicamente a los jugadores que están en el campo
+  // Si acaba antes de tiempo, completar únicamente a los jugadores que están en el campo.
+  // Si hay descuento (jugado > objetivo), NO se recorta: se conserva tal cual.
   if (jugado < objetivo) {
     const faltante = objetivo - jugado;
 
@@ -517,13 +487,16 @@ async function irADescanso() {
       .filter(Boolean)
       .forEach((jugadorId) => {
         if (estaExpulsado(jugadorId)) return;
-        estadoDirecto.minutos[jugadorId] =
-          (estadoDirecto.minutos[jugadorId] || 0) + faltante;
+        consolidarJugador(jugadorId); // fija el tiempo real corrido hasta ahora
+        estadoDirecto.minutos[jugadorId] = (estadoDirecto.minutos[jugadorId] || 0) + faltante;
       });
+
+    estadoDirecto.segundosAcumulados = objetivo;
+  } else {
+    // Con descuento: consolidamos a los jugadores en campo con su tiempo real (ya incluye el descuento).
+    consolidarTodosLosJugadoresEnCampo();
   }
 
-  // El descanso SIEMPRE comienza en el minuto oficial (35:00)
-  estadoDirecto.segundosAcumulados = objetivo;
   estadoDirecto.estado = "descanso";
 
   await persistirEstadoDirecto();
@@ -537,17 +510,18 @@ async function empezar2aParte() {
     return;
   }
 
-  // La segunda parte siempre empieza desde 0 segundos internos.
+  // La segunda parte siempre empieza desde 0 segundos internos del tramo.
   // El marcador mostrará 35:00 gracias a segundosMarcador().
   estadoDirecto.estado = "en_curso";
   estadoDirecto.parte = 2;
   estadoDirecto.segundosAcumulados = 0;
+  estadoDirecto.inicioSegundaParteTimestamp = new Date().toISOString();
+
+  // Arrancamos el tramo y a todos los jugadores que están en el campo ahora mismo.
+  arrancarTramo();
+  arrancarTodosLosJugadoresEnCampo();
 
   await persistirEstadoDirecto();
-
-  if (typeof sincronizarTick === "function") {
-    sincronizarTick();
-  }
 
   pintarTodo();
   mostrarNotificacion("Comienza la 2ª parte.", "exito");
@@ -576,9 +550,11 @@ function finalizarPartido() {
     cerrarConfirmacion();
 
     const objetivo = partido.duracion_parte_minutos * 60;
+
+    // Consolidamos el tramo con su valor real (puede incluir descuento) ANTES de decidir nada.
+    consolidarTramo();
     const jugado = estadoDirecto.segundosAcumulados || 0;
 
-    // Si acaba antes del 70, completar el tiempo únicamente a los jugadores en el campo
     if (jugado < objetivo) {
       const faltante = objetivo - jugado;
 
@@ -586,15 +562,15 @@ function finalizarPartido() {
         .filter(Boolean)
         .forEach((jugadorId) => {
           if (estaExpulsado(jugadorId)) return;
-          estadoDirecto.minutos[jugadorId] =
-            (estadoDirecto.minutos[jugadorId] || 0) + faltante;
+          consolidarJugador(jugadorId);
+          estadoDirecto.minutos[jugadorId] = (estadoDirecto.minutos[jugadorId] || 0) + faltante;
         });
 
       estadoDirecto.segundosAcumulados = objetivo;
+    } else {
+      // Con descuento: se conserva el tiempo real, no se recorta a 35:00.
+      consolidarTodosLosJugadoresEnCampo();
     }
-
-    // Si hay descuento, NO tocar los minutos de los jugadores.
-    // El marcador conservará el tiempo real (72:30, 73:10, etc.)
 
     estadoDirecto.estado = "finalizado";
 

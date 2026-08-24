@@ -763,6 +763,10 @@ label {
   flex: 1;
 }
 
+.marcador-tarjetas.dch {
+  justify-content: flex-end;
+}
+
 .chip-tarjeta {
   font-size: 0.75rem;
   font-weight: 700;

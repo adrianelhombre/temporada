@@ -10,7 +10,6 @@ let estadoDirecto = null;
 let modoCambio = false;
 let seleccion = null;
 let cambiosPendientes = [];
-let contadorTick = 0;
 let slotHuecoActual = null;
 let operacionEnCurso = false;
 
@@ -42,24 +41,92 @@ function estadoVacio(formacion) {
   return {
     estado: "no_iniciado",
     parte: 1,
+    // ---- Reloj del partido (patrón acumulado + inicio) ----
+    // segundosAcumulados: tiempo ya cerrado/consolidado de la parte actual (no corre).
+    // inicioTramoTimestamp: cuándo empezó a correr el tramo actual (null si está parado).
     segundosAcumulados: 0,
+    inicioTramoTimestamp: null,
+    inicioSegundaParteTimestamp: null,
     huecos,
+    // ---- Reloj por jugador (mismo patrón, uno por jugador) ----
+    // minutos: segundos ya consolidados de ese jugador (no corre).
+    // inicioJugador: desde cuándo está corriendo ese jugador en el campo (null si no corre).
     minutos: {},
+    inicioJugador: {},
     expulsados: [],
     titulares: []
   };
 }
 
-// ---------- Cálculo de tiempo ----------
+// ---------- Cálculo de tiempo (patrón acumulado + delta desde inicio) ----------
 
+// Segundos jugados en el tramo actual, en este instante exacto.
 function segundosParteActual() {
-  // En descanso, devolvemos 0 para que el marcador muestre 35:00
   if (estadoDirecto.estado === "descanso") {
     return 0;
   }
-  return estadoDirecto.segundosAcumulados || 0;
+  const base = estadoDirecto.segundosAcumulados || 0;
+  if (estadoDirecto.estado === "en_curso" && estadoDirecto.inicioTramoTimestamp) {
+    const transcurrido = (Date.now() - new Date(estadoDirecto.inicioTramoTimestamp).getTime()) / 1000;
+    return base + Math.max(0, transcurrido);
+  }
+  return base;
 }
 
+// Segundos jugados por un jugador concreto, en este instante exacto.
+function segundosJugador(jugadorId) {
+  const base = (estadoDirecto.minutos && estadoDirecto.minutos[jugadorId]) || 0;
+  const inicio = estadoDirecto.inicioJugador && estadoDirecto.inicioJugador[jugadorId];
+  if (estadoDirecto.estado === "en_curso" && inicio && !estaExpulsado(jugadorId)) {
+    const transcurrido = (Date.now() - new Date(inicio).getTime()) / 1000;
+    return base + Math.max(0, transcurrido);
+  }
+  return base;
+}
+
+// Consolida (cierra) el tiempo corrido del tramo actual dentro de segundosAcumulados,
+// y detiene el reloj (inicioTramoTimestamp = null). Idempotente y segura de llamar varias veces.
+function consolidarTramo() {
+  if (estadoDirecto.inicioTramoTimestamp) {
+    estadoDirecto.segundosAcumulados = segundosParteActual();
+    estadoDirecto.inicioTramoTimestamp = null;
+  }
+}
+
+// Arranca (o reanuda) el reloj del tramo actual desde ahora mismo.
+function arrancarTramo() {
+  estadoDirecto.inicioTramoTimestamp = new Date().toISOString();
+}
+
+// Consolida el tiempo corrido de un jugador dentro de minutos[], y para su reloj.
+function consolidarJugador(jugadorId) {
+  const inicio = estadoDirecto.inicioJugador && estadoDirecto.inicioJugador[jugadorId];
+  if (inicio) {
+    estadoDirecto.minutos[jugadorId] = segundosJugador(jugadorId);
+    estadoDirecto.inicioJugador[jugadorId] = null;
+  }
+}
+
+// Arranca el reloj de un jugador desde ahora mismo (si no estaba ya corriendo).
+function arrancarJugador(jugadorId) {
+  if (!estadoDirecto.inicioJugador) estadoDirecto.inicioJugador = {};
+  if (estadoDirecto.minutos[jugadorId] === undefined) estadoDirecto.minutos[jugadorId] = 0;
+  estadoDirecto.inicioJugador[jugadorId] = new Date().toISOString();
+}
+
+// Consolida a TODOS los jugadores actualmente en el campo (usado al pausar, ir a descanso, finalizar...).
+function consolidarTodosLosJugadoresEnCampo() {
+  Object.values(estadoDirecto.huecos).filter(Boolean).forEach((jugadorId) => {
+    consolidarJugador(jugadorId);
+  });
+}
+
+// Arranca a todos los jugadores actualmente en el campo que no estén expulsados.
+function arrancarTodosLosJugadoresEnCampo() {
+  Object.values(estadoDirecto.huecos).filter(Boolean).forEach((jugadorId) => {
+    if (!estaExpulsado(jugadorId)) arrancarJugador(jugadorId);
+  });
+}
 
 // ---------- Carga ----------
 
@@ -68,7 +135,7 @@ async function cargarPartido() {
   if (error || !data) throw error || new Error("Partido no encontrado.");
   partido = data;
   if (!FORMACIONES[partido.formacion]) throw new Error("El partido tiene una formación no válida.");
-  
+
   if (!estadoDirecto_valido(partido.estado_directo)) {
     estadoDirecto = estadoVacio(partido.formacion);
   } else {
@@ -78,21 +145,18 @@ async function cargarPartido() {
       ...partido.estado_directo,
       huecos: { ...base.huecos, ...partido.estado_directo.huecos },
       minutos: partido.estado_directo.minutos || {},
+      inicioJugador: partido.estado_directo.inicioJugador || {},
       expulsados: Array.isArray(partido.estado_directo.expulsados) ? partido.estado_directo.expulsados : [],
       titulares: Array.isArray(partido.estado_directo.titulares) ? partido.estado_directo.titulares : [],
     };
   }
-  
+
   if (partido.inicio_timestamp) {
     inicioPartidoTimestamp = partido.inicio_timestamp;
   }
-  
+
   document.getElementById("notasPartido").value = partido.notas || "";
   document.getElementById("selectFormacion").value = partido.formacion;
-  
-  if (typeof sincronizarTick === 'function') {
-    sincronizarTick();
-  }
 }
 
 function estadoDirecto_valido(ed) {
@@ -141,7 +205,7 @@ async function cargarEventos() {
   const rojasDirectas = eventosPartido
     .filter(e => e.tipo === "roja")
     .map(e => e.jugador_id);
-  
+
   // Jugadores con 2 o más amarillas (segunda amarilla)
   const conteoAmarillas = {};
   eventosPartido
@@ -149,11 +213,11 @@ async function cargarEventos() {
     .forEach(e => {
       conteoAmarillas[e.jugador_id] = (conteoAmarillas[e.jugador_id] || 0) + 1;
     });
-  
+
   const segundasAmarillas = Object.entries(conteoAmarillas)
     .filter(([_, count]) => count >= 2)
     .map(([id, _]) => id);
-  
+
   // Unión de ambos grupos
   const expulsadosActuales = [...new Set([...rojasDirectas, ...segundasAmarillas])];
   estadoDirecto.expulsados = expulsadosActuales;

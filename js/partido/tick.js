@@ -1,7 +1,4 @@
-// ---------- Cronómetro ----------
-
-let segundosReales = 0;
-let ultimoTick = Date.now();
+// ---------- Cronómetro (solo redibuja; nunca acumula) ----------
 
 function segundosMarcador() {
   const segundosDeLaParte = segundosParteActual();
@@ -25,59 +22,41 @@ function etiquetaEstadoTexto() {
 }
 
 function actualizarMinutosEnPantalla() {
-  document.querySelectorAll(".ficha-jugador[data-jugador]").forEach((el) => {
+  document.querySelectorAll(".ficha-jugador[data-jugador], .ficha-jugador-banquillo[data-jugador]").forEach((el) => {
     const jugadorId = el.dataset.jugador;
-    const mins = estadoDirecto.minutos[jugadorId] || 0;
+    const segs = segundosJugador(jugadorId);
     const etiqueta = el.querySelector(".minutos");
-    if (etiqueta) etiqueta.textContent = formatoMMSS(mins);
+    if (etiqueta) etiqueta.textContent = formatoMMSS(segs);
   });
 }
 
-function sincronizarTick() {
-  segundosReales = estadoDirecto.segundosAcumulados || 0;
-  ultimoTick = Date.now();
-}
+// Contador para persistir periódicamente sin saturar Supabase.
+let contadorPersistencia = 0;
 
 function iniciarTick() {
-  sincronizarTick();
-
   setInterval(async () => {
-    const ahora = Date.now();
-    const delta = (ahora - ultimoTick) / 1000;
-    ultimoTick = ahora;
+    // Si hay una acción de estado en curso (empezar parte, pausar, ir a descanso...),
+    // no tocamos nada: solo redibujamos con los últimos datos consolidados para evitar
+    // pintar valores a medio actualizar mientras la operación termina.
+    if (operacionEnCurso) return;
 
     const enVivo = estadoDirecto.estado === "en_curso";
+
     document.getElementById("textoTiempo").textContent =
       estadoDirecto.estado === "descanso" ? "DESCANSO" : formatoMMSS(segundosMarcador());
     document.getElementById("textoEstado").textContent = enVivo
       ? `${estadoDirecto.parte}ª Parte en Juego`
       : etiquetaEstadoTexto();
 
-    if (estadoDirecto.estado === "en_curso") {
-      segundosReales += delta;
-
-      if (segundosReales - estadoDirecto.segundosAcumulados >= 1) {
-        const segundosAAñadir = Math.floor(segundosReales - estadoDirecto.segundosAcumulados);
-
-        for (let i = 0; i < segundosAAñadir; i++) {
-          Object.values(estadoDirecto.huecos).filter(Boolean).forEach((jugadorId) => {
-            if (estaExpulsado(jugadorId)) return;
-            estadoDirecto.minutos[jugadorId] = (estadoDirecto.minutos[jugadorId] || 0) + 1;
-          });
-        }
-
-        estadoDirecto.segundosAcumulados = Math.floor(segundosReales);
-        contadorTick++;
-        if (contadorTick % 5 === 0) {
-          await persistirEstadoDirecto();
-        }
-      }
-
+    if (enVivo) {
       actualizarMinutosEnPantalla();
-    } else {
-      // Mantener sincronizado el contador sin seguir acumulando tiempo
-      if (segundosReales !== (estadoDirecto.segundosAcumulados || 0)) {
-        segundosReales = estadoDirecto.segundosAcumulados || 0;
+
+      contadorPersistencia++;
+      // Persistimos cada ~5s (10 ticks de 500ms) solo el "ancla" del reloj
+      // (inicioTramoTimestamp / inicioJugador ya están fijos desde que arrancó el tramo,
+      // así que esto es solo para que otros dispositivos vean el estado si recargan).
+      if (contadorPersistencia % 10 === 0) {
+        await persistirEstadoDirecto();
       }
     }
   }, 500);
