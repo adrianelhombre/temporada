@@ -1216,6 +1216,13 @@ label {
 }
 
 /* ===== FILA FORMACIÓN ===== */
+.fila-formacion-select {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .fila-formacion-acciones {
   display: flex;
   flex-wrap: wrap;
@@ -1824,7 +1831,7 @@ label {
 @media (min-width: 768px) and (orientation: landscape) {
   .distribucion-app {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.1fr 0.9fr;
     gap: 1.5rem;
     align-items: start;
   }
@@ -1868,7 +1875,7 @@ label {
 @media (min-width: 1024px) {
   .distribucion-app {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.1fr 0.9fr;
     gap: 1.5rem;
     align-items: start;
   }
@@ -1882,7 +1889,7 @@ label {
   }
 
   .panel-izquierdo .campo {
-    aspect-ratio: 2 / 1.45;
+    aspect-ratio: 2 / 1.25;
     width: 100%;
   }
 
