@@ -87,15 +87,15 @@
   });
 
   document.getElementById("botonHistorial").addEventListener("click", abrirHistorial);
-// --- Cerrar historial con X ---
-document.getElementById("botonCerrarHistorialX").addEventListener("click", () => {
-  document.getElementById("modalHistorial").classList.add("oculto");
-});
+  // --- Cerrar historial con X ---
+  document.getElementById("botonCerrarHistorialX").addEventListener("click", () => {
+    document.getElementById("modalHistorial").classList.add("oculto");
+  });
 
-// --- Cerrar historial con el botón de abajo ---
-document.getElementById("botonCerrarHistorial").addEventListener("click", () => {
-  document.getElementById("modalHistorial").classList.add("oculto");
-});
+  // --- Cerrar historial con el botón de abajo ---
+  document.getElementById("botonCerrarHistorial").addEventListener("click", () => {
+    document.getElementById("modalHistorial").classList.add("oculto");
+  });
 
   // ------------------------------------------------------------
   // LISTENER DE HISTORIAL CORREGIDO (usa closest('button'))
@@ -174,24 +174,88 @@ document.getElementById("botonCerrarHistorial").addEventListener("click", () => 
   });
 })();
 
+// --- Corner ---
+document.getElementById("botonCorner").addEventListener("click", () => {
+  if (estadoDirecto.estado === "no_iniciado") {
+    mostrarNotificacion("No se pueden registrar eventos antes de empezar el partido.", "error");
+    return;
+  }
+  if (estadoDirecto.estado === "finalizado") {
+    mostrarNotificacion("El partido ya ha finalizado.", "error");
+    return;
+  }
+  if (estadoDirecto.estado === "descanso") {
+    mostrarNotificacion("No se pueden registrar eventos durante el descanso.", "error");
+    return;
+  }
+  
+  // Actualizar el nombre del rival en el modal
+  document.getElementById("botonCornerContra").textContent = partido.rival || "Rival";
+  document.getElementById("modalCorner").classList.remove("oculto");
+});
+
+document.getElementById("botonCornerFavor").addEventListener("click", () => {
+  ejecutarAccion(() => registrarCorner('favor'));
+});
+
+document.getElementById("botonCornerContra").addEventListener("click", () => {
+  ejecutarAccion(() => registrarCorner('contra'));
+});
+
+document.getElementById("botonCerrarCorner").addEventListener("click", () => {
+  document.getElementById("modalCorner").classList.add("oculto");
+});
+
+// --- Fuera de juego ---
+document.getElementById("botonFueraJuego").addEventListener("click", () => {
+  if (estadoDirecto.estado === "no_iniciado") {
+    mostrarNotificacion("No se pueden registrar eventos antes de empezar el partido.", "error");
+    return;
+  }
+  if (estadoDirecto.estado === "finalizado") {
+    mostrarNotificacion("El partido ya ha finalizado.", "error");
+    return;
+  }
+  if (estadoDirecto.estado === "descanso") {
+    mostrarNotificacion("No se pueden registrar eventos durante el descanso.", "error");
+    return;
+  }
+  
+  // Actualizar el nombre del rival en el modal
+  document.getElementById("botonFueraJuegoContra").textContent = partido.rival || "Rival";
+  document.getElementById("modalFueraJuego").classList.remove("oculto");
+});
+
+document.getElementById("botonFueraJuegoFavor").addEventListener("click", () => {
+  ejecutarAccion(() => registrarFueraJuego('favor'));
+});
+
+document.getElementById("botonFueraJuegoContra").addEventListener("click", () => {
+  ejecutarAccion(() => registrarFueraJuego('contra'));
+});
+
+document.getElementById("botonCerrarFueraJuego").addEventListener("click", () => {
+  document.getElementById("modalFueraJuego").classList.add("oculto");
+});
 
 // --- Eventos genéricos ---
-document.getElementById("botonTiroPuerta").addEventListener("click", () => abrirModalEventoGenerico('tiro_puerta', 'Tiro a puerta'));
-document.getElementById("botonTiroFuera").addEventListener("click", () => abrirModalEventoGenerico('tiro_fuera', 'Tiro fuera'));
-document.getElementById("botonCorner").addEventListener("click", () => abrirModalEventoGenerico('corner', 'Córner'));
-document.getElementById("botonFalta").addEventListener("click", () => abrirModalEventoGenerico('falta', 'Falta'));
-document.getElementById("botonFueraJuego").addEventListener("click", () => abrirModalEventoGenerico('fuera_juego', 'Fuera de juego'));
+// Los botones de acciones rápidas que ahora están en el menú del jugador se comentan
+// document.getElementById("botonTiroPuerta").addEventListener("click", () => abrirModalEventoGenerico('tiro_puerta', 'Tiro a puerta'));
+// document.getElementById("botonTiroFuera").addEventListener("click", () => abrirModalEventoGenerico('tiro_fuera', 'Tiro fuera'));
+// document.getElementById("botonFalta").addEventListener("click", () => abrirModalEventoGenerico('falta', 'Falta'));
 
 // --- Modal evento genérico ---
 document.getElementById("botonEventoFavor").addEventListener("click", () => {
   document.getElementById("botonEventoFavor").classList.add("activo");
   document.getElementById("botonEventoContra").classList.remove("activo");
+  jugadorModalActual = null;
   actualizarCampoJugadorEventoGenerico('favor');
 });
 
 document.getElementById("botonEventoContra").addEventListener("click", () => {
   document.getElementById("botonEventoContra").classList.add("activo");
   document.getElementById("botonEventoFavor").classList.remove("activo");
+  jugadorModalActual = null;
   actualizarCampoJugadorEventoGenerico('contra');
 });
 
@@ -201,4 +265,13 @@ document.getElementById("botonCerrarEventoGenerico").addEventListener("click", (
   document.getElementById("modalEventoGenerico").classList.add("oculto");
   eventoGenericoActual = null;
   equipoGenericoActual = null;
+  jugadorModalActual = null;
+});
+
+// --- Tiro rival ---
+document.getElementById("botonTiroRival").addEventListener("click", abrirModalTiroRival);
+document.getElementById("botonTiroPuertaRival").addEventListener("click", () => ejecutarAccion(() => registrarTiroRival('puerta')));
+document.getElementById("botonTiroFueraRival").addEventListener("click", () => ejecutarAccion(() => registrarTiroRival('fuera')));
+document.getElementById("botonCerrarTiroRival").addEventListener("click", () => {
+  document.getElementById("modalTiroRival").classList.add("oculto");
 });

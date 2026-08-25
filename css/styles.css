@@ -190,7 +190,6 @@ h3 {
   border: 1px solid var(--borde);
   border-radius: var(--radio);
   padding: 1.25rem;
-  margin-bottom: 0.75rem;
   box-shadow: var(--sombra);
   transition: var(--transicion);
 }
@@ -313,6 +312,19 @@ button[disabled] {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+}
+.fila-botones-arriba {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.fila-botones-abajo {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
 }
 
 /* ===== BOTÓN EQUIPO ===== */
@@ -644,7 +656,6 @@ label {
   background: var(--negro);
   border-radius: var(--radio);
   padding: 1.25rem 1rem 1rem;
-  margin-bottom: 0.75rem;
   border: 1px solid var(--gris-800);
 }
 .marcador-status {
@@ -722,6 +733,7 @@ label {
   font-weight: 700;
   color: var(--blanco);
   text-transform: uppercase;
+  text-align: end;
 }
 @media (min-width: 500px) {
   .marcador-nombre-equipo {
@@ -817,7 +829,7 @@ label {
 .campo {
   position: relative;
   width: 100%;
-  aspect-ratio: 2 / 1.35;
+  aspect-ratio: 2 / 1.5;
   background: repeating-linear-gradient(
     90deg,
     #15803d 0px,
@@ -1787,9 +1799,254 @@ label {
   gap: 0.5rem;
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 500px) {
-  .fila-botones[style*="grid-template-columns: repeat(5, 1fr)"] {
+
+
+/* ============================================================
+   LAYOUT: DOS PANELES (IZQUIERDO Y DERECHO)
+   ============================================================ */
+
+/* En vertical: los paneles van uno debajo de otro */
+.distribucion-app {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.panel-izquierdo,
+.panel-derecho {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+/* En horizontal: los paneles van uno al lado del otro */
+@media (min-width: 768px) and (orientation: landscape) {
+  .distribucion-app {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .panel-izquierdo {
+    grid-column: 1;
+  }
+
+  .panel-derecho {
+    grid-column: 2;
+  }
+
+  /* El campo ocupa todo el ancho disponible */
+  .panel-izquierdo .campo {
+    aspect-ratio: 2 / 1.5;
+    width: 100%;
+  }
+
+  /* Acciones rápidas en grid de 3 columnas en horizontal */
+  .panel-derecho #acciones-rapidas .fila-botones-abajo {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  .fila-formacion-acciones {
+    flex-wrap: nowrap;
+  }
+
+  .ficha-jugador .circulo{
+    width: 45px;
+    height: 45px;
+  }
+
+  .banquillo {
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0;
+  }
+}
+
+/* También en escritorio (opcional) */
+@media (min-width: 1024px) {
+  .distribucion-app {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .panel-izquierdo {
+    grid-column: 1;
+  }
+
+  .panel-derecho {
+    grid-column: 2;
+  }
+
+  .panel-izquierdo .campo {
+    aspect-ratio: 2 / 1.45;
+    width: 100%;
+  }
+
+  .panel-derecho #acciones-rapidas .fila-botones-abajo {
     grid-template-columns: repeat(3, 1fr) !important;
   }
 }
+
+/* ============================================================
+   MENÚ FLOTANTE VERTICAL PARA JUGADORES
+   ============================================================ */
+
+.menu-acciones-flotante {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  background: var(--negro);
+  padding: 0.75rem;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra-fuerte);
+  border: 1px solid var(--gris-700);
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  min-width: 200px;
+  max-width: 260px;
+  width: 220px;
+  transform: translate(-50%, -50%) scale(0.9);
+}
+
+.menu-acciones-flotante.visible {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.menu-acciones-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem 0.25rem 0.5rem 0.5rem;
+  border-bottom: 1px solid var(--gris-700);
+  margin-bottom: 0.5rem;
+}
+
+.menu-acciones-titulo {
+  color: var(--blanco);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: Oswald, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+  flex: 1;
+}
+
+.btn-cancelar-flotante {
+  background: none;
+  border: none;
+  color: var(--gris-500);
+  cursor: pointer;
+  padding: 0.2rem 0.3rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: var(--transicion);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-cancelar-flotante:hover {
+  color: var(--rojo);
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.menu-acciones-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.menu-acciones-flotante .btn-accion-flotante {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border-radius: 6px;
+  border: 1px solid var(--gris-600);
+  background: transparent;
+  color: var(--blanco);
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: var(--transicion);
+  pointer-events: auto;
+  font-family: inherit;
+  font-weight: 500;
+  justify-content: flex-start;
+}
+
+.menu-acciones-flotante .btn-accion-flotante:hover {
+  transform: translateX(4px);
+  border-color: var(--amarillo);
+  background: rgba(234, 179, 8, 0.15);
+}
+
+/* Ajuste responsive para móvil */
+@media (max-width: 500px) {
+  .menu-acciones-flotante {
+    min-width: 160px;
+    max-width: 200px;
+    width: 180px;
+    padding: 0.6rem;
+  }
+  .menu-acciones-flotante .btn-accion-flotante {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.5rem;
+  }
+  .menu-acciones-titulo {
+    font-size: 0.75rem;
+  }
+}
+
+
+#textoEstado {
+  display: none !important;
+}
+
+/* Ajustar el padding del reloj para que no quede espacio vacío */
+.marcador-reloj {
+  margin-top: 0.3rem;
+  padding-top: 0.3rem;
+}
+
+
+/* Modal simple para corner y fuera de juego */
+.hoja-modal-simple {
+  max-width: 360px;
+}
+
+.hoja-modal-simple .btn-equipo {
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 2px solid var(--gris-300);
+  background: var(--superficie);
+  border-radius: var(--radio);
+  transition: var(--transicion);
+  cursor: pointer;
+  font-family: Oswald, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+  color: var(--texto);
+}
+
+.hoja-modal-simple .btn-equipo:hover {
+  border-color: var(--amarillo);
+  background: var(--amarillo-claro);
+}
+
+.hoja-modal-simple .btn-equipo.activo {
+  background: var(--amarillo);
+  border-color: var(--amarillo);
+  color: var(--blanco);
+}
+

@@ -81,3 +81,18 @@ function notificarError(error, mensaje = "No se pudo completar la operación.") 
   console.error(error);
   mostrarNotificacion(mensaje, "error");
 }
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(err => {
+      console.log('Error al entrar en pantalla completa:', err);
+    });
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
+}
+
+// Botón en el header
+document.getElementById("botonPantallaCompleta")?.addEventListener("click", toggleFullscreen);

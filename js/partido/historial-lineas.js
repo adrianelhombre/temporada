@@ -6,6 +6,10 @@ const ICONOS_EVENTO = {
   amarilla: "🟨",
   roja: "🟥",
   cambio: "🔄",
+  tiro_puerta: "🎯",
+  tiro_fuera: "❌",
+  falta_cometida: "⚠️",
+  falta_recibida: "🛡️",
   tiro_puerta_favor: "🎯",
   tiro_puerta_contra: "🎯",
   tiro_fuera_favor: "❌",
@@ -24,6 +28,10 @@ const ETIQUETAS_EVENTO = {
   amarilla: "Tarjeta amarilla",
   roja: "Tarjeta roja",
   cambio: "Cambios",
+  tiro_puerta: "Tiro a puerta",
+  tiro_fuera: "Tiro fuera",
+  falta_cometida: "Falta cometida",
+  falta_recibida: "Falta recibida",
   tiro_puerta_favor: "Tiro a puerta",
   tiro_puerta_contra: "Tiro a puerta",
   tiro_fuera_favor: "Tiro fuera",
@@ -38,6 +46,7 @@ const ETIQUETAS_EVENTO = {
 
 function construirLineasHistorial() {
   const lineas = [];
+  const rivalNombre = partido?.rival || "Rival";
 
   // --- Cambios agrupados por bloque ---
   const bloques = {};
@@ -83,6 +92,7 @@ function construirLineasHistorial() {
   eventosPartido.forEach(e => {
     if (e.tipo === "sale" || e.tipo === "entra") return;
     
+    // Eventos con sufijos (_favor, _contra) - corner y fuera de juego ya no se guardan con jugador
     if (e.tipo && (e.tipo.includes('_favor') || e.tipo.includes('_contra'))) {
       const labels = {
         'tiro_puerta': 'Tiro a puerta',
@@ -114,7 +124,9 @@ function construirLineasHistorial() {
       return;
     }
     
+    // Eventos normales (gol, asistencia, amarilla, roja, tiro_puerta, tiro_fuera, falta_cometida, falta_recibida)
     const j = jugadorPorId(e.jugador_id);
+    
     lineas.push({
       momento: e.momento,
       parte: e.parte,
@@ -141,8 +153,11 @@ function construirLineasHistorial() {
       const nombreEvento = labels[tipoBase] || tipoBase;
       
       let textoCompleto = nombreEvento;
-      if (e.dorsal) {
-        textoCompleto = `${e.dorsal} - Rival`;
+      // Si es un evento del rival, mostrar el nombre del rival
+      if (e.tipo.includes('_contra')) {
+        textoCompleto = rivalNombre;
+      } else if (e.dorsal) {
+        textoCompleto = `${e.dorsal} - ${rivalNombre}`;
       }
       
       lineas.push({
@@ -165,7 +180,7 @@ function construirLineasHistorial() {
       id: e.id,
       origen: "rival",
       dorsal: e.dorsal,
-      texto: `${e.dorsal || "?"} - Rival`,
+      texto: `${e.dorsal || "?"} - ${rivalNombre}`,
     });
   });
 

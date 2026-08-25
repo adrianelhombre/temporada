@@ -38,14 +38,32 @@
           <polyline points="12 6 12 12 16 14"></polyline>
         </svg>Historial
       </button>
+      
+      <button class="enlace" id="botonPantallaCompleta" style="display: inline-flex; align-items: center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <polyline points="9 21 3 21 3 15"></polyline>
+          <line x1="21" y1="3" x2="14" y2="10"></line>
+          <line x1="3" y1="21" x2="10" y2="14"></line>
+        </svg>
+      </button>
     </div>
   </header>
 
   <div class="contenedor">
+    
+    <!-- ============================================================ -->
+    <!-- CONTENEDOR PRINCIPAL: en vertical uno debajo de otro,         -->
+    <!-- en horizontal uno al lado del otro                           -->
+    <!-- ============================================================ -->
     <div class="distribucion-app">
 
-      <!-- Columna Izquierda: Marcador, Controles, Formación y Campo -->
-      <div class="columna-izquierda">
+      <!-- ========================================================== -->
+      <!-- PANEL IZQUIERDO: Marcador + Campo                          -->
+      <!-- ========================================================== -->
+      <div class="panel-izquierdo">
+
         <!-- Marcador -->
         <div class="marcador-wrapper">
           <div class="marcador-status">
@@ -75,6 +93,20 @@
           </div>
         </div>
 
+        <!-- Campo -->
+        <div class="campo" id="campo">
+          <div class="area"></div>
+        </div>
+
+      </div>
+      <!-- FIN panel-izquierdo -->
+
+      <!-- ========================================================== -->
+      <!-- PANEL DERECHO: Controles + Acciones + Suplentes            -->
+      <!-- ========================================================== -->
+      <div class="panel-derecho">
+
+        <!-- Bloque Antes de Empezar -->
         <div id="bloqueAntesEmpezar" class="tarjeta oculto">
           <p>El partido todavía no ha empezado.</p>
           <button class="primario ancho" id="botonEmpezar1aParte">
@@ -85,6 +117,7 @@
           </button>
         </div>
 
+        <!-- Bloque Control de Parte -->
         <div id="bloqueControlParte" class="tarjeta oculto">
           <div class="fila-botones">
             <button class="ancho" id="botonPausar" style="flex:1">
@@ -125,9 +158,9 @@
           </div>
         </div>
 
-        <!-- Fila: Formación + Gol rival + Tarjeta rival -->
-        <div class="fila-formacion-acciones">
-          <div class="fila-formacion">
+        <!-- Fila: Formación -->
+        <div class="fila-formacion">
+          <div class="fila-formacion-select">
             <label for="selectFormacion" style="margin: 0; font-weight: 600;">Formación:</label>
             <select id="selectFormacion"
               style="min-width: 120px; margin: 0; padding: 0.35rem 0.5rem; font-size: 0.9rem;">
@@ -137,33 +170,60 @@
               <option value="4-4-2">4-4-2</option>
             </select>
           </div>
-          <div class="fila-acciones-rival">
-            <button class="ancho" id="botonGolRival">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M12 2v20" stroke-dasharray="3 3"></path>
-                <path d="M2 12h20" stroke-dasharray="3 3"></path>
-              </svg>Gol rival
-            </button>
-            <button class="ancho" id="botonTarjetaRival">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="5" y="3" width="14" height="18" rx="2" fill="currentColor"></rect>
-              </svg>Tarjeta rival
-            </button>
+        </div>
+
+        <!-- Acciones rápidas -->
+        <div class="tarjeta" id="acciones-rapidas" style="padding: 1rem;">
+          <h3 style="margin-top: 0; margin-bottom: 0.75rem; color: var(--texto);">Acciones rápidas</h3>
+
+          <div class="fila-botones">
+            <div class="fila-botones-arriba">
+              <button class="ancho" id="botonCorner">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="2" />
+                  <path d="M12 2v20" stroke-dasharray="3 3" />
+                  <path d="M2 12h20" stroke-dasharray="3 3" />
+                  <circle cx="12" cy="12" r="3" fill="currentColor" stroke="none" />
+                </svg>Córner
+              </button>
+              <button class="ancho" id="botonFueraJuego">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="2" />
+                  <line x1="6" y1="12" x2="18" y2="12" />
+                  <line x1="12" y1="6" x2="12" y2="18" />
+                  <path d="M6 6l12 12" />
+                </svg>Offside
+              </button>
+            </div>
+            <div class="fila-botones-abajo">
+              <button class="ancho" id="botonGolRival">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M12 2v20" stroke-dasharray="3 3"></path>
+                  <path d="M2 12h20" stroke-dasharray="3 3"></path>
+                </svg>Gol rival
+              </button>
+              <button class="ancho" id="botonTarjetaRival">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="5" y="3" width="14" height="18" rx="2" fill="currentColor"></rect>
+                </svg>Tarjeta rival
+              </button>
+              <button class="ancho" id="botonTiroRival">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 2v20" stroke-dasharray="3 3" />
+                  <path d="M2 12h20" stroke-dasharray="3 3" />
+                </svg>Tiro rival
+              </button>
+            </div>
           </div>
         </div>
 
-        <div class="campo" id="campo">
-          <div class="area"></div>
-        </div>
-      </div>
-
-      <!-- Zona Inferior: Suplentes y Acciones -->
-      <div class="zona-inferior">
-
-        <div id="cambiosPendientesBox" class="cambios-pendientes oculto" style="grid-column: 1 / -1;"></div>
-
-        <div class="tarjeta">
+        <!-- Suplentes -->
+        <div class="tarjeta" id="suplentes">
           <div class="suplentes-header">
             <h3 style="display: flex; align-items: center; gap: 6px; margin: 0;">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -172,7 +232,7 @@
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>Suplentes
             </h3>
-            <button class="ancho" class="btn-cambio" id="botonModoCambio">
+            <button class="ancho" id="botonModoCambio">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
                 <path d="M17 1l4 4-4 4"></path>
@@ -185,68 +245,38 @@
           <div class="banquillo" id="banquillo"></div>
         </div>
 
-        <div class="tarjeta" style="padding: 1rem;">
-          <h3 style="margin-top: 0; margin-bottom: 0.75rem; color: var(--texto);">Acciones rápidas</h3>
-          <div class="fila-botones" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem;">
-            <button class="ancho" id="botonTiroPuerta">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 2v20" stroke-dasharray="3 3" />
-                <path d="M2 12h20" stroke-dasharray="3 3" />
-              </svg>Tiro puerta
-            </button>
-            <button class="ancho" id="botonTiroFuera">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="8" y1="8" x2="16" y2="16" />
-                <line x1="16" y1="8" x2="8" y2="16" />
-              </svg>Tiro fuera
-            </button>
-            <button class="ancho" id="botonCorner">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="2" />
-                <path d="M12 2v20" stroke-dasharray="3 3" />
-                <path d="M2 12h20" stroke-dasharray="3 3" />
-                <circle cx="12" cy="12" r="3" fill="currentColor" stroke="none" />
-              </svg>Córner
-            </button>
-            <button class="ancho" id="botonFalta">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 8v5" />
-                <circle cx="12" cy="17" r="1" fill="currentColor" stroke="none" />
-              </svg>Falta
-            </button>
-            <button class="ancho" id="botonFueraJuego">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="2" />
-                <line x1="6" y1="12" x2="18" y2="12" />
-                <line x1="12" y1="6" x2="12" y2="18" />
-                <path d="M6 6l12 12" />
-              </svg>Offside
-            </button>
-          </div>
-        </div>
+        <!-- Cambios Pendientes -->
+        <div id="cambiosPendientesBox" class="cambios-pendientes oculto"></div>
 
       </div>
+      <!-- FIN panel-derecho -->
 
     </div>
-  </div>
+    <!-- FIN distribucion-app -->
 
-  <!-- MODALES -->
+  </div>
+  <!-- FIN contenedor -->
+
+  <!-- ============================================================ -->
+  <!-- MODALES                                                      -->
+  <!-- ============================================================ -->
 
   <!-- Menú de acciones flotante para jugadores en campo -->
   <div id="menuAccionesJugador" class="menu-acciones-flotante posicion-campo oculto">
-    <button class="btn-accion-flotante" data-accion="gol" title="Gol">⚽</button>
-    <button class="btn-accion-flotante" data-accion="asistencia" title="Asistencia">🅰️</button>
-    <button class="btn-accion-flotante" data-accion="amarilla" title="Tarjeta amarilla">🟨</button>
-    <button class="btn-accion-flotante" data-accion="roja" title="Tarjeta roja">🟥</button>
-    <button class="btn-accion-flotante btn-cancelar" id="btnCancelarAcciones" title="Cancelar">✕</button>
+    <div class="menu-acciones-header">
+      <div class="menu-acciones-titulo" id="menuAccionesTitulo">Jugador #</div>
+      <button class="btn-cancelar-flotante" id="btnCancelarAcciones" title="Cancelar">✕</button>
+    </div>
+    <div class="menu-acciones-lista">
+      <button class="btn-accion-flotante" data-accion="gol" title="Gol">⚽ Gol</button>
+      <button class="btn-accion-flotante" data-accion="asistencia" title="Asistencia">🅰️ Asistencia</button>
+      <button class="btn-accion-flotante" data-accion="tiro_puerta" title="Tiro a puerta">🎯 Tiro puerta</button>
+      <button class="btn-accion-flotante" data-accion="tiro_fuera" title="Tiro fuera">❌ Tiro fuera</button>
+      <button class="btn-accion-flotante" data-accion="falta_cometida" title="Falta cometida">⚠️ Falta cometida</button>
+      <button class="btn-accion-flotante" data-accion="falta_recibida" title="Falta recibida">🛡️ Falta recibida</button>
+      <button class="btn-accion-flotante" data-accion="amarilla" title="Tarjeta amarilla">🟨 Amarilla</button>
+      <button class="btn-accion-flotante" data-accion="roja" title="Tarjeta roja">🟥 Roja</button>
+    </div>
   </div>
 
   <!-- Menú de acciones flotante para suplentes (solo tarjetas) -->
@@ -283,24 +313,50 @@
     </div>
   </div>
 
-<!-- Modal Evento Genérico -->
-<div id="modalEventoGenerico" class="superposicion oculto">
-  <div class="hoja-modal hoja-modal-evento-generico" style="max-height: 95vh;">
-    <p id="tituloEventoGenerico" style="font-weight:600; margin-bottom: 1rem; text-align: center;"></p>
-    
-    <div class="fila-botones" style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
-      <button class="ancho btn-equipo activo" id="botonEventoFavor" style="flex: 1;">Balsas</button>
-      <button class="ancho btn-equipo" id="botonEventoContra" style="flex: 1;">Rival</button>
-    </div>
-    
-    <div id="campoJugadorEventoGenerico" style="margin-bottom: 0.75rem;"></div>
-    
-    <div class="fila-botones" style="display: flex; gap: 0.5rem;">
-      <button class="ancho btn-accion-modal confirmar" id="botonConfirmarEventoGenerico" style="flex: 1;">Confirmar</button>
-      <button class="ancho btn-accion-modal cancelar" id="botonCerrarEventoGenerico" style="flex: 1;">Cancelar</button>
+  <!-- Modal Corner -->
+  <div id="modalCorner" class="superposicion oculto">
+    <div class="hoja-modal hoja-modal-simple">
+      <p style="font-weight:600; text-align: center; margin-bottom: 1rem;">📐 Córner</p>
+      <p style="text-align: center; color: var(--texto-secundario); font-size: 0.9rem; margin-bottom: 1rem;">¿Quién ha sacado el córner?</p>
+      <div class="fila-botones" style="display: flex; gap: 0.75rem;">
+        <button class="ancho btn-equipo" id="botonCornerFavor" style="flex: 1;">Balsas</button>
+        <button class="ancho btn-equipo" id="botonCornerContra" style="flex: 1;">Rival</button>
+      </div>
+      <button class="ancho" id="botonCerrarCorner" style="margin-top:0.75rem;">Cancelar</button>
     </div>
   </div>
-</div>
+
+  <!-- Modal Fuera de Juego -->
+  <div id="modalFueraJuego" class="superposicion oculto">
+    <div class="hoja-modal hoja-modal-simple">
+      <p style="font-weight:600; text-align: center; margin-bottom: 1rem;">🚩 Fuera de juego</p>
+      <p style="text-align: center; color: var(--texto-secundario); font-size: 0.9rem; margin-bottom: 1rem;">¿Quién ha cometido el fuera de juego?</p>
+      <div class="fila-botones" style="display: flex; gap: 0.75rem;">
+        <button class="ancho btn-equipo" id="botonFueraJuegoFavor" style="flex: 1;">Balsas</button>
+        <button class="ancho btn-equipo" id="botonFueraJuegoContra" style="flex: 1;">Rival</button>
+      </div>
+      <button class="ancho" id="botonCerrarFueraJuego" style="margin-top:0.75rem;">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Modal Evento Genérico (para tiro_puerta, tiro_fuera, falta) -->
+  <div id="modalEventoGenerico" class="superposicion oculto">
+    <div class="hoja-modal hoja-modal-evento-generico" style="max-height: 95vh;">
+      <p id="tituloEventoGenerico" style="font-weight:600; margin-bottom: 1rem; text-align: center;"></p>
+      
+      <div class="fila-botones" style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+        <button class="ancho btn-equipo activo" id="botonEventoFavor" style="flex: 1;">Balsas</button>
+        <button class="ancho btn-equipo" id="botonEventoContra" style="flex: 1;">Rival</button>
+      </div>
+      
+      <div id="campoJugadorEventoGenerico" style="margin-bottom: 0.75rem;"></div>
+      
+      <div class="fila-botones" style="display: flex; gap: 0.5rem;">
+        <button class="ancho btn-accion-modal confirmar" id="botonConfirmarEventoGenerico" style="flex: 1;">Confirmar</button>
+        <button class="ancho btn-accion-modal cancelar" id="botonCerrarEventoGenerico" style="flex: 1;">Cancelar</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal Historial -->
   <div id="modalHistorial" class="superposicion oculto">
@@ -447,6 +503,19 @@
         <button class="primario ancho" id="botonGuardarEdicionCambio">Guardar</button>
         <button class="ancho" id="botonCancelarEdicionCambio">Cancelar</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal Tiro Rival -->
+  <div id="modalTiroRival" class="superposicion oculto">
+    <div class="hoja-modal hoja-modal-simple">
+      <p style="font-weight:600; text-align: center; margin-bottom: 1rem;">🎯 Tiro rival</p>
+      <p style="text-align: center; color: var(--texto-secundario); font-size: 0.9rem; margin-bottom: 1rem;">¿Qué tipo de tiro ha sido?</p>
+      <div class="fila-botones" style="display: flex; gap: 0.75rem;">
+        <button class="ancho btn-equipo" id="botonTiroPuertaRival" style="flex: 1;">🚪 A puerta</button>
+        <button class="ancho btn-equipo" id="botonTiroFueraRival" style="flex: 1;">❌ Fuera</button>
+      </div>
+      <button class="ancho" id="botonCerrarTiroRival" style="margin-top:0.75rem;">Cancelar</button>
     </div>
   </div>
 

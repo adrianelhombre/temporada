@@ -209,30 +209,44 @@ function abrirMenuAcciones(jugadorId, slotId) {
 
   jugadorMenuActual = jugadorId;
 
-  const slotInfo = FORMACIONES[partido.formacion].find(s => s.id === slotId);
-  if (!slotInfo) return;
-
-  const campo = document.getElementById("campo");
-  const rect = campo.getBoundingClientRect();
-  const x = rect.left + (slotInfo.x / 100) * rect.width;
-  const y = rect.top + (slotInfo.y / 100) * rect.height;
+  // Actualizar título con el nombre y dorsal del jugador
+  const titulo = document.getElementById("menuAccionesTitulo");
+  if (titulo) {
+    titulo.textContent = `${j.dorsal} - ${j.nombre}`;
+  }
 
   const menu = document.getElementById("menuAccionesJugador");
+  
+  // Posición: centro-derecha de la pantalla
+  const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
+  
+  // Posición X: 65% del ancho de la pantalla (más centrado)
+  const x = windowWidth * 0.65;
+  // Posición Y: centrado verticalmente
+  const y = windowHeight / 2;
+  
   menu.style.left = x + 'px';
   menu.style.top = y + 'px';
-  menu.classList.add("posicion-arriba");
+  menu.style.transform = 'translate(-50%, -50%)';
 
+  // Ocultar/mostrar opciones según el estado del partido
   const enDescanso = estadoDirecto.estado === "descanso";
-  const btnGol = menu.querySelector('[data-accion="gol"]');
-  const btnAsistencia = menu.querySelector('[data-accion="asistencia"]');
-
-  if (enDescanso) {
-    btnGol.style.display = 'none';
-    btnAsistencia.style.display = 'none';
-  } else {
-    btnGol.style.display = 'flex';
-    btnAsistencia.style.display = 'flex';
-  }
+  const menuItems = menu.querySelectorAll('.btn-accion-flotante:not(.btn-cancelar)');
+  
+  menuItems.forEach(btn => {
+    const accion = btn.dataset.accion;
+    if (enDescanso) {
+      if (accion === 'gol' || accion === 'asistencia' || accion === 'tiro_puerta' || 
+          accion === 'tiro_fuera' || accion === 'falta_cometida' || accion === 'falta_recibida') {
+        btn.style.display = 'none';
+      } else {
+        btn.style.display = 'flex';
+      }
+    } else {
+      btn.style.display = 'flex';
+    }
+  });
 
   menu.classList.remove("oculto");
   requestAnimationFrame(() => {
@@ -274,21 +288,25 @@ async function registrarEventoDesdeMenu(tipo) {
 
   let parteEvento = estadoDirecto.parte;
   if (estadoDirecto.estado === "descanso") {
-    if (tipo === "gol" || tipo === "asistencia") {
+    if (tipo === "gol" || tipo === "asistencia" || tipo === "tiro_puerta" || 
+        tipo === "tiro_fuera" || tipo === "falta_cometida" || tipo === "falta_recibida") {
       notificarError("Durante el descanso solo se pueden registrar tarjetas.", "error");
       return;
     }
     parteEvento = 0;
   }
 
-  if (tipo === "gol" || tipo === "asistencia") {
+  // Verificar que el jugador está en el campo para acciones de juego
+  const accionesCampo = ["gol", "asistencia", "tiro_puerta", "tiro_fuera", "falta_cometida", "falta_recibida"];
+  if (accionesCampo.includes(tipo)) {
     const enCampo = Object.values(estadoDirecto.huecos).includes(jugadorId);
     if (!enCampo) {
-      notificarError("Los jugadores en el banquillo no pueden registrar goles o asistencias.", "error");
+      notificarError("Los jugadores en el banquillo no pueden registrar esta acción.", "error");
       return;
     }
   }
 
+  // Manejo de tarjetas
   if (tipo === "amarilla") {
     const amarillasActuales = eventosPartido.filter(
       e => e.jugador_id === jugadorId && e.tipo === "amarilla"
@@ -305,7 +323,7 @@ async function registrarEventoDesdeMenu(tipo) {
       partido_id: partidoId, jugador_id: jugadorId, tipo, parte: parteEvento, momento: new Date().toISOString(),
     });
     if (error) {
-      notificarError(error, "No se pudo registrar el evento.");
+      notificarError(error, "No se pudo registrar la tarjeta roja.");
       return;
     }
     consolidarJugador(jugadorId);
@@ -317,16 +335,45 @@ async function registrarEventoDesdeMenu(tipo) {
     return;
   }
 
+  // Mapear los tipos del menú a los tipos válidos en la base de datos
+  const tipoBD = {
+    'gol': 'gol',
+    'asistencia': 'asistencia',
+    'tiro_puerta': 'tiro_puerta_favor',
+    'tiro_fuera': 'tiro_fuera_favor',
+    'falta_cometida': 'falta_favor',
+    'falta_recibida': 'falta_favor',
+    'amarilla': 'amarilla',
+    'roja': 'roja'
+  }[tipo] || tipo;
+
   const { error } = await supabaseClient.from("eventos_partido").insert({
-    partido_id: partidoId, jugador_id: jugadorId, tipo, parte: parteEvento, momento: new Date().toISOString(),
+    partido_id: partidoId, jugador_id: jugadorId, tipo: tipoBD, parte: parteEvento, momento: new Date().toISOString(),
   });
   if (error) {
-    notificarError(error, "No se pudo registrar el evento.");
+    console.error("Error al registrar evento:", error);
+    notificarError(error, `No se pudo registrar ${tipo}.`);
     return;
+  }
+
+  if (tipo === "gol") {
+    await persistirEstadoDirecto();
   }
 
   await cargarEventos();
   pintarTodo();
+  
+  const labels = {
+    'gol': 'Gol',
+    'asistencia': 'Asistencia',
+    'tiro_puerta': 'Tiro a puerta',
+    'tiro_fuera': 'Tiro fuera',
+    'falta_cometida': 'Falta cometida',
+    'falta_recibida': 'Falta recibida',
+    'amarilla': 'Tarjeta amarilla',
+    'roja': 'Tarjeta roja'
+  };
+  mostrarNotificacion(`${labels[tipo] || tipo} registrado para ${j.nombre} (dorsal ${j.dorsal}).`, "exito");
 }
 
 // ---------- Menú flotante para suplentes ----------

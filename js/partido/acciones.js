@@ -347,6 +347,157 @@ async function confirmarEventoGenerico() {
   mostrarNotificacion(`${labels[tipo]} ${equipo === 'favor' ? 'de Balsas' : 'del rival'} registrado.`, "exito");
 }
 
+// ---------- Tiro rival ----------
+function abrirModalTiroRival() {
+  if (estadoDirecto.estado === "no_iniciado") {
+    mostrarNotificacion("No se pueden registrar eventos antes de empezar el partido.", "error");
+    return;
+  }
+  if (estadoDirecto.estado === "finalizado") {
+    mostrarNotificacion("El partido ya ha finalizado.", "error");
+    return;
+  }
+  if (estadoDirecto.estado === "descanso") {
+    mostrarNotificacion("No se pueden registrar eventos durante el descanso.", "error");
+    return;
+  }
+  document.getElementById("modalTiroRival").classList.remove("oculto");
+}
+
+async function registrarTiroRival(tipo) {
+  document.getElementById("modalTiroRival").classList.add("oculto");
+  
+  if (estadoDirecto.estado === "no_iniciado" || estadoDirecto.estado === "finalizado") {
+    mostrarNotificacion("No se pueden registrar eventos en este estado.", "error");
+    return;
+  }
+  
+  if (estadoDirecto.estado === "descanso") {
+    mostrarNotificacion("No se pueden registrar eventos durante el descanso.", "error");
+    return;
+  }
+  
+  const tipoEvento = tipo === 'puerta' ? 'tiro_puerta_contra' : 'tiro_fuera_contra';
+  const parteEvento = estadoDirecto.parte;
+  const ahora = new Date().toISOString();
+  
+  const { error } = await supabaseClient.from("eventos_rival").insert({
+    partido_id: partidoId,
+    tipo: tipoEvento,
+    dorsal: null,
+    parte: parteEvento,
+    momento: ahora,
+  });
+  
+  if (error) {
+    notificarError(error, "No se pudo registrar el tiro.");
+    return;
+  }
+  
+  await cargarEventos();
+  pintarTodo();
+  const label = tipo === 'puerta' ? 'a puerta' : 'fuera';
+  mostrarNotificacion(`Tiro ${label} del rival registrado.`, "exito");
+}
+
+// ---------- Corner ----------
+async function registrarCorner(equipo) {
+  document.getElementById("modalCorner").classList.add("oculto");
+  
+  if (estadoDirecto.estado === "no_iniciado" || estadoDirecto.estado === "finalizado") {
+    mostrarNotificacion("No se pueden registrar eventos en este estado.", "error");
+    return;
+  }
+  
+  if (estadoDirecto.estado === "descanso") {
+    mostrarNotificacion("No se pueden registrar eventos durante el descanso.", "error");
+    return;
+  }
+  
+  const tipoEvento = `corner_${equipo}`;
+  const parteEvento = estadoDirecto.parte;
+  const ahora = new Date().toISOString();
+  
+  let error;
+  
+  if (equipo === 'favor') {
+    ({ error } = await supabaseClient.from("eventos_partido").insert({
+      partido_id: partidoId,
+      jugador_id: null,
+      tipo: tipoEvento,
+      parte: parteEvento,
+      momento: ahora,
+    }));
+  } else {
+    ({ error } = await supabaseClient.from("eventos_rival").insert({
+      partido_id: partidoId,
+      tipo: tipoEvento,
+      dorsal: null,
+      parte: parteEvento,
+      momento: ahora,
+    }));
+  }
+  
+  if (error) {
+    notificarError(error, "No se pudo registrar el córner.");
+    return;
+  }
+  
+  await cargarEventos();
+  pintarTodo();
+  mostrarNotificacion(`Córner registrado (${equipo === 'favor' ? 'Balsas' : partido.rival || 'Rival'}).`, "exito");
+}
+
+// ---------- Fuera de juego ----------
+async function registrarFueraJuego(equipo) {
+  document.getElementById("modalFueraJuego").classList.add("oculto");
+  
+  if (estadoDirecto.estado === "no_iniciado" || estadoDirecto.estado === "finalizado") {
+    mostrarNotificacion("No se pueden registrar eventos en este estado.", "error");
+    return;
+  }
+  
+  if (estadoDirecto.estado === "descanso") {
+    mostrarNotificacion("No se pueden registrar eventos durante el descanso.", "error");
+    return;
+  }
+  
+  const tipoEvento = `fuera_juego_${equipo}`;
+  const parteEvento = estadoDirecto.parte;
+  const ahora = new Date().toISOString();
+  
+  let error;
+  
+  if (equipo === 'favor') {
+    ({ error } = await supabaseClient.from("eventos_partido").insert({
+      partido_id: partidoId,
+      jugador_id: null,
+      tipo: tipoEvento,
+      parte: parteEvento,
+      momento: ahora,
+    }));
+  } else {
+    ({ error } = await supabaseClient.from("eventos_rival").insert({
+      partido_id: partidoId,
+      tipo: tipoEvento,
+      dorsal: null,
+      parte: parteEvento,
+      momento: ahora,
+    }));
+  }
+  
+  if (error) {
+    notificarError(error, "No se pudo registrar el fuera de juego.");
+    return;
+  }
+  
+  await cargarEventos();
+  pintarTodo();
+  mostrarNotificacion(`Fuera de juego registrado (${equipo === 'favor' ? 'Balsas' : partido.rival || 'Rival'}).`, "exito");
+}
+
+
+
 // ---------- Rival ----------
 
 async function golRival() {

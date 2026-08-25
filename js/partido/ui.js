@@ -413,25 +413,24 @@ function pintarControles() {
   }
 
   const accionesRapidas = [
-    "botonTiroPuerta",
-    "botonTiroFuera",
     "botonCorner",
-    "botonFalta",
-    "botonFueraJuego"
+    "botonFueraJuego",
+    "botonGolRival",
+    "botonTarjetaRival",
+    "botonTiroRival"
   ];
   
   const enDescanso = estadoDirecto.estado === "descanso";
+  const noIniciado = estadoDirecto.estado === "no_iniciado";
   
   accionesRapidas.forEach(id => {
     const btn = document.getElementById(id);
     if (btn) {
-      btn.disabled = finalizado || enDescanso;
+      btn.disabled = finalizado || enDescanso || noIniciado;
     }
   });
 
   document.getElementById("botonModoCambio").disabled = finalizado || estadoDirecto.estado === "no_iniciado";
-  document.getElementById("botonGolRival").disabled = finalizado || estadoDirecto.estado === "no_iniciado" || enDescanso;
-  document.getElementById("botonTarjetaRival").disabled = finalizado || estadoDirecto.estado === "no_iniciado";
   document.getElementById("selectFormacion").disabled = finalizado;
 }
 
