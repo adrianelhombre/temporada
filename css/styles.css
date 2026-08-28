@@ -425,6 +425,9 @@ textarea:focus {
   border-color: var(--amarillo);
   box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.15);
 }
+input[type="checkbox"] {
+  margin: 0;
+}
 label {
   font-size: 0.8rem;
   font-weight: 600;

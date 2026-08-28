@@ -288,7 +288,7 @@ function renderizarConvocatoria(contenedor, convocadosSet, modoEdicion = false, 
   const checkboxContainer = document.createElement('div');
   checkboxContainer.style.cssText = `
     width: 100%;
-    padding: 8px 0;
+    padding: 20px 0;
     border-top: 1px solid var(--borde);
     margin-top: 4px;
     display: flex;
@@ -325,19 +325,6 @@ function renderizarConvocatoria(contenedor, convocadosSet, modoEdicion = false, 
   contenedor.appendChild(checkboxContainer);
 
   if (checkbox.checked && jugadoresExternos.length > 0) {
-    const separador = document.createElement('div');
-    separador.style.cssText = `
-      width: 100%;
-      padding: 4px 0;
-      border-top: 2px dashed var(--borde);
-      margin: 4px 0;
-      text-align: center;
-      font-size: 0.65rem;
-      color: var(--texto-secundario);
-    `;
-    separador.textContent = '━━━ Otros equipos ━━━';
-    contenedor.appendChild(separador);
-    
     jugadoresExternos.forEach(j => {
       contenedor.appendChild(crearElementoJugador(j, true));
     });
