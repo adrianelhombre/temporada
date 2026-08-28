@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Balsas - Ficha Jugador</title>
+<link rel="stylesheet" href="../css/styles.css" />
+<link rel="stylesheet" href="../css/jugador.css" />
+</head>
+<body>
+  <header class="cabecera-app cabecera-page">
+    <a href="plantilla.html">
+      <img src="../assets/volver.svg" class="icono-cabecera" alt="icono para volver">
+    </a>
+    <h1>Ficha</h1>
+    <button class="enlace" id="botonPantallaCompleta" style="display: inline-flex; align-items: center;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+        <polyline points="15 3 21 3 21 9"></polyline>
+        <polyline points="9 21 3 21 3 15"></polyline>
+        <line x1="21" y1="3" x2="14" y2="10"></line>
+        <line x1="3" y1="21" x2="10" y2="14"></line>
+      </svg>
+    </button>
+  </header>
+
+  <div class="contenedor" id="appJugador">
+    <div id="contenidoJugador">
+      <p>Cargando ficha del jugador...</p>
+    </div>
+  </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabaseClient.js"></script>
+    <script src="../js/comun.js"></script>
+    <script src="../js/formaciones.js"></script>
+    <script src="../js/desarrollo/criterios.js"></script>
+    <script src="../js/desarrollo/temporadas.js"></script>
+    <script src="../js/desarrollo/evaluaciones.js"></script>
+    <script src="../js/desarrollo/pid.js"></script>
+    <!-- PRIMERO los módulos que definen funciones -->
+    <script src="../js/jugador/render.js"></script>
+    <script src="../js/jugador/evaluaciones.js"></script>
+    <script src="../js/jugador/pid.js"></script>
+    <script src="../js/jugador/eventos.js"></script>
+    <!-- AL FINAL main.js que usa todo lo anterior -->
+    <script src="../js/jugador/main.js"></script>
+    </body>
+</html>

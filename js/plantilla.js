@@ -138,6 +138,9 @@ function pintarTabla() {
           <button class="btn-borrar" data-borrar="${j.id}">Borrar</button>
         </div>
       </td>
+      <td style="text-align:center;">
+        <button class="btn-ficha" data-id="${j.id}" title="Ver ficha del jugador">👤</button>
+      </td>
     `;
     cuerpo.appendChild(fila);
   });
@@ -163,7 +166,7 @@ function ocultarFormulario() {
 
 function obtenerPosicionesGuardadas() {
   return {
-    posicion: posicionPrincipalSeleccionada,  // ← Usamos 'posicion' como antes
+    posicion: posicionPrincipalSeleccionada,
     posiciones_secundarias: Array.from(posicionesSecundariasSeleccionadas)
   };
 }
@@ -203,8 +206,8 @@ function obtenerPosicionesGuardadas() {
     const registro = {
       nombre: nombre,
       dorsal: dorsal,
-      posicion: posiciones.posicion,  // ← Mantenemos el campo existente
-      posiciones_secundarias: posiciones.posiciones_secundarias,  // ← Nuevo campo
+      posicion: posiciones.posicion,
+      posiciones_secundarias: posiciones.posiciones_secundarias,
     };
 
     let error;
@@ -224,6 +227,13 @@ function obtenerPosicionesGuardadas() {
   let idPendienteBorrar = null;
 
   document.querySelector("#tablaJugadores tbody").addEventListener("click", async (e) => {
+    // Botón Ficha
+    const btnFicha = e.target.closest('.btn-ficha');
+    if (btnFicha) {
+      window.location.href = `jugador.html?id=${btnFicha.dataset.id}`;
+      return;
+    }
+
     const idEditar = e.target.dataset.editar;
     const idBorrar = e.target.dataset.borrar;
     if (idEditar) {

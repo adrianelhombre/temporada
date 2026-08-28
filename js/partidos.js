@@ -69,11 +69,25 @@ function crearFilaPartido(partido, marcador, finalizado) {
   const acciones = document.createElement("div");
   acciones.classList.add("acciones-partidos")
   
+  // Determinar el texto y la clase del botón
+  let textoBoton = "Iniciar";
+  let claseBoton = "primario";
+  
+  if (finalizado) {
+    textoBoton = "Ver";
+    claseBoton = "primario";
+  } else if (partido.estado === "en_juego") {
+    textoBoton = "Entrar";
+    claseBoton = "primario en-juego"; // Clase adicional para partidos en juego
+  } else {
+    textoBoton = "Iniciar";
+    claseBoton = "primario";
+  }
 
   const abrir = document.createElement("button");
-  abrir.className = "primario";
+  abrir.className = claseBoton;
   abrir.type = "button";
-  abrir.textContent = finalizado ? "Ver" : partido.estado === "en_juego" ? "Entrar" : "Iniciar";
+  abrir.textContent = textoBoton;
   abrir.addEventListener("click", () => { location.href = `partido.html?id=${partido.id}`; });
 
   const menu = document.createElement("button");

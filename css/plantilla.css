@@ -228,3 +228,24 @@
   text-overflow: ellipsis;
   text-align: center;
 }
+
+/* ---------- BOTÓN FICHA ---------- */
+.btn-ficha {
+  background: none;
+  border: 1px solid var(--borde);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: var(--transicion);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.btn-ficha:hover {
+  border-color: var(--amarillo);
+  background: var(--amarillo-claro);
+  transform: scale(1.05);
+}

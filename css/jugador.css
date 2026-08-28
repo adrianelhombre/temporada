@@ -1,0 +1,1254 @@
+/* ============================================
+   JUGADOR - FICHA INDIVIDUAL
+   ============================================ */
+
+/* ---------- CABECERA DEL JUGADOR ---------- */
+.cabecera-jugador {
+    background: var(--negro);
+    border-radius: var(--radio);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--gris-800);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.cabecera-jugador .avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: var(--amarillo);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--negro);
+    font-family: Oswald, sans-serif;
+    flex-shrink: 0;
+    border: 3px solid var(--gris-700);
+}
+
+.cabecera-jugador .info {
+    flex: 1;
+    min-width: 150px;
+}
+
+.cabecera-jugador .info .nombre {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--blanco);
+    font-family: Oswald, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+}
+
+.cabecera-jugador .info .detalles {
+    font-size: 0.9rem;
+    color: var(--gris-400);
+    margin-top: 0.2rem;
+}
+
+.cabecera-jugador .info .detalles span {
+    background: var(--gris-800);
+    padding: 0.15rem 0.6rem;
+    border-radius: 4px;
+    margin-right: 0.5rem;
+}
+
+.cabecera-jugador .info .detalles .posicion-tag {
+    background: var(--amarillo);
+    color: var(--negro);
+    font-weight: 700;
+    padding: 0.15rem 0.6rem;
+    border-radius: 4px;
+}
+
+/* ---------- RESUMEN RÁPIDO ---------- */
+.resumen-rapido {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.resumen-rapido .item {
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 0.7rem 0.5rem;
+    text-align: center;
+}
+
+.resumen-rapido .item .valor {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--negro);
+    font-family: Oswald, sans-serif;
+}
+
+.resumen-rapido .item .etiqueta {
+    font-size: 0.6rem;
+    color: var(--texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    font-weight: 600;
+}
+
+.resumen-rapido .item .valor.verde {
+    color: var(--verde);
+}
+
+.resumen-rapido .item .valor.rojo {
+    color: var(--rojo);
+}
+
+.resumen-rapido .item .valor.amarillo {
+    color: var(--amarillo-oscuro);
+}
+
+/* ---------- PESTAÑAS ---------- */
+.tabs-jugador {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 2px solid var(--borde);
+}
+
+.tabs-jugador .tab {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--texto-secundario);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: var(--transicion);
+    font-family: Oswald, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+}
+
+.tabs-jugador .tab:hover {
+    color: var(--texto);
+}
+
+.tabs-jugador .tab.activo {
+    color: var(--negro);
+    border-bottom-color: var(--amarillo);
+}
+
+.tabs-jugador .tab .badge {
+    background: var(--gris-200);
+    color: var(--texto-secundario);
+    font-size: 0.6rem;
+    padding: 0.05rem 0.5rem;
+    border-radius: 10px;
+    margin-left: 0.3rem;
+}
+
+.tabs-jugador .tab.activo .badge {
+    background: var(--amarillo-claro);
+    color: var(--amarillo-oscuro);
+}
+
+.panel-jugador {
+    display: none;
+    animation: fadeIn 0.25s ease;
+}
+
+.panel-jugador.activo {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---------- SELECTOR DE TEMPORADA ---------- */
+.selector-temporada {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.selector-temporada label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--texto-secundario);
+    margin: 0;
+}
+
+.selector-temporada select {
+    width: auto;
+    min-width: 120px;
+    margin: 0;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--superficie);
+}
+
+/* ---------- EVALUACIONES - GRID ---------- */
+.grid-evaluaciones {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.tarjeta-evaluacion {
+    background: var(--superficie);
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 1rem;
+    transition: var(--transicion);
+    position: relative;
+}
+
+.tarjeta-evaluacion:hover {
+    border-color: var(--gris-400);
+    box-shadow: var(--sombra-media);
+}
+
+.tarjeta-evaluacion.completada {
+    border-color: var(--verde);
+}
+
+.tarjeta-evaluacion.completada:hover {
+    border-color: #16a34a;
+}
+
+.tarjeta-evaluacion .cabecera-eval {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.tarjeta-evaluacion .cabecera-eval .trimestre {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--negro);
+    font-family: Oswald, sans-serif;
+    text-transform: uppercase;
+}
+
+.tarjeta-evaluacion .cabecera-eval .fecha {
+    font-size: 0.7rem;
+    color: var(--texto-secundario);
+}
+
+.tarjeta-evaluacion .media-global {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--negro);
+    font-family: Oswald, sans-serif;
+    text-align: center;
+    padding: 0.25rem 0;
+}
+
+.tarjeta-evaluacion .media-global .sin-evaluar {
+    font-size: 0.9rem;
+    color: var(--texto-secundario);
+    font-weight: 400;
+}
+
+.tarjeta-evaluacion .medias-bloque {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.2rem 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.75rem;
+}
+
+.tarjeta-evaluacion .medias-bloque .bloque {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.1rem 0;
+    border-bottom: 1px solid var(--gris-100);
+}
+
+.tarjeta-evaluacion .medias-bloque .bloque .nombre {
+    color: var(--texto-secundario);
+}
+
+.tarjeta-evaluacion .medias-bloque .bloque .nota {
+    font-weight: 600;
+}
+
+.tarjeta-evaluacion .diferencia {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 0.2rem;
+    border-radius: 4px;
+    margin: 0.3rem 0;
+}
+
+.tarjeta-evaluacion .diferencia.positiva {
+    color: var(--verde);
+    background: var(--verde-claro);
+}
+
+.tarjeta-evaluacion .diferencia.negativa {
+    color: var(--rojo);
+    background: var(--rojo-claro);
+}
+
+.tarjeta-evaluacion .diferencia.neutral {
+    color: var(--texto-secundario);
+    background: var(--gris-100);
+}
+
+.tarjeta-evaluacion .acciones-eval {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.tarjeta-evaluacion .acciones-eval button {
+    flex: 1;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--superficie);
+    cursor: pointer;
+    transition: var(--transicion);
+    font-family: Oswald, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+}
+
+.tarjeta-evaluacion .acciones-eval button:hover {
+    border-color: var(--amarillo);
+    background: var(--amarillo-claro);
+}
+
+.tarjeta-evaluacion .acciones-eval button.primario {
+    background: var(--amarillo);
+    border-color: var(--amarillo);
+    color: var(--blanco);
+}
+
+.tarjeta-evaluacion .acciones-eval button.primario:hover {
+    background: var(--amarillo-oscuro);
+    border-color: var(--amarillo-oscuro);
+}
+
+.tarjeta-evaluacion .acciones-eval button.ver {
+    border-color: var(--gris-300);
+}
+
+.tarjeta-evaluacion .acciones-eval button.ver:hover {
+    border-color: var(--azul-portero);
+    background: #eef4fd;
+}
+
+/* ---------- DETALLE DE EVALUACIÓN (EXPANDIDO) ---------- */
+.detalle-evaluacion {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid var(--borde);
+    display: none;
+}
+
+.detalle-evaluacion.abierto {
+    display: block;
+}
+
+.detalle-evaluacion .bloque-criterios {
+    margin-bottom: 1.25rem;
+}
+
+.detalle-evaluacion .bloque-criterios .titulo-bloque {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    border-bottom: 1px solid var(--borde);
+    padding-bottom: 0.3rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.detalle-evaluacion .bloque-criterios .titulo-bloque .media-bloque {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--negro);
+}
+
+.fila-criterio {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.3rem 0.4rem;
+    border-bottom: 1px solid var(--gris-100);
+}
+
+.fila-criterio .nombre {
+    flex: 1;
+    font-size: 0.8rem;
+    color: var(--texto);
+}
+
+.fila-criterio .valor {
+    font-weight: 700;
+    font-size: 0.9rem;
+    min-width: 32px;
+    text-align: center;
+    color: var(--negro);
+}
+
+.fila-criterio .slider-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.fila-criterio .slider-wrapper input[type="range"] {
+    flex: 1;
+    margin: 0;
+    padding: 0;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--gris-300);
+    border-radius: 4px;
+    outline: none;
+}
+
+.fila-criterio .slider-wrapper input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--amarillo);
+    cursor: pointer;
+    border: 2px solid var(--blanco);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.fila-criterio .slider-wrapper input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--amarillo);
+    cursor: pointer;
+    border: 2px solid var(--blanco);
+}
+
+.fila-criterio .slider-wrapper .valor-num {
+    font-weight: 700;
+    font-size: 0.85rem;
+    min-width: 28px;
+    text-align: center;
+    color: var(--negro);
+}
+
+.fila-criterio .slider-wrapper .valor-num.sin-nota {
+    color: var(--texto-secundario);
+    font-weight: 400;
+}
+
+.fila-criterio.lectura .slider-wrapper input[type="range"] {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.fila-criterio.lectura .slider-wrapper input[type="range"]::-webkit-slider-thumb {
+    background: var(--gris-400);
+}
+
+.fila-criterio.lectura .slider-wrapper input[type="range"]::-moz-range-thumb {
+    background: var(--gris-400);
+}
+
+/* ---------- OBSERVACIONES ---------- */
+.observaciones-eval {
+    margin: 1rem 0;
+}
+
+.observaciones-eval label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--texto-secundario);
+    margin-bottom: 0.25rem;
+}
+
+.observaciones-eval textarea {
+    width: 100%;
+    min-height: 60px;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+    font-family: inherit;
+    resize: vertical;
+}
+
+.observaciones-eval textarea:focus {
+    border-color: var(--amarillo);
+    outline: none;
+}
+
+.observaciones-eval textarea:disabled {
+    background: var(--gris-100);
+    opacity: 0.7;
+}
+
+/* ---------- BOTONES DE ACCIÓN DEL DETALLE ---------- */
+.acciones-detalle {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid var(--borde);
+}
+
+.acciones-detalle button {
+    padding: 0.5rem 1.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--superficie);
+    cursor: pointer;
+    transition: var(--transicion);
+    font-family: Oswald, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+}
+
+.acciones-detalle button:hover {
+    border-color: var(--amarillo);
+    background: var(--amarillo-claro);
+}
+
+.acciones-detalle button.guardar {
+    background: var(--amarillo);
+    border-color: var(--amarillo);
+    color: var(--blanco);
+}
+
+.acciones-detalle button.guardar:hover {
+    background: var(--amarillo-oscuro);
+    border-color: var(--amarillo-oscuro);
+}
+
+.acciones-detalle button.cancelar:hover {
+    border-color: var(--rojo);
+    background: var(--rojo-claro);
+    color: var(--rojo);
+}
+
+/* ---------- COMPARATIVA ---------- */
+.comparativa-eval {
+    margin-top: 1.25rem;
+    padding: 1rem;
+    background: var(--gris-100);
+    border-radius: var(--radio);
+    border: 1px solid var(--borde);
+}
+
+.comparativa-eval .titulo {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    margin-bottom: 0.5rem;
+}
+
+.comparativa-eval table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+
+.comparativa-eval table th {
+    text-align: left;
+    padding: 0.3rem 0.5rem;
+    font-weight: 600;
+    color: var(--texto-secundario);
+    border-bottom: 1px solid var(--borde);
+}
+
+.comparativa-eval table td {
+    padding: 0.3rem 0.5rem;
+    border-bottom: 1px solid var(--gris-200);
+}
+
+.comparativa-eval table .diferencia {
+    font-weight: 700;
+}
+
+.comparativa-eval table .diferencia.positiva {
+    color: var(--verde);
+}
+
+.comparativa-eval table .diferencia.negativa {
+    color: var(--rojo);
+}
+
+/* ---------- PID - OBJETIVOS ---------- */
+.grid-objetivos {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+@media (min-width: 600px) {
+    .grid-objetivos {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.tarjeta-objetivo {
+    background: var(--superficie);
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 1rem;
+    transition: var(--transicion);
+}
+
+.tarjeta-objetivo:hover {
+    border-color: var(--gris-400);
+    box-shadow: var(--sombra-media);
+}
+
+.tarjeta-objetivo.activo {
+    border-left: 4px solid var(--amarillo);
+}
+
+.tarjeta-objetivo.conseguido {
+    border-left: 4px solid var(--verde);
+    opacity: 0.8;
+}
+
+.tarjeta-objetivo.cancelado {
+    border-left: 4px solid var(--rojo);
+    opacity: 0.6;
+}
+
+.tarjeta-objetivo .cabecera-obj {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.3rem;
+}
+
+.tarjeta-objetivo .cabecera-obj .titulo {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--negro);
+}
+
+.tarjeta-objetivo .cabecera-obj .categoria-tag {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.tarjeta-objetivo .cabecera-obj .categoria-tag.tecnica {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.tarjeta-objetivo .cabecera-obj .categoria-tag.tactica {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.tarjeta-objetivo .cabecera-obj .categoria-tag.fisica {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.tarjeta-objetivo .cabecera-obj .categoria-tag.psicologica {
+    background: #fce4ec;
+    color: #b71c1c;
+}
+
+.tarjeta-objetivo .cabecera-obj .categoria-tag.personal {
+    background: #f3e8ff;
+    color: #6d28d9;
+}
+
+.tarjeta-objetivo .descripcion {
+    font-size: 0.8rem;
+    color: var(--texto-secundario);
+    margin: 0.3rem 0;
+}
+
+.tarjeta-objetivo .fechas {
+    font-size: 0.7rem;
+    color: var(--texto-secundario);
+    display: flex;
+    gap: 1rem;
+    margin: 0.3rem 0;
+}
+
+.tarjeta-objetivo .progreso-wrapper {
+    margin: 0.5rem 0;
+}
+
+.tarjeta-objetivo .progreso-wrapper .barra {
+    width: 100%;
+    height: 6px;
+    background: var(--gris-200);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.tarjeta-objetivo .progreso-wrapper .barra .relleno {
+    height: 100%;
+    background: var(--amarillo);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.tarjeta-objetivo .progreso-wrapper .barra .relleno.completado {
+    background: var(--verde);
+}
+
+.tarjeta-objetivo .progreso-wrapper .texto-progreso {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--texto-secundario);
+    margin-top: 0.15rem;
+}
+
+.tarjeta-objetivo .observacion-obj {
+    font-size: 0.75rem;
+    color: var(--texto-secundario);
+    background: var(--gris-100);
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    margin: 0.3rem 0;
+    font-style: italic;
+}
+
+.tarjeta-objetivo .acciones-obj {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tarjeta-objetivo .acciones-obj button {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--superficie);
+    cursor: pointer;
+    transition: var(--transicion);
+    font-family: Oswald, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+}
+
+.tarjeta-objetivo .acciones-obj button:hover {
+    border-color: var(--amarillo);
+    background: var(--amarillo-claro);
+}
+
+.tarjeta-objetivo .acciones-obj button.primario {
+    background: var(--amarillo);
+    border-color: var(--amarillo);
+    color: var(--blanco);
+}
+
+.tarjeta-objetivo .acciones-obj button.primario:hover {
+    background: var(--amarillo-oscuro);
+    border-color: var(--amarillo-oscuro);
+}
+
+.tarjeta-objetivo .acciones-obj button.completar {
+    border-color: var(--verde);
+    color: var(--verde);
+}
+
+.tarjeta-objetivo .acciones-obj button.completar:hover {
+    background: var(--verde-claro);
+}
+
+.tarjeta-objetivo .acciones-obj button.cancelar-obj {
+    border-color: var(--rojo);
+    color: var(--rojo);
+}
+
+.tarjeta-objetivo .acciones-obj button.cancelar-obj:hover {
+    background: var(--rojo-claro);
+}
+
+/* ---------- FORMULARIO NUEVO OBJETIVO ---------- */
+.form-nuevo-objetivo {
+    background: var(--superficie);
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 1rem;
+    margin-top: 1rem;
+    display: none;
+}
+
+.form-nuevo-objetivo.abierto {
+    display: block;
+}
+
+.form-nuevo-objetivo .fila-campos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.form-nuevo-objetivo .fila-campos .campo-completo {
+    grid-column: 1 / -1;
+}
+
+.form-nuevo-objetivo label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--texto-secundario);
+    margin-bottom: 0.15rem;
+}
+
+.form-nuevo-objetivo input,
+.form-nuevo-objetivo select,
+.form-nuevo-objetivo textarea {
+    width: 100%;
+    margin: 0;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+    font-family: inherit;
+}
+
+.form-nuevo-objetivo input:focus,
+.form-nuevo-objetivo select:focus,
+.form-nuevo-objetivo textarea:focus {
+    border-color: var(--amarillo);
+    outline: none;
+}
+
+.form-nuevo-objetivo textarea {
+    min-height: 50px;
+    resize: vertical;
+}
+
+.form-nuevo-objetivo .acciones-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--borde);
+}
+
+.form-nuevo-objetivo .acciones-form button {
+    padding: 0.4rem 1.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--superficie);
+    cursor: pointer;
+    transition: var(--transicion);
+    font-family: Oswald, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+}
+
+.form-nuevo-objetivo .acciones-form button:hover {
+    border-color: var(--amarillo);
+    background: var(--amarillo-claro);
+}
+
+.form-nuevo-objetivo .acciones-form button.guardar {
+    background: var(--amarillo);
+    border-color: var(--amarillo);
+    color: var(--blanco);
+}
+
+.form-nuevo-objetivo .acciones-form button.guardar:hover {
+    background: var(--amarillo-oscuro);
+    border-color: var(--amarillo-oscuro);
+}
+
+.form-nuevo-objetivo .acciones-form button.cancelar:hover {
+    border-color: var(--rojo);
+    background: var(--rojo-claro);
+    color: var(--rojo);
+}
+
+/* ---------- FORMULARIO SEGUIMIENTO ---------- */
+.form-seguimiento {
+    background: var(--gris-100);
+    border-radius: var(--radio);
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    display: none;
+}
+
+.form-seguimiento.abierto {
+    display: block;
+}
+
+.form-seguimiento .fila {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.form-seguimiento .fila label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--texto-secundario);
+    margin: 0;
+}
+
+.form-seguimiento .fila input[type="number"] {
+    width: 70px;
+    margin: 0;
+    padding: 0.3rem 0.4rem;
+    font-size: 0.85rem;
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+}
+
+.form-seguimiento .fila textarea {
+    flex: 1;
+    min-width: 150px;
+    margin: 0;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.8rem;
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+    resize: vertical;
+    font-family: inherit;
+}
+
+.form-seguimiento .fila textarea:focus,
+.form-seguimiento .fila input[type="number"]:focus {
+    border-color: var(--amarillo);
+    outline: none;
+}
+
+.form-seguimiento .acciones {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.form-seguimiento .acciones button {
+    padding: 0.3rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--superficie);
+    cursor: pointer;
+    transition: var(--transicion);
+    font-family: Oswald, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+}
+
+.form-seguimiento .acciones button:hover {
+    border-color: var(--amarillo);
+    background: var(--amarillo-claro);
+}
+
+.form-seguimiento .acciones button.guardar {
+    background: var(--amarillo);
+    border-color: var(--amarillo);
+    color: var(--blanco);
+}
+
+.form-seguimiento .acciones button.guardar:hover {
+    background: var(--amarillo-oscuro);
+    border-color: var(--amarillo-oscuro);
+}
+
+/* ---------- BOTÓN NUEVO OBJETIVO ---------- */
+.btn-nuevo-objetivo {
+    padding: 0.5rem 1.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 2px dashed var(--borde);
+    border-radius: var(--radio);
+    background: none;
+    cursor: pointer;
+    transition: var(--transicion);
+    font-family: Oswald, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    color: var(--texto-secundario);
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.btn-nuevo-objetivo:hover {
+    border-color: var(--amarillo);
+    color: var(--negro);
+    background: var(--amarillo-claro);
+}
+
+/* ---------- HISTÓRICO OBJETIVOS ---------- */
+.historico-objetivos {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 2px solid var(--borde);
+}
+
+.historico-objetivos .titulo {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.3rem 0;
+}
+
+.historico-objetivos .titulo:hover {
+    color: var(--texto);
+}
+
+.historico-objetivos .contenido {
+    display: none;
+    margin-top: 0.5rem;
+}
+
+.historico-objetivos .contenido.abierto {
+    display: block;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 600px) {
+    .cabecera-jugador {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .cabecera-jugador .avatar {
+        width: 55px;
+        height: 55px;
+        font-size: 1.4rem;
+    }
+
+    .cabecera-jugador .info .nombre {
+        font-size: 1.4rem;
+    }
+
+    .resumen-rapido {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-evaluaciones {
+        grid-template-columns: 1fr;
+    }
+
+    .fila-criterio {
+        flex-wrap: wrap;
+        gap: 0.3rem;
+    }
+
+    .fila-criterio .slider-wrapper {
+        flex: 1;
+        min-width: 100px;
+    }
+
+    .fila-criterio .nombre {
+        width: 100%;
+        font-size: 0.75rem;
+    }
+
+    .tarjeta-evaluacion .medias-bloque {
+        grid-template-columns: 1fr;
+    }
+
+    .form-nuevo-objetivo .fila-campos {
+        grid-template-columns: 1fr;
+    }
+
+    .form-seguimiento .fila {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .form-seguimiento .fila textarea {
+        min-width: auto;
+    }
+
+    .tabs-jugador .tab {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* ---------- SLIDER DE PROGRESO PID ---------- */
+.slider-progreso-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 150px;
+}
+
+.slider-progreso-wrapper input[type="range"] {
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--gris-300);
+  border-radius: 4px;
+  outline: none;
+}
+
+.slider-progreso-wrapper input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--amarillo);
+  cursor: pointer;
+  border: 2px solid var(--blanco);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+.slider-progreso-wrapper input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--amarillo);
+  cursor: pointer;
+  border: 2px solid var(--blanco);
+}
+
+.slider-progreso-wrapper .valor-progreso {
+  font-weight: 700;
+  font-size: 0.9rem;
+  min-width: 45px;
+  text-align: center;
+  color: var(--negro);
+}
+
+/* Ajustes responsive para el slider */
+@media (max-width: 600px) {
+  .form-seguimiento .fila {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .slider-progreso-wrapper {
+    min-width: auto;
+  }
+  
+  .slider-progreso-wrapper input[type="range"] {
+    width: 100%;
+  }
+}
+
+/* ---------- BOTÓN ELIMINAR EN HISTÓRICO ---------- */
+.tarjeta-objetivo .acciones-obj .eliminar-historico {
+  border-color: var(--rojo);
+  color: var(--rojo);
+  background: none;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border: 2px solid var(--rojo);
+  border-radius: var(--radio);
+  cursor: pointer;
+  transition: var(--transicion);
+  font-family: Oswald, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+.tarjeta-objetivo .acciones-obj .eliminar-historico:hover {
+  background: var(--rojo-claro);
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+/* ---------- MODAL CONFIRMACIÓN PID ---------- */
+#modalConfirmacionPID .hoja-modal .confirmar {
+  background: var(--amarillo);
+  border-color: var(--amarillo);
+  color: var(--blanco);
+  font-weight: 700;
+  font-family: Oswald, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+#modalConfirmacionPID .hoja-modal .confirmar:hover {
+  background: var(--amarillo-oscuro);
+  border-color: var(--amarillo-oscuro);
+}
+
+#modalConfirmacionPID .hoja-modal .cancelar {
+  border-color: var(--rojo);
+  color: var(--rojo);
+}
+
+#modalConfirmacionPID .hoja-modal .cancelar:hover {
+  background: var(--rojo-claro);
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+
+/* ---------- CRITERIOS ESPECÍFICOS (background diferente) ---------- */
+.fila-criterio.fila-especifico {
+  background: var(--gris-100);
+  margin: 0.15rem 0;
+}
+
+.fila-criterio.fila-especifico .nombre {
+  font-weight: 500;
+}
+
+/* En modo lectura, mantener el mismo estilo */
+.fila-criterio.lectura.fila-especifico {
+  background: var(--gris-100);
+  opacity: 0.85;
+}

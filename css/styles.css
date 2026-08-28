@@ -70,6 +70,7 @@ body {
   max-width: 480px;
   margin: 0 auto;
   padding: 0.75rem;
+  gap: 20px;
 }
 @media (min-width: 600px) {
   .contenedor {
@@ -274,6 +275,29 @@ button.primario:hover {
   border-color: var(--gris-800);
   box-shadow: var(--sombra-media);
   color: var(--blanco);
+}
+/* ===== BOTÓN PARTIDO EN JUEGO ===== */
+button.primario.en-juego {
+  background: var(--azul-portero);
+  border-color: var(--azul-portero);
+  animation: pulse-en-juego 2s infinite;
+  color: var(--blanco);
+}
+
+button.primario.en-juego:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+}
+
+@keyframes pulse-en-juego {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(38, 123, 220, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(220, 38, 38, 0);
+  }
 }
 button.peligro {
   background: var(--rojo);
@@ -1305,13 +1329,13 @@ label {
   transform: translate(-50%, -50%) scale(1);
 }
 .menu-acciones-flotante .btn-accion-flotante {
-  width: 38px;
-  height: 38px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   border: 2px solid var(--gris-600);
   background: transparent;
   color: var(--blanco);
-  font-size: 1rem;
+  font-size: 1.5rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1865,8 +1889,8 @@ label {
   }
 
   .banquillo {
-    justify-content: space-between;
-    gap: 0.5rem;
+    justify-content: start;
+    gap: 0.7rem;
     padding: 0;
   }
 }
@@ -1938,7 +1962,7 @@ label {
 
 .menu-acciones-titulo {
   color: var(--blanco);
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 600;
   font-family: Oswald, sans-serif;
   text-transform: uppercase;
@@ -1979,11 +2003,11 @@ label {
   border: 1px solid var(--gris-600);
   background: transparent;
   color: var(--blanco);
-  font-size: 0.85rem;
+  font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.8rem;
   transition: var(--transicion);
   pointer-events: auto;
   font-family: inherit;
