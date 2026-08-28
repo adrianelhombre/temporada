@@ -1,4 +1,6 @@
 let jugadores = [];
+let jugadoresEquipo = [];
+let jugadoresExternos = [];
 let posicionPrincipalSeleccionada = null;
 let posicionesSecundariasSeleccionadas = new Set();
 
@@ -103,14 +105,23 @@ async function cargarJugadores() {
     notificarError(error, "No se pudo cargar la plantilla.");
     return;
   }
+  
   jugadores = data || [];
+  
+  // Separar jugadores del equipo y externos
+  // Por defecto (null o false) son del equipo
+  jugadoresEquipo = jugadores.filter(j => j.es_de_otro_equipo !== true);
+  jugadoresExternos = jugadores.filter(j => j.es_de_otro_equipo === true);
+  
   pintarTabla();
 }
 
 function pintarTabla() {
   const cuerpo = document.querySelector("#tablaJugadores tbody");
   cuerpo.innerHTML = "";
-  jugadores.forEach((j) => {
+  
+  // Función para pintar una fila de jugador
+  function pintarFila(j, esExterno = false) {
     const fila = document.createElement("tr");
     
     // Obtener todas las posiciones (principal + secundarias)
@@ -124,11 +135,16 @@ function pintarTabla() {
       `<span class="jugador-posicion-tag ${p.principal ? 'principal' : ''}">${p.pos}</span>`
     ).join('');
     
+    // Solo añadir un indicador visual para jugadores externos
+    const nombreHTML = esExterno ? 
+      `${escaparHTML(j.nombre)} <span style="font-size:0.6rem; color:var(--texto-secundario); font-weight:400;">(ext.)</span>` : 
+      escaparHTML(j.nombre);
+    
     fila.innerHTML = `
       <td>
         <div class="celda-jugador">
           <span class="jugador-dorsal">${j.dorsal}</span>
-          <span class="jugador-nombre">${escaparHTML(j.nombre)}</span>
+          <span class="jugador-nombre">${nombreHTML}</span>
         </div>
       </td>
       <td><div class="jugador-posiciones">${posicionesHTML || '-'}</div></td>
@@ -142,8 +158,31 @@ function pintarTabla() {
         <button class="btn-ficha" data-id="${j.id}" title="Ver ficha del jugador">👤</button>
       </td>
     `;
-    cuerpo.appendChild(fila);
-  });
+    return fila;
+  }
+  
+  // Primero los jugadores del equipo (sin separador)
+  jugadoresEquipo.forEach(j => cuerpo.appendChild(pintarFila(j, false)));
+  
+  // Luego los externos con un pequeño separador
+  if (jugadoresExternos.length > 0) {
+    const separador = document.createElement("tr");
+    separador.innerHTML = `<td colspan="4" style="padding: 12px 0 6px 0; border-bottom: 1px solid var(--borde);">
+      <span style="font-size:0.7rem; color:var(--texto-secundario); text-transform:uppercase; letter-spacing:0.05em;">Jugadores de otros equipos</span>
+    </td>`;
+    cuerpo.appendChild(separador);
+    
+    jugadoresExternos.forEach(j => cuerpo.appendChild(pintarFila(j, true)));
+  }
+  
+  // Si no hay jugadores
+  if (jugadoresEquipo.length === 0 && jugadoresExternos.length === 0) {
+    const vacio = document.createElement("tr");
+    vacio.innerHTML = `<td colspan="4" style="text-align:center; padding:40px 0; color:var(--texto-secundario);">
+      No hay jugadores registrados
+    </td>`;
+    cuerpo.appendChild(vacio);
+  }
 }
 
 function mostrarFormulario(jugador) {
@@ -151,6 +190,9 @@ function mostrarFormulario(jugador) {
   document.getElementById("jugadorId").value = jugador ? jugador.id : "";
   document.getElementById("nombreJugador").value = jugador ? jugador.nombre : "";
   document.getElementById("dorsalJugador").value = jugador ? jugador.dorsal : "";
+  
+  // Checkbox: solo se marca si es explícitamente de otro equipo
+  document.getElementById("esDeOtroEquipo").checked = jugador ? jugador.es_de_otro_equipo === true : false;
   
   // Inicializar selectores de posiciones
   inicializarSelectoresPosiciones(jugador);
@@ -184,6 +226,7 @@ function obtenerPosicionesGuardadas() {
     const id = document.getElementById("jugadorId").value;
     const nombre = document.getElementById("nombreJugador").value.trim();
     const dorsal = parseInt(document.getElementById("dorsalJugador").value, 10);
+    const esDeOtroEquipo = document.getElementById("esDeOtroEquipo").checked;
     
     if (!nombre || !Number.isInteger(dorsal) || dorsal < 1 || dorsal > 999) {
       mostrarNotificacion("Indica un nombre y un dorsal entre 1 y 999.", "error");
@@ -197,10 +240,13 @@ function obtenerPosicionesGuardadas() {
       return;
     }
 
-    const dorsalRepetido = jugadores.some((jugador) => jugador.dorsal === dorsal && jugador.id !== id);
-    if (dorsalRepetido) {
-      mostrarNotificacion("Ya existe un jugador activo con ese dorsal.", "error");
-      return;
+    // Verificar dorsal duplicado solo entre jugadores del equipo
+    if (!esDeOtroEquipo) {
+      const dorsalRepetido = jugadoresEquipo.some((jugador) => jugador.dorsal === dorsal && jugador.id !== id);
+      if (dorsalRepetido) {
+        mostrarNotificacion("Ya existe un jugador con ese dorsal.", "error");
+        return;
+      }
     }
 
     const registro = {
@@ -208,6 +254,7 @@ function obtenerPosicionesGuardadas() {
       dorsal: dorsal,
       posicion: posiciones.posicion,
       posiciones_secundarias: posiciones.posiciones_secundarias,
+      es_de_otro_equipo: esDeOtroEquipo,
     };
 
     let error;

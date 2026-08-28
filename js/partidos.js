@@ -2,8 +2,11 @@ let partidoPendienteEliminar = null;
 let partidoAcciones = null;
 let partidoEnEdicion = null;
 let jugadores = [];
+let jugadoresEquipo = [];
+let jugadoresExternos = [];
 let convocados = new Set();
 let convocadosEditando = new Set();
+let mostrarExternos = false;
 
 function pintarMensajeVacio(contenedor, texto) {
   const mensaje = document.createElement("p");
@@ -78,7 +81,7 @@ function crearFilaPartido(partido, marcador, finalizado) {
     claseBoton = "primario";
   } else if (partido.estado === "en_juego") {
     textoBoton = "Entrar";
-    claseBoton = "primario en-juego"; // Clase adicional para partidos en juego
+    claseBoton = "primario en-juego";
   } else {
     textoBoton = "Iniciar";
     claseBoton = "primario";
@@ -99,7 +102,6 @@ function crearFilaPartido(partido, marcador, finalizado) {
   menu.addEventListener("click", () => abrirAcciones(partido));
   acciones.append(abrir, menu);
   
-  // Orden: jornada | datos | resultado | acciones
   fila.append(jornadaDatos, resultadoPartido, acciones);
   return fila;
 }
@@ -136,7 +138,6 @@ function generarOpcionesJornada(tipo) {
   
   switch(tipo) {
     case 'Liga':
-      // J1 a J30
       for (let i = 1; i <= 30; i++) {
         opciones.push({ value: `J${i}`, label: `J${i}` });
       }
@@ -175,21 +176,25 @@ async function cargarJugadoresParaConvocatoria() {
     const { data, error } = await supabaseClient
       .from("jugadores")
       .select("*")
+      .eq("activo", true)
       .order("dorsal");
 
     if (error) throw error;
     jugadores = data || [];
+    
+    jugadoresEquipo = jugadores.filter(j => j.es_de_otro_equipo !== true);
+    jugadoresExternos = jugadores.filter(j => j.es_de_otro_equipo === true);
   } catch (error) {
     console.error('Error cargando jugadores:', error);
     notificarError(error, "No se pudieron cargar los jugadores.");
   }
 }
 
-function renderizarConvocatoria(contenedor, convocadosSet, modoEdicion = false) {
+function renderizarConvocatoria(contenedor, convocadosSet, modoEdicion = false, esCreacion = false) {
   if (!contenedor) return;
   contenedor.innerHTML = '';
 
-  jugadores.forEach(j => {
+  function crearElementoJugador(j, esExterno = false) {
     const estaConvocado = convocadosSet.has(j.id);
     
     const div = document.createElement('div');
@@ -206,14 +211,13 @@ function renderizarConvocatoria(contenedor, convocadosSet, modoEdicion = false) 
     `;
     div.title = `${j.nombre} (Dorsal ${j.dorsal}) - ${estaConvocado ? 'Convocado' : 'Desconvocado'}`;
     
-    // Círculo del jugador - Fondo AMARILLO
     const circulo = document.createElement('div');
     circulo.style.cssText = `
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: #FFC107;
-      color: #333;
+      background: ${esExterno ? '#FF9800' : '#FFC107'};
+      color: ${esExterno ? 'white' : '#333'};
       display: flex;
       align-items: center;
       justify-content: center;
@@ -225,7 +229,6 @@ function renderizarConvocatoria(contenedor, convocadosSet, modoEdicion = false) 
     `;
     circulo.textContent = j.dorsal;
     
-    // Indicador de convocatoria (esquina superior derecha)
     const indicador = document.createElement('div');
     indicador.style.cssText = `
       position: absolute;
@@ -249,7 +252,6 @@ function renderizarConvocatoria(contenedor, convocadosSet, modoEdicion = false) 
     circulo.appendChild(indicador);
     div.appendChild(circulo);
     
-    // Nombre del jugador
     const nombre = document.createElement('span');
     nombre.style.cssText = `
       font-size: 0.6rem;
@@ -270,11 +272,82 @@ function renderizarConvocatoria(contenedor, convocadosSet, modoEdicion = false) 
       } else {
         convocadosSet.add(j.id);
       }
-      renderizarConvocatoria(contenedor, convocadosSet, modoEdicion);
+      renderizarConvocatoria(contenedor, convocadosSet, modoEdicion, esCreacion);
       actualizarContadorConvocados(convocadosSet);
     });
     
-    contenedor.appendChild(div);
+    return div;
+  }
+
+  if (jugadoresEquipo.length > 0) {
+    jugadoresEquipo.forEach(j => {
+      contenedor.appendChild(crearElementoJugador(j, false));
+    });
+  }
+
+  const checkboxContainer = document.createElement('div');
+  checkboxContainer.style.cssText = `
+    width: 100%;
+    padding: 8px 0;
+    border-top: 1px solid var(--borde);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  `;
+  
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.id = 'checkboxMostrarExternos';
+  checkbox.style.cssText = `
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--amarillo);
+    cursor: pointer;
+  `;
+  // CORREGIDO: usar mostrarExternos siempre, no depender de esCreacion
+  checkbox.checked = mostrarExternos;
+  
+  const label = document.createElement('label');
+  label.htmlFor = 'checkboxMostrarExternos';
+  label.style.cssText = `
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--texto-secundario);
+    cursor: pointer;
+    white-space: nowrap;
+  `;
+  label.textContent = `Mostrar jugadores de otros equipos (${jugadoresExternos.length})`;
+  
+  checkboxContainer.appendChild(checkbox);
+  checkboxContainer.appendChild(label);
+  contenedor.appendChild(checkboxContainer);
+
+  if (checkbox.checked && jugadoresExternos.length > 0) {
+    const separador = document.createElement('div');
+    separador.style.cssText = `
+      width: 100%;
+      padding: 4px 0;
+      border-top: 2px dashed var(--borde);
+      margin: 4px 0;
+      text-align: center;
+      font-size: 0.65rem;
+      color: var(--texto-secundario);
+    `;
+    separador.textContent = '━━━ Otros equipos ━━━';
+    contenedor.appendChild(separador);
+    
+    jugadoresExternos.forEach(j => {
+      contenedor.appendChild(crearElementoJugador(j, true));
+    });
+  }
+
+  checkbox.addEventListener('change', function(e) {
+    e.stopPropagation();
+    mostrarExternos = this.checked;
+    renderizarConvocatoria(contenedor, convocadosSet, modoEdicion, esCreacion);
+    actualizarContadorConvocados(convocadosSet);
   });
 
   actualizarContadorConvocados(convocadosSet);
@@ -283,7 +356,11 @@ function renderizarConvocatoria(contenedor, convocadosSet, modoEdicion = false) 
 function actualizarContadorConvocados(convocadosSet) {
   const contador = document.getElementById('contadorConvocados');
   if (contador) {
-    contador.textContent = `${convocadosSet.size} / ${jugadores.length}`;
+    const totalEquipo = jugadoresEquipo.length;
+    const externosConvocados = jugadoresExternos.filter(j => convocadosSet.has(j.id)).length;
+    const totalConvocados = convocadosSet.size;
+    const totalJugadores = totalEquipo + externosConvocados;
+    contador.textContent = `${totalConvocados} / ${totalJugadores}`;
   }
 }
 
@@ -312,14 +389,13 @@ function abrirFormularioEdicion(partido) {
   document.getElementById("duracionPartido").value = partido.duracion_parte_minutos || 35;
   document.getElementById("formacionPartido").value = partido.formacion || "4-3-3";
   
-  // Generar opciones de jornada según el tipo y seleccionar la guardada
   generarOpcionesJornada(partido.tipo_partido || 'Liga');
   document.getElementById("jornadaPartido").value = partido.jornada || '';
   
   convocadosEditando = new Set(partido.convocados || []);
   
   const contenedor = document.getElementById('listaConvocados');
-  renderizarConvocatoria(contenedor, convocadosEditando, true);
+  renderizarConvocatoria(contenedor, convocadosEditando, true, false);
   
   document.getElementById("duracionPartido").disabled = soloMetadatos;
   document.getElementById("formacionPartido").disabled = soloMetadatos;
@@ -351,20 +427,22 @@ function prepararNuevoPartido() {
   document.getElementById("formacionPartido").disabled = false;
   
   convocados = new Set();
-  jugadores.forEach(j => convocados.add(j.id));
+  jugadoresEquipo.forEach(j => convocados.add(j.id));
+  
+  // CORREGIDO: resetear mostrarExternos a false
+  mostrarExternos = false;
   
   const contenedor = document.getElementById('listaConvocados');
   contenedor.style.opacity = '1';
   contenedor.style.pointerEvents = 'auto';
-  renderizarConvocatoria(contenedor, convocados, false);
+  renderizarConvocatoria(contenedor, convocados, false, true);
   
   const formulario = document.getElementById("formularioPartido");
   formulario.reset();
   document.getElementById("fechaPartido").value = new Date().toISOString().slice(0, 10);
   document.getElementById("tipoPartido").value = 'Liga';
-  document.getElementById("duracionPartido").value = '35'; // Select con valor 35
+  document.getElementById("duracionPartido").value = '35';
   
-  // Generar jornada inicial
   generarOpcionesJornada('Liga');
   
   abrirModalFormulario();
@@ -398,12 +476,10 @@ let filtroActual = 'todos';
 function aplicarFiltro(tipo) {
   filtroActual = tipo;
   
-  // Actualizar botones usando clases btn-equipo y activo
   document.querySelectorAll('.btn-equipo').forEach(btn => {
     btn.classList.toggle('activo', btn.dataset.tipo === tipo);
   });
   
-  // Recargar partidos con filtro
   cargarPartidos();
 }
 
@@ -414,7 +490,6 @@ async function cargarPartidos() {
     .select("id, fecha, rival, condicion, duracion_parte_minutos, formacion, estado, estado_directo, tipo_partido, jornada, convocados")
     .order("fecha", { ascending: true });
   
-  // Aplicar filtro si no es 'todos'
   if (filtroActual !== 'todos') {
     query = query.eq("tipo_partido", filtroActual);
   }
@@ -462,34 +537,30 @@ async function cargarPartidos() {
   if (!await exigirSesion()) return;
   
   await cargarJugadoresParaConvocatoria();
-  jugadores.forEach(j => convocados.add(j.id));
   
-  // Cargar partidos con filtro inicial (todos)
+  jugadoresEquipo.forEach(j => convocados.add(j.id));
+  
   await cargarPartidos();
 
   const formulario = document.getElementById("formularioPartido");
   const contenedorConvocados = document.getElementById('listaConvocados');
   
-  renderizarConvocatoria(contenedorConvocados, convocados, false);
+  renderizarConvocatoria(contenedorConvocados, convocados, false, true);
   
-  // ===== EVENTO: Cambio de tipo de partido =====
   document.getElementById("tipoPartido").addEventListener("change", function() {
     generarOpcionesJornada(this.value);
   });
   
-  // ===== EVENTOS DE FILTROS =====
   document.querySelectorAll('.btn-equipo').forEach(btn => {
     btn.addEventListener('click', () => {
       aplicarFiltro(btn.dataset.tipo);
     });
   });
   
-  // Botones de la modal
   document.getElementById("botonNuevoPartido").addEventListener("click", prepararNuevoPartido);
   document.getElementById("botonCancelarPartido").addEventListener("click", cerrarModalFormulario);
   document.getElementById("botonCerrarModalPartido").addEventListener("click", cerrarModalFormulario);
   
-  // Cerrar modal al hacer clic fuera
   document.getElementById("modalFormularioPartido").addEventListener("click", (e) => {
     if (e.target === e.currentTarget) {
       cerrarModalFormulario();
@@ -514,7 +585,6 @@ async function cargarPartidos() {
     abrirConfirmacionEliminar(partido);
   });
 
-  // SUBMIT del formulario
   formulario.addEventListener("submit", async (evento) => {
     evento.preventDefault();
     

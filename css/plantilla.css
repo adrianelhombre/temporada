@@ -181,6 +181,46 @@
   color: var(--negro);
 }
 
+/* ---------- CHECKBOX EN FORMULARIO ---------- */
+#formularioJugador label[for="esDeOtroEquipo"] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--texto);
+  cursor: pointer;
+}
+
+#formularioJugador label[for="esDeOtroEquipo"] input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--amarillo);
+}
+
+/* ---------- BOTÓN FICHA ---------- */
+.btn-ficha {
+  background: none;
+  border: 1px solid var(--borde);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: var(--transicion);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.btn-ficha:hover {
+  border-color: var(--amarillo);
+  background: var(--amarillo-claro);
+  transform: scale(1.05);
+}
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 500px) {
   .celda-jugador {
@@ -214,8 +254,11 @@
     padding: 4px 10px;
     font-size: 0.7rem;
   }
+  
+  #formularioJugador label[for="esDeOtroEquipo"] {
+    font-size: 0.8rem;
+  }
 }
-
 
 /* Posición en banquillo */
 .posicion-banquillo {
@@ -227,25 +270,4 @@
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
-}
-
-/* ---------- BOTÓN FICHA ---------- */
-.btn-ficha {
-  background: none;
-  border: 1px solid var(--borde);
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: var(--transicion);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-.btn-ficha:hover {
-  border-color: var(--amarillo);
-  background: var(--amarillo-claro);
-  transform: scale(1.05);
 }

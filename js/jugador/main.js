@@ -64,13 +64,18 @@ async function cargarTemporadaActiva() {
     .from('temporadas')
     .select('*')
     .eq('activa', true)
-    .single();
+    .maybeSingle();  // <-- CAMBIA .single() por .maybeSingle()
 
   if (error) {
-    notificarError(error, 'No se pudo cargar la temporada activa.');
+    // Solo notificar si es un error real, no si es "no encontrado"
+    if (error.code !== 'PGRST116') {
+      notificarError(error, 'No se pudo cargar la temporada activa.');
+    }
+    temporadaActual = null;
     return;
   }
-  temporadaActual = data;
+  
+  temporadaActual = data; // data será null si no hay temporada activa
 }
 
 // ---------- CARGAR CRITERIOS ----------
