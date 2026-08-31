@@ -354,9 +354,9 @@ button[disabled] {
 /* ===== BOTÓN EQUIPO ===== */
 .btn-equipo {
   flex: 1;
-  background: var(--superficie);
-  border: 2px solid var(--gris-300);
-  color: var(--texto-secundario);
+  background: var(--gris-600);
+  border: 2px solid var(--gris-600);
+  color: var(--blanco);
   font-weight: 500;
   font-family: Oswald, sans-serif;
   text-transform: uppercase;
@@ -510,7 +510,6 @@ label {
 
 /* Scroll en lista de partidos jugados */
 .lista-jugados-scroll {
-  max-height: 300px;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--gris-300) transparent;
@@ -682,7 +681,7 @@ label {
 .marcador-wrapper {
   background: var(--negro);
   border-radius: var(--radio);
-  padding: 1.25rem 1rem 1rem;
+  padding: 1rem;
   border: 1px solid var(--gris-800);
 }
 .marcador-status {
@@ -690,7 +689,7 @@ label {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 .marcador-parte {
   font-size: 0.8rem;
@@ -784,7 +783,7 @@ label {
 }
 @media (min-width: 500px) {
   .marcador-gol-num {
-    font-size: 2.5rem;
+    font-size: 2em;
     min-width: 38px;
   }
 }
@@ -880,7 +879,6 @@ label {
 .campo::after {
   content: "";
   position: absolute;
-  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 25%;
@@ -941,7 +939,7 @@ label {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 .ficha-jugador .minutos {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   background: rgba(255, 255, 255, 0.92);
   border-radius: 4px;
   padding: 2px 8px;
@@ -1118,23 +1116,27 @@ label {
   color: var(--negro);
 }
 .ficha-jugador-banquillo .nombre-banquillo {
-  font-size: 0.6rem;
-  color: var(--texto);
+  font-size: 0.7rem;
   text-align: center;
-  margin-top: 3px;
-  max-width: 44px;
-  white-space: nowrap;
+  font-weight: 600;
+  color: var(--blanco);
+  background: rgba(0, 0, 0, 0.8);
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-top: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-weight: 500;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  line-height: 1.4;
 }
 .ficha-jugador-banquillo .minutos {
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   background: var(--superficie);
   border: 1px solid var(--borde);
   border-radius: 3px;
   padding: 1px 6px;
-  margin-top: 2px;
+  margin-top: 4px;
   font-weight: 500;
 }
 .ficha-jugador-banquillo.expulsado {
@@ -1916,7 +1918,7 @@ label {
   }
 
   .panel-izquierdo .campo {
-    aspect-ratio: 2 / 1.25;
+    aspect-ratio: 2 / 1.4;
     width: 100%;
   }
 
@@ -1943,8 +1945,7 @@ label {
   opacity: 0;
   transition: opacity 0.2s ease, transform 0.2s ease;
   min-width: 200px;
-  max-width: 260px;
-  width: 220px;
+  width: 350px;
   transform: translate(-50%, -50%) scale(0.9);
 }
 
@@ -1965,7 +1966,7 @@ label {
 
 .menu-acciones-titulo {
   color: var(--blanco);
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 600;
   font-family: Oswald, sans-serif;
   text-transform: uppercase;
@@ -2014,8 +2015,11 @@ label {
   transition: var(--transicion);
   pointer-events: auto;
   font-family: inherit;
-  font-weight: 500;
+  font-weight: 700;
   justify-content: flex-start;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+
 }
 
 .menu-acciones-flotante .btn-accion-flotante:hover {
@@ -2062,15 +2066,15 @@ label {
   padding: 0.8rem 1rem;
   font-size: 1rem;
   font-weight: 600;
-  border: 2px solid var(--gris-300);
-  background: var(--superficie);
+  border: 2px solid var(--gris-500);
+  background: var(--gris-500);
   border-radius: var(--radio);
   transition: var(--transicion);
   cursor: pointer;
   font-family: Oswald, sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.05rem;
-  color: var(--texto);
+  color: var(--blanco);
 }
 
 .hoja-modal-simple .btn-equipo:hover {
@@ -2084,3 +2088,221 @@ label {
   color: var(--blanco);
 }
 
+/* ============================================================
+   MENÚ FLOTANTE CON FONDO OSCURO SUAVE (mejor UX)
+   ============================================================ */
+
+.menu-acciones-flotante {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  background: #2a2a2a; /* Gris carbón, no negro puro */
+  padding: 0.75rem;
+  border-radius: var(--radio);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid #444;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  min-width: 220px;
+  max-width: 340px;
+  width: 300px;
+  transform: translate(-50%, -50%) scale(0.92);
+}
+
+.menu-acciones-flotante.visible {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Header */
+.menu-acciones-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.25rem 0.6rem 0.25rem;
+  border-bottom: 2px solid #3d3d3d;
+  margin-bottom: 0.6rem;
+}
+
+.menu-acciones-titulo {
+  color: #f0f0f0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: Oswald, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+.btn-cancelar-flotante {
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-size: 1.5rem;
+  transition: var(--transicion);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.btn-cancelar-flotante:hover {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.15);
+}
+
+/* Grid de 2 columnas */
+.menu-acciones-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Botones base */
+.menu-acciones-flotante .btn-accion-flotante {
+  width: 100%;
+  padding: 0.55rem 0.4rem;
+  border-radius: 6px;
+  border: 2px solid #444;
+  background: #333;
+  color: #e0e0e0;
+  font-size: 0.78rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: var(--transicion);
+  pointer-events: auto;
+  font-family: inherit;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03rem;
+  white-space: nowrap;
+  min-height: 65px;
+}
+
+.menu-acciones-flotante .btn-accion-flotante:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+
+
+/* Botones genéricos (tiro, faltas) - más sutiles */
+.btn-accion-flotante:not(.accion-gol):not(.accion-asistencia):not(.accion-amarilla):not(.accion-roja):hover {
+  border-color: #888;
+  background: #3d3d3d;
+  color: #ffffff;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+/* Móvil pequeño */
+@media (max-width: 480px) {
+  .menu-acciones-flotante {
+    min-width: 160px;
+    max-width: 200px;
+    width: 180px;
+    padding: 0.5rem;
+  }
+  
+  .menu-acciones-grid {
+    gap: 0.3rem;
+  }
+  
+  .menu-acciones-flotante .btn-accion-flotante {
+    font-size: 0.55rem;
+    padding: 0.35rem 0.2rem;
+    gap: 0.2rem;
+    min-height: 36px;
+  }
+  
+  .menu-acciones-titulo {
+    font-size: 0.7rem;
+  }
+  
+  .btn-cancelar-flotante {
+    font-size: 0.85rem;
+  }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+  .menu-acciones-flotante {
+    min-width: 240px;
+    max-width: 320px;
+    width: 280px;
+    padding: 0.75rem;
+  }
+  
+  .menu-acciones-flotante .btn-accion-flotante {
+    font-size: 1rem;
+    padding: 0.45rem 0.3rem;
+    min-height: 40px;
+  }
+}
+
+/* Escritorio */
+@media (min-width: 769px) {
+  .menu-acciones-flotante {
+    min-width: 280px;
+    max-width: 450px;
+    width: 450px;
+    padding: 0.9rem;
+  }
+  
+  .menu-acciones-flotante .btn-accion-flotante {
+    font-size: 1rem;
+    padding: 0.6rem 0.5rem;
+    min-height: 85px;
+  }
+}
+
+/* ===== NOMBRE DEL JUGADOR EN EL CAMPO ===== */
+.ficha-jugador .nombre-campo {
+  font-size: 0.7rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--blanco);
+  background: rgba(0, 0, 0, 0.7);
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  line-height: 1.4;
+}
+
+/* Responsive para móvil */
+@media (max-width: 480px) {
+  .ficha-jugador {
+    width: 55px;
+  }
+  
+  .ficha-jugador .nombre-campo {
+    font-size: 0.6rem;
+    padding: 1px 4px;
+  }
+  
+  .ficha-jugador .circulo {
+    width: 34px;
+    height: 34px;
+    font-size: 0.75rem;
+  }
+  
+  .ficha-jugador .minutos {
+    font-size: 0.5rem;
+    padding: 0 4px;
+  }
+}

@@ -268,14 +268,16 @@
       <button class="btn-cancelar-flotante" id="btnCancelarAcciones" title="Cancelar">✕</button>
     </div>
     <div class="menu-acciones-lista">
-      <button class="btn-accion-flotante" data-accion="gol" title="Gol">⚽  Gol</button>
-      <button class="btn-accion-flotante" data-accion="asistencia" title="Asistencia">🅰️  Asistencia</button>
-      <button class="btn-accion-flotante" data-accion="tiro_puerta" title="Tiro a puerta">🎯  Tiro puerta</button>
-      <button class="btn-accion-flotante" data-accion="tiro_fuera" title="Tiro fuera">❌  Tiro fuera</button>
-      <button class="btn-accion-flotante" data-accion="falta_cometida" title="Falta cometida">⚠️  Falta cometida</button>
-      <button class="btn-accion-flotante" data-accion="falta_recibida" title="Falta recibida">🛡️  Falta recibida</button>
-      <button class="btn-accion-flotante" data-accion="amarilla" title="Tarjeta amarilla">🟨  Amarilla</button>
-      <button class="btn-accion-flotante" data-accion="roja" title="Tarjeta roja">🟥  Roja</button>
+      <div class="menu-acciones-grid">
+        <button class="btn-accion-flotante" data-accion="gol" title="Gol">⚽  Gol</button>
+        <button class="btn-accion-flotante" data-accion="asistencia" title="Asistencia">🅰️  Asistencia</button>
+        <button class="btn-accion-flotante" data-accion="tiro_puerta" title="Tiro a puerta">🎯  Tiro puerta</button>
+        <button class="btn-accion-flotante" data-accion="tiro_fuera" title="Tiro fuera">❌  Tiro fuera</button>
+        <button class="btn-accion-flotante" data-accion="falta_cometida" title="Falta cometida">⚠️  Falta cometida</button>
+        <button class="btn-accion-flotante" data-accion="falta_recibida" title="Falta recibida">🛡️  Falta recibida</button>
+        <button class="btn-accion-flotante" data-accion="amarilla" title="Tarjeta amarilla">🟨  Amarilla</button>
+        <button class="btn-accion-flotante" data-accion="roja" title="Tarjeta roja">🟥  Roja</button>
+      </div>
     </div>
   </div>
 
@@ -296,7 +298,7 @@
         <button class="ancho" id="botonRivalAmarilla" style="background:var(--amarillo); color:var(--amarillo-texto); font-weight:600; flex: 1;">Amarilla</button>
         <button class="ancho peligro" id="botonRivalRoja" style="flex: 1;">Roja</button>
       </div>
-      <button class="ancho" id="botonCerrarModalRival" style="margin-top:0.5rem;">Cancelar</button>
+      <button class="ancho btn-accion-modal cancelar" id="botonCerrarModalRival" style="margin-top:0.5rem;">Cancelar</button>
     </div>
   </div>
 
@@ -307,8 +309,8 @@
       <label for="dorsalGolRival">Dorsal del rival</label>
       <input type="number" inputmode="numeric" id="dorsalGolRival" />
       <div class="fila-botones" style="margin-top: 0.5rem;">
-        <button class="primario ancho" id="botonConfirmarGolRival">Confirmar</button>
-        <button class="ancho" id="botonCerrarModalGolRival">Cancelar</button>
+        <button class="ancho btn-accion-modal confirmar" id="botonConfirmarGolRival">Confirmar</button>
+        <button class="ancho btn-accion-modal cancelar" id="botonCerrarModalGolRival">Cancelar</button>
       </div>
     </div>
   </div>
@@ -319,10 +321,10 @@
       <p style="font-weight:600; text-align: center; margin-bottom: 1rem;">📐 Córner</p>
       <p style="text-align: center; color: var(--texto-secundario); font-size: 0.9rem; margin-bottom: 1rem;">¿Quién ha sacado el córner?</p>
       <div class="fila-botones" style="display: flex; gap: 0.75rem;">
-        <button class="ancho btn-equipo" id="botonCornerFavor" style="flex: 1;">Balsas</button>
+        <button class="ancho btn-equipo activo" id="botonCornerFavor" style="flex: 1;">Balsas</button>
         <button class="ancho btn-equipo" id="botonCornerContra" style="flex: 1;">Rival</button>
       </div>
-      <button class="ancho" id="botonCerrarCorner" style="margin-top:0.75rem;">Cancelar</button>
+      <button class="ancho btn-accion-modal cancelar" id="botonCerrarCorner" style="margin-top:0.75rem;">Cancelar</button>
     </div>
   </div>
 
@@ -332,10 +334,23 @@
       <p style="font-weight:600; text-align: center; margin-bottom: 1rem;">🚩 Fuera de juego</p>
       <p style="text-align: center; color: var(--texto-secundario); font-size: 0.9rem; margin-bottom: 1rem;">¿Quién ha cometido el fuera de juego?</p>
       <div class="fila-botones" style="display: flex; gap: 0.75rem;">
-        <button class="ancho btn-equipo" id="botonFueraJuegoFavor" style="flex: 1;">Balsas</button>
+        <button class="ancho btn-equipo activo" id="botonFueraJuegoFavor" style="flex: 1;">Balsas</button>
         <button class="ancho btn-equipo" id="botonFueraJuegoContra" style="flex: 1;">Rival</button>
       </div>
-      <button class="ancho" id="botonCerrarFueraJuego" style="margin-top:0.75rem;">Cancelar</button>
+      <button class="ancho btn-accion-modal cancelar" id="botonCerrarFueraJuego" style="margin-top:0.75rem;">Cancelar</button>
+    </div>
+  </div>
+
+    <!-- Modal Tiro Rival -->
+  <div id="modalTiroRival" class="superposicion oculto">
+    <div class="hoja-modal hoja-modal-simple">
+      <p style="font-weight:600; text-align: center; margin-bottom: 1rem;">Tiro rival</p>
+      <p style="text-align: center; color: var(--texto-secundario); font-size: 0.9rem; margin-bottom: 1rem;">¿Qué tipo de tiro ha sido?</p>
+      <div class="fila-botones" style="display: flex; gap: 0.75rem;">
+        <button class="ancho btn-equipo" id="botonTiroPuertaRival" style="flex: 1;">A puerta</button>
+        <button class="ancho btn-equipo" id="botonTiroFueraRival" style="flex: 1; background-color: var(--gris-400); border: var(--gris-400);">Fuera</button>
+      </div>
+      <button class="ancho btn-accion-modal cancelar" id="botonCerrarTiroRival" style="margin-top:0.75rem;">Cancelar</button>
     </div>
   </div>
 
@@ -506,18 +521,7 @@
     </div>
   </div>
 
-  <!-- Modal Tiro Rival -->
-  <div id="modalTiroRival" class="superposicion oculto">
-    <div class="hoja-modal hoja-modal-simple">
-      <p style="font-weight:600; text-align: center; margin-bottom: 1rem;">Tiro rival</p>
-      <p style="text-align: center; color: var(--texto-secundario); font-size: 0.9rem; margin-bottom: 1rem;">¿Qué tipo de tiro ha sido?</p>
-      <div class="fila-botones" style="display: flex; gap: 0.75rem;">
-        <button class="ancho btn-equipo" id="botonTiroPuertaRival" style="flex: 1;">A puerta</button>
-        <button class="ancho btn-equipo" id="botonTiroFueraRival" style="flex: 1;">Fuera</button>
-      </div>
-      <button class="ancho" id="botonCerrarTiroRival" style="margin-top:0.75rem;">Cancelar</button>
-    </div>
-  </div>
+
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabaseClient.js"></script>

@@ -65,7 +65,14 @@ function crearFilaPartido(partido, marcador, finalizado) {
   if (finalizado) {
       const resultado = document.createElement("span");
       resultado.className = "estado-finalizado";
-      resultado.textContent = `${marcador.propios} - ${marcador.rival}`;
+      
+      // CORREGIDO: Mostrar el marcador en orden local - visitante
+      if (partido.condicion === 'local') {
+        resultado.textContent = `${marcador.propios} - ${marcador.rival}`;
+      } else {
+        resultado.textContent = `${marcador.rival} - ${marcador.propios}`;
+      }
+      
       resultadoPartido.appendChild(resultado);
     }
 

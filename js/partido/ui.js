@@ -158,10 +158,12 @@ function pintarCampo() {
         badgesHTML += `</div>`;
       }
       
+      // ✅ AÑADIR EL NOMBRE DEL JUGADOR DEBAJO DEL CÍRCULO
       ficha.innerHTML = `
         <div class="circulo" style="${expulsado ? "opacity:0.45;" : ""}">${j ? j.dorsal : "?"}</div>
         ${badgeEntra}
         ${badgesHTML}
+        <div class="nombre-campo">${j ? j.nombre : "?"}</div>
         <div class="minutos">${formatoMMSS(mins)}</div>
         ${botonEliminar}
       `;

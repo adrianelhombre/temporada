@@ -228,7 +228,7 @@ function abrirMenuAcciones(jugadorId, slotId) {
   
   menu.style.left = x + 'px';
   menu.style.top = y + 'px';
-  menu.style.transform = 'translate(-50%, -50%)';
+  menu.style.transform = 'translate(-21%, -50%)';
 
   // Ocultar/mostrar opciones según el estado del partido
   const enDescanso = estadoDirecto.estado === "descanso";
