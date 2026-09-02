@@ -8,11 +8,15 @@
 <link rel="stylesheet" href="../css/plantilla.css" />
 </head>
 <body>
-  <header class="cabecera-app">
-    <a href="inicio.html">
-      <img src="../assets/volver.svg" class="icono-cabecera" alt="icono para volver">
+<header class="cabecera-app">
+  <a href="inicio.html">
+    <img src="../assets/volver.svg" class="icono-cabecera" alt="icono para volver">
+  </a>
+  <h1>Plantilla</h1>
+  <div style="display:flex; gap:0.5rem; align-items:center;">
+    <a href="control-fisico.html" class="enlace" style="color:var(--blanco); text-decoration:none; font-size:0.75rem; background:var(--gris-700); padding:0.3rem 0.7rem; border-radius:var(--radio);">
+      Control físico
     </a>
-    <h1>Plantilla</h1>
     <button class="enlace" id="botonPantallaCompleta" style="display: inline-flex; align-items: center;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
         stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
@@ -22,7 +26,8 @@
         <line x1="3" y1="21" x2="10" y2="14"></line>
       </svg>
     </button>
-  </header>
+  </div>
+</header>
 
   <div class="contenedor">
     <button class="primario ancho" id="botonNuevoJugador">+ Añadir jugador</button>

@@ -83,6 +83,9 @@ body {
     max-width: 1200px;
     padding: 1.5rem;
   }
+  .contenedor-partido{
+    padding: 0.6rem;
+  }
 }
 
 .distribucion-app {
@@ -681,7 +684,7 @@ label {
 .marcador-wrapper {
   background: var(--negro);
   border-radius: var(--radio);
-  padding: 1rem;
+  padding: .7rem;
   border: 1px solid var(--gris-800);
 }
 .marcador-status {
@@ -689,7 +692,6 @@ label {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 0.5rem;
 }
 .marcador-parte {
   font-size: 0.8rem;
@@ -931,7 +933,7 @@ label {
   .ficha-jugador .circulo {
     width: 50px;
     height: 50px;
-    font-size: 1.1rem;
+    font-size: 1.3rem;
   }
 }
 .ficha-jugador:hover .circulo {
@@ -1111,7 +1113,7 @@ label {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 800;
   color: var(--negro);
 }
@@ -1875,7 +1877,7 @@ label {
 
   /* El campo ocupa todo el ancho disponible */
   .panel-izquierdo .campo {
-    aspect-ratio: 2 / 1.5;
+    aspect-ratio: 2 / 1.45;
     width: 100%;
   }
 
@@ -1918,7 +1920,7 @@ label {
   }
 
   .panel-izquierdo .campo {
-    aspect-ratio: 2 / 1.4;
+    aspect-ratio: 2 / 1.45;
     width: 100%;
   }
 

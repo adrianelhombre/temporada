@@ -66,8 +66,8 @@
   font-weight: 600;
   color: var(--texto);
   background: var(--gris-200);
-  padding: 2px 8px;
-  border-radius: 10px;
+  padding: 4px 8px;
+  border-radius: 6px;
   display: inline-block;
 }
 

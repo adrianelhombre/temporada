@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Balsas - Control Físico</title>
+<link rel="stylesheet" href="../css/styles.css" />
+<link rel="stylesheet" href="../css/control-fisico.css" />
+</head>
+<body>
+  <header class="cabecera-app cabecera-page">
+    <a href="plantilla.html">
+      <img src="../assets/volver.svg" class="icono-cabecera" alt="icono para volver">
+    </a>
+    <h1>Control Físico</h1>
+    <button class="enlace" id="botonPantallaCompleta" style="display: inline-flex; align-items: center;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+        <polyline points="15 3 21 3 21 9"></polyline>
+        <polyline points="9 21 3 21 3 15"></polyline>
+        <line x1="21" y1="3" x2="14" y2="10"></line>
+        <line x1="3" y1="21" x2="10" y2="14"></line>
+      </svg>
+    </button>
+  </header>
+
+  <div class="contenedor" id="appControlFisico">
+    <!-- HISTORIAL + BOTONES -->
+    <div class="historial-evaluaciones">
+      <div id="listaHistorial" class="lista-historial">
+        <span class="texto-secundario">Cargando...</span>
+      </div>
+      <div class="historial-buttons">
+        <button class="primario pequeno" id="btnNuevaEvaluacion" title="Nueva evaluación">+ Nueva</button>
+        <button class="peligro pequeno" id="btnEliminarEvaluacion" title="Eliminar evaluación actual">🗑️</button>
+      </div>
+    </div>
+
+    <!-- TABLA PRINCIPAL -->
+    <div class="tarjeta tabla-wrapper" id="tablaWrapper">
+      <div class="tabla-header">
+        <span id="tituloTabla" class="tabla-titulo">✏️ Edición</span>
+      </div>
+      <div class="tabla-scroll">
+        <!-- GRID EDICIÓN (visible por defecto) -->
+        <div id="gridEdicion">
+          <div class="grid-header-edicion" id="gridHeaderEdicion">
+            <div class="col-header estado-col">Estado</div>
+            <div class="col-header dorsal-col">Dorsal</div>
+            <div class="col-header nombre-col">Nombre</div>
+            <div class="col-header altura-col">Altura (cm)</div>
+            <div class="col-header peso-col">Peso (kg)</div>
+            <div class="col-header imc-col">IMC</div>
+            <div class="col-header acciones-col">Acciones</div>
+          </div>
+          <div id="gridBodyEdicion" class="grid-body-edicion">
+            <div class="grid-mensaje">Cargando datos...</div>
+          </div>
+        </div>
+
+        <!-- GRID TEMPORADA (oculto por defecto) -->
+        <div id="gridTemporada" class="oculto">
+          <div class="grid-header-temporada" id="gridHeaderTemporada">
+            <!-- Se genera dinámicamente -->
+          </div>
+          <div id="gridBodyTemporada" class="grid-body-temporada">
+            <div class="grid-mensaje">Cargando datos...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal nueva evaluación -->
+  <div id="modalNuevaEvaluacion" class="superposicion oculto">
+    <div class="hoja-modal">
+      <h2 style="margin-top:0;">Nueva evaluación física</h2>
+      <label for="inputNombreEval">Nombre de la evaluación *</label>
+      <input type="text" id="inputNombreEval" placeholder="Ej: 1ª Evaluación - Septiembre" />
+      <label for="inputFechaEval">Fecha *</label>
+      <input type="date" id="inputFechaEval" />
+      <div class="fila-botones" style="margin-top:1rem;">
+        <button class="primario ancho" id="btnCrearEvaluacion">Crear</button>
+        <button class="ancho" id="btnCancelarNuevaEval">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal eliminar evaluación -->
+  <div id="modalEliminarEvaluacion" class="superposicion oculto">
+    <div class="hoja-modal">
+      <h2 style="margin-top:0; color:var(--rojo);">⚠️ Eliminar evaluación</h2>
+      <p id="textoEliminarEval">¿Seguro que quieres eliminar esta evaluación? Se borrarán todas las mediciones asociadas. Esta acción no se puede deshacer.</p>
+      <div class="fila-botones" style="margin-top:1rem;">
+        <button class="peligro ancho" id="btnConfirmarEliminarEval">Eliminar</button>
+        <button class="ancho" id="btnCancelarEliminarEval">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal borrar datos de jugador -->
+  <div id="modalBorrarDatos" class="superposicion oculto">
+    <div class="hoja-modal">
+      <h2 style="margin-top:0; color:var(--rojo);">⚠️ Borrar datos</h2>
+      <p id="textoBorrarDatos">¿Seguro que quieres borrar los datos de este jugador en esta evaluación?</p>
+      <div class="fila-botones" style="margin-top:1rem;">
+        <button class="peligro ancho" id="btnConfirmarBorrarDatos">Borrar</button>
+        <button class="ancho" id="btnCancelarBorrarDatos">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabaseClient.js"></script>
+  <script src="../js/comun.js"></script>
+  <script src="../js/control-fisico.js"></script>
+</body>
+</html>

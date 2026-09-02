@@ -1,0 +1,745 @@
+/* ============================================
+   CONTROL FÍSICO - ESTILOS ESPECÍFICOS
+   ============================================ */
+
+/* ---------- HISTORIAL + BOTONES ---------- */
+.historial-evaluaciones {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--gris-100);
+  border-radius: var(--radio);
+  margin-bottom: 1rem;
+}
+
+.historial-evaluaciones .historial-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--texto-secundario);
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+/* Estilos tipo tabs-jugador para listaHistorial */
+.lista-historial {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  flex: 1;
+  border-bottom: 2px solid var(--borde);
+  padding-bottom: 0.15rem;
+}
+
+.lista-historial .item-historial {
+  padding: 0.4rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--texto-secundario);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: var(--transicion);
+  font-family: Oswald, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+.lista-historial .item-historial:hover {
+  color: var(--texto);
+}
+
+.lista-historial .item-historial.activo {
+  color: var(--negro);
+  border-bottom-color: var(--amarillo);
+}
+
+.lista-historial .item-historial.temporada {
+  color: var(--azul-portero);
+}
+
+.lista-historial .item-historial.temporada:hover {
+  color: var(--azul-portero);
+  opacity: 0.7;
+}
+
+.lista-historial .item-historial.temporada.activo {
+  color: var(--azul-portero-oscuro);
+  border-bottom-color: var(--azul-portero);
+}
+
+.historial-buttons {
+  display: flex;
+  gap: 0.3rem;
+  flex-shrink: 0;
+  align-self: flex-end;
+  padding-bottom: 0.15rem;
+}
+
+.historial-buttons button.pequeno {
+  padding: 0.4rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--radio);
+  border: none;
+  cursor: pointer;
+  transition: var(--transicion);
+  font-family: Oswald, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+.historial-buttons button.primario.pequeno {
+  background: var(--amarillo);
+  color: var(--blanco);
+}
+
+.historial-buttons button.primario.pequeno:hover {
+  background: var(--amarillo-oscuro);
+}
+
+.historial-buttons button.peligro.pequeno {
+  background: var(--rojo);
+  color: var(--blanco);
+}
+
+.historial-buttons button.peligro.pequeno:hover {
+  background: #dc2626;
+}
+
+/* ============================================================
+   TABLA WRAPPER
+   ============================================================ */
+
+.tabla-wrapper {
+  padding: 0;
+  overflow: hidden;
+}
+
+.tabla-header {
+  padding: 0.75rem 1rem 0.5rem 1rem;
+  border-bottom: 1px solid var(--borde);
+}
+
+.tabla-titulo {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--negro);
+  font-family: Oswald, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+.tabla-scroll {
+  overflow-x: auto;
+  padding: 0.5rem 0.75rem;
+}
+
+/* ============================================================
+   GRID EDICIÓN
+   ============================================================ */
+
+.grid-header-edicion {
+  display: grid;
+  grid-template-columns: 0.3fr 0.4fr 2fr 1fr 1fr 1fr 0.5fr;
+  gap: 0.3rem;
+  padding: 0.3rem 0.2rem;
+  border-bottom: 2px solid var(--borde);
+  margin-bottom: 0.3rem;
+}
+
+.grid-body-edicion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.grid-row-edicion {
+  display: grid;
+  grid-template-columns: 0.3fr 0.4fr 2fr 1fr 1fr 1fr 0.5fr;
+  gap: 0.3rem;
+  padding: 0.2rem 0.2rem;
+  border-radius: 6px;
+  transition: var(--transicion);
+  align-items: center;
+  border-bottom: 1px solid var(--gris-200);
+}
+
+.grid-row-edicion:hover {
+  background: var(--gris-100);
+}
+
+.col-header {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--texto-secundario);
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+.col-header,
+.grid-row-edicion .cell {
+  display: flex;
+  align-items: center;
+}
+
+.col-header.estado-col,
+.cell-estado {
+  justify-content: center;
+}
+
+.col-header.dorsal-col,
+.cell-dorsal {
+  justify-content: center;
+}
+
+.col-header.nombre-col,
+.cell-nombre {
+  justify-content: flex-start;
+}
+
+.col-header.altura-col,
+.cell-altura {
+  justify-content: center;
+}
+
+.col-header.peso-col,
+.cell-peso {
+  justify-content: center;
+}
+
+.col-header.imc-col,
+.cell-imc {
+  justify-content: center;
+}
+
+.col-header.acciones-col,
+.cell-acciones {
+  justify-content: center;
+}
+
+/* ---------- ESTADO (círculo) ---------- */
+.circulo-estado {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.circulo-estado.completo {
+  background: var(--verde);
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.3);
+}
+
+.circulo-estado.pendiente {
+  background: var(--naranja);
+  box-shadow: 0 0 6px rgba(249, 115, 22, 0.3);
+}
+
+/* ---------- DORSAL ---------- */
+.cell-dorsal {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* ---------- NOMBRE ---------- */
+.cell-nombre {
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- ALTURA ---------- */
+.cell-altura {
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+.select-altura {
+  padding: 0.2rem 0.3rem;
+  font-size: 0.9rem;
+  border: 2px solid var(--borde);
+  border-radius: 6px;
+  background: var(--superficie);
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--transicion);
+  width: 100%;
+  max-width: 80px;
+  text-align: center;
+}
+
+.select-altura:focus {
+  border-color: var(--amarillo);
+  outline: none;
+}
+
+.select-altura:hover {
+  border-color: var(--gris-400);
+}
+
+/* ---------- PESO ---------- */
+.cell-peso {
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+.select-peso-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0.15rem;
+}
+
+.select-peso-wrapper .select-peso {
+  padding: 0.2rem 0.2rem;
+  font-size: 0.9rem;
+  border: 2px solid var(--borde);
+  border-radius: 6px;
+  background: var(--superficie);
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--transicion);
+  text-align: center;
+  min-width: 45px;
+}
+
+.select-peso-wrapper .select-peso:focus {
+  border-color: var(--amarillo);
+  outline: none;
+}
+
+.select-peso-wrapper .select-peso:hover {
+  border-color: var(--gris-400);
+}
+
+.select-peso-wrapper .peso-decimal {
+  font-weight: 600;
+  color: var(--texto-secundario);
+  font-size: 0.8rem;
+}
+
+/* ---------- VALOR ANTERIOR ---------- */
+.valor-anterior {
+  display: block;
+  font-size: 0.5rem;
+  color: var(--texto-secundario);
+  text-align: center;
+  font-weight: 500;
+  opacity: 0.7;
+  min-height: 14px;
+  letter-spacing: 0.02rem;
+}
+
+.valor-anterior .label-ant {
+  font-size: 0.45rem;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+/* ---------- IMC ---------- */
+.imc-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  background: var(--gris-100);
+  color: var(--texto-secundario);
+  min-width: 40px;
+  text-align: center;
+}
+
+.imc-badge.has-value {
+  background: var(--amarillo-claro);
+  color: var(--negro);
+  font-weight: 700;
+}
+
+/* ---------- ACCIONES ---------- */
+.btn-borrar-fila {
+  background: none;
+  border: 1px solid var(--rojo);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--rojo);
+  transition: var(--transicion);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.btn-borrar-fila:hover {
+  background: var(--rojo-claro);
+  transform: scale(1.05);
+}
+
+/* ---------- ICONO GUARDADO ---------- */
+.icono-guardado {
+  display: inline-block;
+  margin-left: 0.3rem;
+  font-size: 0.7rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.icono-guardado.visible {
+  opacity: 1;
+}
+
+.icono-guardado.guardado {
+  color: var(--verde);
+}
+
+.icono-guardado.error {
+  color: var(--rojo);
+}
+
+/* ---------- MENSAJE VACÍO ---------- */
+.grid-mensaje {
+  text-align: center;
+  padding: 2rem 0;
+  color: var(--texto-secundario);
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+   GRID TEMPORADA
+   ============================================================ */
+
+#gridTemporada .grid-header-temporada {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.3rem 0.2rem;
+  border-bottom: 2px solid var(--borde);
+  margin-bottom: 0.3rem;
+}
+
+#gridTemporada .grid-body-temporada {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+#gridTemporada .grid-row-temporada {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.3rem 0.2rem;
+  border-radius: 6px;
+  transition: var(--transicion);
+  align-items: center;
+  border-bottom: 1px solid var(--gris-200);
+}
+
+#gridTemporada .grid-row-temporada:hover {
+  background: var(--gris-100);
+}
+
+/* Celdas de evaluación en modo temporada */
+#gridTemporada .col-eval-temp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.1rem;
+  min-height: 55px;
+}
+
+#gridTemporada .col-eval-temp .eval-datos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+#gridTemporada .col-eval-temp .eval-datos .eval-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 30px;
+}
+
+#gridTemporada .col-eval-temp .eval-datos .eval-item .diff {
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.2;
+  display: block;
+}
+
+#gridTemporada .col-eval-temp .eval-datos .eval-item .diff.positiva {
+  color: var(--verde);
+}
+
+#gridTemporada .col-eval-temp .eval-datos .eval-item .diff.negativa {
+  color: var(--rojo);
+}
+
+#gridTemporada .col-eval-temp .eval-datos .eval-item .eval-valor {
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-align: center;
+  line-height: 1.3;
+}
+
+#gridTemporada .col-eval-temp .eval-datos .eval-item .eval-valor.altura {
+  color: var(--azul-portero);
+}
+
+#gridTemporada .col-eval-temp .eval-datos .eval-item .eval-valor.peso {
+  color: var(--naranja);
+}
+
+#gridTemporada .col-eval-temp .eval-datos .eval-item .eval-valor.imc {
+  color: var(--negro);
+  font-weight: 800;
+}
+
+#gridTemporada .col-eval-temp .eval-labels {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.1rem;
+}
+
+#gridTemporada .col-eval-temp .eval-labels .eval-label {
+  font-size: 0.5rem;
+  color: var(--texto-secundario);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03rem;
+  min-width: 30px;
+  text-align: center;
+}
+
+#gridTemporada .col-eval-temp .sin-dato {
+  color: var(--texto-secundario);
+  font-size: 1rem;
+  opacity: 0.3;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+/* Tablet */
+@media (max-width: 768px) {
+  .historial-evaluaciones {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.3rem;
+  }
+
+  .lista-historial {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .lista-historial .item-historial {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.75rem;
+  }
+
+  .historial-buttons {
+    align-self: stretch;
+    padding-bottom: 0;
+    justify-content: flex-end;
+  }
+
+  .historial-buttons button.pequeno {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.6rem;
+  }
+
+  .grid-header-edicion,
+  .grid-row-edicion {
+    grid-template-columns: 0.25fr 0.4fr 1.5fr 0.8fr 0.8fr 0.6fr 0.4fr !important;
+    gap: 0.2rem;
+  }
+
+  .select-altura {
+    max-width: 60px;
+    font-size: 0.75rem;
+  }
+
+  .select-peso-wrapper .select-peso {
+    min-width: 35px;
+    font-size: 0.75rem;
+  }
+
+  .select-peso-wrapper .peso-decimal {
+    font-size: 0.7rem;
+  }
+
+  .col-header,
+  .cell-nombre {
+    font-size: 0.7rem;
+  }
+
+  .cell-dorsal {
+    font-size: 0.85rem;
+  }
+
+  .imc-badge {
+    font-size: 0.75rem;
+    min-width: 32px;
+    padding: 0.1rem 0.3rem;
+  }
+
+  .btn-borrar-fila {
+    width: 24px;
+    height: 24px;
+    font-size: 0.6rem;
+  }
+
+  #gridTemporada .grid-header-temporada,
+  #gridTemporada .grid-row-temporada {
+    grid-template-columns: 40px 1fr repeat(auto-fit, minmax(80px, 1fr)) !important;
+  }
+
+  #gridTemporada .col-eval-temp .eval-datos {
+    gap: 0.3rem;
+  }
+
+  #gridTemporada .col-eval-temp .eval-datos .eval-item {
+    min-width: 24px;
+  }
+
+  #gridTemporada .col-eval-temp .eval-datos .eval-item .eval-valor {
+    font-size: 0.65rem;
+  }
+
+  #gridTemporada .col-eval-temp .eval-datos .eval-item .diff {
+    font-size: 0.45rem;
+  }
+
+  #gridTemporada .col-eval-temp .eval-labels {
+    gap: 0.3rem;
+  }
+
+  #gridTemporada .col-eval-temp .eval-labels .eval-label {
+    font-size: 0.45rem;
+    min-width: 24px;
+  }
+}
+
+/* Móvil */
+@media (max-width: 480px) {
+  .historial-evaluaciones {
+    gap: 0.2rem;
+    padding: 0.4rem 0.5rem;
+  }
+
+  .historial-evaluaciones .historial-label {
+    font-size: 0.65rem;
+  }
+
+  .lista-historial .item-historial {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.65rem;
+  }
+
+  .historial-buttons button.pequeno {
+    font-size: 0.6rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .grid-header-edicion,
+  .grid-row-edicion {
+    grid-template-columns: 0.2fr 0.3fr 1.2fr 0.6fr 0.6fr 0.4fr 0.3fr !important;
+    gap: 0.1rem;
+    padding: 0.2rem 0.1rem;
+  }
+
+  .select-altura {
+    max-width: 45px;
+    font-size: 0.65rem;
+    padding: 0.1rem 0.1rem;
+  }
+
+  .select-peso-wrapper .select-peso {
+    min-width: 28px;
+    font-size: 0.65rem;
+    padding: 0.1rem 0.1rem;
+  }
+
+  .select-peso-wrapper .peso-decimal {
+    font-size: 0.6rem;
+  }
+
+  .col-header,
+  .cell-nombre {
+    font-size: 0.6rem;
+  }
+
+  .cell-dorsal {
+    font-size: 0.75rem;
+  }
+
+  .imc-badge {
+    font-size: 0.65rem;
+    min-width: 26px;
+    padding: 0.1rem 0.2rem;
+  }
+
+  .btn-borrar-fila {
+    width: 20px;
+    height: 20px;
+    font-size: 0.5rem;
+  }
+
+  .circulo-estado {
+    width: 10px;
+    height: 10px;
+  }
+
+  .valor-anterior {
+    font-size: 0.45rem;
+    min-height: 12px;
+  }
+
+  #gridTemporada .grid-header-temporada,
+  #gridTemporada .grid-row-temporada {
+    grid-template-columns: 30px 1fr repeat(auto-fit, minmax(55px, 1fr)) !important;
+  }
+
+  #gridTemporada .col-eval-temp {
+    padding: 0.15rem 0.05rem;
+    min-height: 40px;
+  }
+
+  #gridTemporada .col-eval-temp .eval-datos {
+    gap: 0.15rem;
+  }
+
+  #gridTemporada .col-eval-temp .eval-datos .eval-item {
+    min-width: 18px;
+  }
+
+  #gridTemporada .col-eval-temp .eval-datos .eval-item .eval-valor {
+    font-size: 0.55rem;
+  }
+
+  #gridTemporada .col-eval-temp .eval-datos .eval-item .diff {
+    font-size: 0.4rem;
+  }
+
+  #gridTemporada .col-eval-temp .eval-labels {
+    gap: 0.15rem;
+  }
+
+  #gridTemporada .col-eval-temp .eval-labels .eval-label {
+    font-size: 0.4rem;
+    min-width: 18px;
+  }
+}
