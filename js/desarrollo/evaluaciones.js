@@ -75,13 +75,24 @@ async function guardarEvaluacionCompleta(jugadorId, temporadaId, trimestre, fech
 
       if (errorUpdate) throw errorUpdate;
 
-      // Eliminar notas antiguas
-      const { error: errorDelete } = await supabaseClient
-        .from('notas_evaluacion')
-        .delete()
-        .eq('evaluacion_id', evaluacionId);
+      // ACTUALIZAR notas usando UPSERT (insertar o actualizar)
+      if (notas && notas.length > 0) {
+        const notasParaUpsert = notas.map(n => ({
+          evaluacion_id: evaluacionId,
+          criterio_id: n.criterio_id,
+          valor: n.valor
+        }));
 
-      if (errorDelete) throw errorDelete;
+        // Usar upsert con conflict_target para evitar duplicados
+        const { error: errorNotas } = await supabaseClient
+          .from('notas_evaluacion')
+          .upsert(notasParaUpsert, { 
+            onConflict: 'evaluacion_id, criterio_id',
+            ignoreDuplicates: false 
+          });
+
+        if (errorNotas) throw errorNotas;
+      }
 
     } else {
       // Crear nueva evaluación
@@ -99,21 +110,21 @@ async function guardarEvaluacionCompleta(jugadorId, temporadaId, trimestre, fech
 
       if (errorInsert) throw errorInsert;
       evaluacionId = nueva.id;
-    }
 
-    // Insertar nuevas notas
-    if (notas && notas.length > 0) {
-      const notasParaInsertar = notas.map(n => ({
-        evaluacion_id: evaluacionId,
-        criterio_id: n.criterio_id,
-        valor: n.valor
-      }));
+      // Insertar nuevas notas
+      if (notas && notas.length > 0) {
+        const notasParaInsertar = notas.map(n => ({
+          evaluacion_id: evaluacionId,
+          criterio_id: n.criterio_id,
+          valor: n.valor
+        }));
 
-      const { error: errorNotas } = await supabaseClient
-        .from('notas_evaluacion')
-        .insert(notasParaInsertar);
+        const { error: errorNotas } = await supabaseClient
+          .from('notas_evaluacion')
+          .insert(notasParaInsertar);
 
-      if (errorNotas) throw errorNotas;
+        if (errorNotas) throw errorNotas;
+      }
     }
 
     return { success: true, evaluacionId };

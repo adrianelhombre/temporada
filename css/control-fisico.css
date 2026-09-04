@@ -543,11 +543,13 @@
   .lista-historial {
     border-bottom: none;
     padding-bottom: 0;
+    justify-content: space-between;
   }
 
   .lista-historial .item-historial {
-    padding: 0.3rem 0.7rem;
-    font-size: 0.75rem;
+    padding: 0.3rem 0;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
   }
 
   .historial-buttons {
@@ -557,14 +559,14 @@
   }
 
   .historial-buttons button.pequeno {
-    font-size: 0.7rem;
-    padding: 0.25rem 0.6rem;
+    font-size: 1rem;
+    padding: 0.25rem 0.9rem;
   }
 
   .grid-header-edicion,
   .grid-row-edicion {
-    grid-template-columns: 0.25fr 0.4fr 1.5fr 0.8fr 0.8fr 0.6fr 0.4fr !important;
-    gap: 0.2rem;
+    grid-template-columns: 0.2fr 0.2fr 0.8fr 0.8fr 1.2fr 0.6fr 0.6fr !important;
+    gap: 0.5rem;
   }
 
   .select-altura {
@@ -581,19 +583,24 @@
     font-size: 0.7rem;
   }
 
-  .col-header,
-  .cell-nombre {
+  .col-header {
     font-size: 0.7rem;
+  }
+  
+
+  .cell-nombre {
+    font-size: 1rem;
   }
 
   .cell-dorsal {
-    font-size: 0.85rem;
+    font-size: 1rem;
   }
 
   .imc-badge {
     font-size: 0.75rem;
     min-width: 32px;
     padding: 0.1rem 0.3rem;
+    text-align: center;
   }
 
   .btn-borrar-fila {
@@ -602,10 +609,6 @@
     font-size: 0.6rem;
   }
 
-  #gridTemporada .grid-header-temporada,
-  #gridTemporada .grid-row-temporada {
-    grid-template-columns: 40px 1fr repeat(auto-fit, minmax(80px, 1fr)) !important;
-  }
 
   #gridTemporada .col-eval-temp .eval-datos {
     gap: 0.3rem;

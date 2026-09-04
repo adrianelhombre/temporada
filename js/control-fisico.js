@@ -7,7 +7,6 @@ let evaluacionActual = null;
 let mediciones = [];
 let jugadores = [];
 let temporadaActiva = null;
-let timeoutGuardado = null;
 let todasMediciones = {};
 let modoTemporada = false;
 let jugadorBorrarPendiente = null;
@@ -218,7 +217,6 @@ function renderizarGridEdicion() {
           <span class="imc-badge ${imcClass}" id="imc_${j.id}">
             ${imc !== '' ? parseFloat(imc).toFixed(1) : '--'}
           </span>
-          <span class="icono-guardado" id="icono_${j.id}">💾</span>
         </div>
         <div class="cell cell-acciones">
           <button class="btn-borrar-fila" data-jugador="${j.id}" title="Borrar datos de este jugador">✕</button>
@@ -472,7 +470,6 @@ async function guardarMedicion(jugadorId, altura, peso) {
 
   if (result.error) {
     console.error('Error al guardar:', result.error);
-    mostrarIconoGuardado(jugadorId, false);
     notificarError(result.error, 'Error al guardar la medición.');
     return;
   }
@@ -490,7 +487,7 @@ async function guardarMedicion(jugadorId, altura, peso) {
     imcSpan.className = `imc-badge ${imc !== null ? 'has-value' : ''}`;
   }
 
-  // Actualizar círculo de estado - USAR grid-row-edicion
+  // Actualizar círculo de estado
   const row = document.querySelector(`.grid-row-edicion[data-jugador-id="${jugadorId}"]`);
   if (row) {
     const circulo = row.querySelector('.circulo-estado');
@@ -501,7 +498,6 @@ async function guardarMedicion(jugadorId, altura, peso) {
     }
   }
 
-  mostrarIconoGuardado(jugadorId, true);
   await actualizarEstadoEvaluacion();
   await cargarTodasMediciones();
   
@@ -563,7 +559,6 @@ async function borrarDatosJugador(jugadorId) {
     }
   }
 
-  mostrarIconoGuardado(jugadorId, true);
   await actualizarEstadoEvaluacion();
   await cargarTodasMediciones();
   
@@ -575,19 +570,6 @@ async function borrarDatosJugador(jugadorId) {
   cerrarModalBorrarDatos();
 }
 
-// ---------- MOSTRAR ICONO DE GUARDADO ----------
-function mostrarIconoGuardado(jugadorId, success) {
-  const icono = document.getElementById(`icono_${jugadorId}`);
-  if (!icono) return;
-
-  icono.textContent = success ? '✅' : '❌';
-  icono.className = `icono-guardado visible ${success ? 'guardado' : 'error'}`;
-
-  clearTimeout(timeoutGuardado);
-  timeoutGuardado = setTimeout(() => {
-    icono.className = 'icono-guardado';
-  }, 1500);
-}
 
 // ---------- ACTUALIZAR ESTADO DE EVALUACIÓN ----------
 async function actualizarEstadoEvaluacion() {

@@ -247,7 +247,7 @@ async function abrirDetalleEvaluacion(trimestre, editable = false, soloLectura =
         <div class="fila-criterio ${soloLectura ? 'lectura' : ''} ${esEspecifico ? 'fila-especifico' : ''}">
           <span class="nombre">${escaparHTML(c.nombre)}</span>
           <div class="slider-wrapper">
-            <input type="range" min="1" max="10" step="0.2" 
+            <input type="range" min="4" max="10" step="0.5" 
               value="${valorSlider}" 
               data-criterio="${c.id}"
               data-trimestre="${trimestre}"
