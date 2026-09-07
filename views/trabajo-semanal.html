@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Trabajo Semanal Individual</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/trabajo-semanal.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body>
+    <!-- CABECERA -->
+    <header class="cabecera-app">
+        <a id="btn-volver-principal" href="plantilla.html">
+            <img src="../assets/volver.svg" class="icono-cabecera" alt="Volver" />
+        </a>
+        <h1 id="header-titulo">Trabajo semanal</h1>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+            <button id="btn-pantalla-completa" style="background:none; border:none; color:var(--blanco); cursor:pointer;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <polyline points="9 21 3 21 3 15"></polyline>
+                    <line x1="21" y1="3" x2="14" y2="10"></line>
+                    <line x1="3" y1="21" x2="10" y2="14"></line>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="contenedor" id="app">
+        <!-- Pantalla 1: Historial -->
+        <section id="historial-screen" class="screen active">
+            <div class="historial-header">
+                <button id="btn-nueva-semana" class="primario" style="display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-plus-circle"></i> Nueva Semana
+                </button>
+            </div>
+            <div id="lista-semanas-container" class="tarjeta" style="padding:0; overflow:hidden;"></div>
+        </section>
+
+        <!-- Pantalla 2: Editor Semanal -->
+        <section id="editor-screen" class="screen">
+            <div class="editor-header">
+                <div style="display:flex; gap:6px; margin-left:auto;">
+                    <button id="btn-editar-semana" class="secundario" style="display:flex; align-items:center; gap:6px; background:var(--gris-200); border:1px solid var(--borde);">
+                        <i class="fas fa-pen"></i> Editar
+                    </button>
+                    <button id="btn-descargar-pdf" class="exito" style="display:flex; align-items:center; gap:6px;">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </button>
+                </div>
+            </div>
+            <div id="editor-container" class="tarjeta" style="padding:0; overflow:hidden;"></div>
+            <footer id="editor-footer">
+                <button id="btn-guardar-cambios" class="primario" style="display:flex; align-items:center; gap:8px; width:100%; justify-content:center; padding:16px; font-size:1.2rem;">
+                    <i class="fas fa-save"></i> Guardar Cambios
+                </button>
+                <div style="font-size:0.75rem; color:var(--texto-secundario); text-align:center; margin-top:8px;">
+                    <i class="fas fa-info-circle"></i> Los cambios se guardan automáticamente al salir de cada campo
+                </div>
+            </footer>
+        </section>
+    </div>
+
+    <!-- Modal de creación de semana -->
+    <div id="modal-crear-semana" class="superposicion oculto">
+        <div class="hoja-modal" style="max-width:420px;">
+            <h3 style="margin-bottom:16px;">
+                <i class="fas fa-calendar-plus" style="color:var(--amarillo);"></i> Crear nueva semana
+            </h3>
+            
+            <div style="display:flex; flex-direction:column; gap:14px;">
+                <div>
+                    <label for="input-numero-semana" style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:4px;">
+                        Número de semana
+                    </label>
+                    <input type="number" id="input-numero-semana" min="1" style="width:100%; padding:8px 12px; border:1px solid var(--borde); border-radius:6px; font-size:1rem;" />
+                </div>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div>
+                        <label for="input-fecha-inicio" style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:4px;">
+                            Fecha inicio
+                        </label>
+                        <input type="date" id="input-fecha-inicio" style="width:100%; padding:8px 12px; border:1px solid var(--borde); border-radius:6px; font-size:0.9rem;" />
+                    </div>
+                    <div>
+                        <label for="input-fecha-fin" style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:4px;">
+                            Fecha fin
+                        </label>
+                        <input type="date" id="input-fecha-fin" style="width:100%; padding:8px 12px; border:1px solid var(--borde); border-radius:6px; font-size:0.9rem;" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="fila-botones" style="margin-top:20px;">
+                <button class="primario ancho" id="btn-confirmar-crear-semana">Crear semana</button>
+                <button class="ancho" id="btn-cancelar-crear-semana">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de edición de semana -->
+    <div id="modal-editar-semana" class="superposicion oculto">
+        <div class="hoja-modal" style="max-width:420px;">
+            <h3 style="margin-bottom:16px;">
+                <i class="fas fa-pen" style="color:var(--amarillo);"></i> Editar semana
+            </h3>
+            
+            <div style="display:flex; flex-direction:column; gap:14px;">
+                <div>
+                    <label for="input-editar-numero-semana" style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:4px;">
+                        Número de semana
+                    </label>
+                    <input type="number" id="input-editar-numero-semana" min="1" style="width:100%; padding:8px 12px; border:1px solid var(--borde); border-radius:6px; font-size:1rem;" />
+                </div>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div>
+                        <label for="input-editar-fecha-inicio" style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:4px;">
+                            Fecha inicio
+                        </label>
+                        <input type="date" id="input-editar-fecha-inicio" style="width:100%; padding:8px 12px; border:1px solid var(--borde); border-radius:6px; font-size:0.9rem;" />
+                    </div>
+                    <div>
+                        <label for="input-editar-fecha-fin" style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:4px;">
+                            Fecha fin
+                        </label>
+                        <input type="date" id="input-editar-fecha-fin" style="width:100%; padding:8px 12px; border:1px solid var(--borde); border-radius:6px; font-size:0.9rem;" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="fila-botones" style="margin-top:20px;">
+                <button class="primario ancho" id="btn-confirmar-editar-semana">Guardar cambios</button>
+                <button class="ancho" id="btn-cancelar-editar-semana">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación de eliminación -->
+    <div id="modal-eliminar-semana" class="superposicion oculto">
+        <div class="hoja-modal">
+            <p style="font-weight:600; font-size:1.2rem; margin-bottom:8px;">
+                <i class="fas fa-exclamation-triangle" style="color:var(--rojo);"></i>
+                ¿Eliminar semana?
+            </p>
+            <p style="color:var(--texto-secundario); margin-bottom:16px;">
+                Esta acción no se puede deshacer.
+            </p>
+            <div class="fila-botones">
+                <button class="ancho peligro" id="btn-confirmar-eliminar">Eliminar</button>
+                <button class="ancho" id="btn-cancelar-eliminar">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificación -->
+    <div id="notificacion" class="notificacion oculto">
+        <span id="notificacion-mensaje"></span>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="../js/supabaseClient.js"></script>
+    <script src="../js/comun.js"></script>
+    
+    <!-- Módulos (con type="module") -->
+    <script type="module" src="../js/trabajo-semanal/main.js"></script>
+</body>
+</html>

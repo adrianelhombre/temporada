@@ -1,0 +1,370 @@
+/* ============================================
+   TRABAJO SEMANAL - ESTILOS ESPECÍFICOS
+   ============================================ */
+
+/* ---------- PANTALLAS ---------- */
+
+body {
+    padding-bottom: 0;
+}
+
+.contenedor {
+    padding-bottom: 0;
+}
+
+.screen {
+    display: none;
+    animation: fadeIn 0.2s ease;
+}
+
+.screen.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- HISTORIAL ---------- */
+.historial-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+
+/* Lista de semanas */
+#lista-semanas-container {
+    padding: 0;
+    border-radius: var(--radio);
+    overflow: hidden;
+}
+
+.lista-semanas {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.lista-semanas li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--borde);
+    gap: 12px;
+    transition: var(--transicion);
+}
+
+.lista-semanas li:last-child {
+    border-bottom: none;
+}
+
+.lista-semanas li:hover {
+    background: var(--gris-100);
+}
+
+.semana-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.semana-numero {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--texto);
+    min-width: 80px;
+}
+
+.semana-fechas {
+    font-size: 0.85rem;
+    color: var(--texto-secundario);
+}
+
+.semana-jugadores {
+    font-size: 0.8rem;
+    background: var(--gris-200);
+    padding: 2px 10px;
+    border-radius: 12px;
+    color: var(--texto-secundario);
+    font-weight: 600;
+}
+
+.semana-acciones {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.semana-acciones button {
+    background: none;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transicion);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.semana-acciones .btn-abrir {
+    color: var(--texto);
+}
+.semana-acciones .btn-abrir:hover {
+    border-color: var(--amarillo);
+    background: var(--amarillo-claro);
+}
+
+.semana-acciones .btn-pdf {
+    color: #506aa6;
+}
+.semana-acciones .btn-pdf:hover {
+    background: var(--rojo-claro);
+    border-color: var(--rojo);
+}
+
+.semana-acciones .btn-eliminar {
+    color: var(--rojo);
+}
+.semana-acciones .btn-eliminar:hover {
+    background: var(--rojo-claro);
+    border-color: var(--rojo);
+}
+
+/* Semana vacía */
+.lista-vacia {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--texto-secundario);
+}
+.lista-vacia i {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 12px;
+    opacity: 0.4;
+}
+
+/* ---------- EDITOR ---------- */
+.editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.editor-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#editor-container {
+    padding: 0;
+    border-radius: var(--radio);
+    background: var(--superficie);
+    padding: 16px;
+    margin-bottom: 40px;
+}
+
+/* ---------- GRID DE JUGADORES (3 COLUMNAS) ---------- */
+.editor-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 16px;
+}
+
+/* Responsive: 2 columnas en tablets pequeñas */
+@media (max-width: 900px) {
+    .editor-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 1 columna en móvil */
+@media (max-width: 600px) {
+    .editor-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------- CARD DE JUGADOR ---------- */
+.card-jugador-editor {
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    transition: var(--transicion);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.card-jugador-editor:hover {
+    border-color: var(--gris-400);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Header de la card */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--gris-200);
+    flex-wrap: wrap;
+}
+
+.card-header .dorsal {
+    font-weight: 700;
+    background: var(--gris-800);
+    color: var(--blanco);
+    padding: 2px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    min-width: 30px;
+    text-align: center;
+}
+
+.card-header .nombre {
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    flex: 1;
+}
+
+.card-header .posicion-tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--texto-secundario);
+    background: var(--gris-100);
+    padding: 2px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--gris-200);
+}
+
+/* Cuerpo de la card (campos) */
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+
+.campo-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.campo-container label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--texto-secundario);
+}
+
+.campo-container textarea {
+    width: 100%;
+    min-height: 50px;
+    padding: 6px 8px;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    resize: vertical;
+    background: var(--blanco);
+    transition: var(--transicion);
+    line-height: 1.4;
+}
+
+.campo-container textarea:focus {
+    outline: none;
+    border-color: var(--amarillo);
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.15);
+}
+
+.campo-container textarea::placeholder {
+    color: var(--texto-secundario);
+    opacity: 0.4;
+    font-size: 0.75rem;
+}
+
+/* Footer del editor (siempre visible) */
+#editor-footer {
+    position: sticky;
+    bottom: 0;
+    background: var(--superficie);
+    padding: 16px 0 8px 0;
+    border-top: 1px solid var(--borde);
+    margin: 0 -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* ---------- NOTIFICACIÓN ---------- */
+.notificacion {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gris-800);
+    color: var(--blanco);
+    padding: 12px 24px;
+    border-radius: var(--radio);
+    font-weight: 500;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    z-index: 1000;
+    transition: var(--transicion);
+    max-width: 90%;
+    text-align: center;
+}
+
+.notificacion.exito {
+    background: #2e7d32;
+}
+.notificacion.error {
+    background: #c62828;
+}
+
+/* ---------- ESTADO DE CARGA ---------- */
+.cargando {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--texto-secundario);
+}
+.cargando i {
+    font-size: 2rem;
+    animation: spin 1s linear infinite;
+    display: block;
+    margin-bottom: 12px;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ---------- PANTALLA COMPLETA ---------- */
+:-webkit-full-screen #app {
+    padding: 0 20px;
+}
+:-moz-full-screen #app {
+    padding: 0 20px;
+}
+:fullscreen #app {
+    padding: 0 20px;
+}

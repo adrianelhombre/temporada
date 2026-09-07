@@ -1,4 +1,4 @@
-let filtroActual = 'todos';
+let filtroActual = 'Liga';
 
 document.addEventListener('DOMContentLoaded', () => {
   const btnEquipo = document.getElementById('btnEquipo');
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Cargar vista inicial (jugadores) con filtro 'todos'
   if (typeof cargarEstadisticasJugadores === 'function') {
-    cargarEstadisticasJugadores('todos');
+    cargarEstadisticasJugadores('Liga');
   }
 });
 

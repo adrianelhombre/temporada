@@ -465,7 +465,7 @@ async function eliminarPartido() {
 }
 
 // ===== FILTROS =====
-let filtroActual = 'todos';
+let filtroActual = 'Liga';
 
 function aplicarFiltro(tipo) {
   filtroActual = tipo;
