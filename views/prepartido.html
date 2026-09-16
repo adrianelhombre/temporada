@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <title>Balsas - Pre-partido</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/prepartido.css" />
+</head>
+
+<body>
+    <header class="cabecera-app cabecera-page">
+        <a href="partidos.html">
+            <img src="../assets/volver.svg" class="icono-cabecera" alt="icono para volver">
+        </a>
+        <h1 id="tituloPrepartido">Pre-partido</h1>
+    </header>
+
+    <div class="contenedor contenedor-prepartido">
+        <nav class="tabs-prepartido" id="tabsPrepartido">
+            <button class="tab-prepartido activo" data-tab="resumen">Resumen</button>
+            <button class="tab-prepartido" data-tab="ataque">Ataque</button>
+            <button class="tab-prepartido" data-tab="defensa">Defensa</button>
+            <button class="tab-prepartido" data-tab="corners_favor">Corners favor</button>
+            <button class="tab-prepartido" data-tab="corners_contra">Corners contra</button>
+        </nav>
+
+        <div class="distribucion-prepartido">
+            <div class="panel-pizarra">
+                <div class="barra-pizarra">
+                    <div class="controles-pizarra">
+                        <button class="btn-ficha-propia" id="btnAnadirPropio">+ Balsas</button>
+                        <div class="select-formacion" id="wrapperFormPropia">
+                            <select id="selectFormPropia" title="Formación Balsas"></select>
+                        </div>
+                        <div class="select-formacion" id="wrapperFormRival">
+                            <select id="selectFormRival" title="Formación Rival"></select>
+                        </div>
+                        <button class="btn-ficha-rival" id="btnAnadirRival">+ <span
+                                id="nombreRivalBtn">Rival</span></button>
+                        <button class="btn-borrar-todas" id="btnBorrarTodas"
+                            title="Borrar todas las fichas de esta pestaña">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                                <path d="M10 11v6"></path>
+                                <path d="M14 11v6"></path>
+                                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                            </svg>
+                            Borrar
+                        </button>
+                    </div>
+                    <div class="control-color-rival">
+                        <label for="inputColorRival">Color rival</label>
+                        <input type="color" id="inputColorRival" value="#c0392b" />
+                    </div>
+                </div>
+
+                <div class="pizarra-campo" id="pizarraCampo">
+                    <div class="area-pizarra area-izquierda"></div>
+                    <div class="area-pizarra area-derecha"></div>
+                </div>
+            </div>
+
+            <div class="panel-texto">
+                <label for="textoAnalisis" id="etiquetaTexto">Notas del análisis</label>
+                <textarea id="textoAnalisis" placeholder="Escribe aquí el análisis de esta sección..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div id="menuAccionesFicha" class="menu-ficha-flotante oculto">
+        <button class="btn-ficha-accion editar" id="btnEditarFicha" title="Editar etiqueta">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path>
+            </svg>
+        </button>
+        <button class="btn-ficha-accion borrar" id="btnBorrarFicha" title="Borrar ficha">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                <path d="M10 11v6"></path>
+                <path d="M14 11v6"></path>
+                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+            </svg>
+        </button>
+    </div>
+
+    <div id="modalEtiquetaFicha" class="superposicion oculto">
+        <div class="hoja-modal hoja-modal-simple">
+            <p style="font-weight:600;text-align:center;margin-bottom:.75rem;">Etiqueta de la ficha</p>
+            <input type="text" id="inputEtiquetaFicha" maxlength="3" placeholder="Ej: 9, GK, DC" autocomplete="off" />
+            <div class="fila-botones" style="margin-top:.75rem;">
+                <button class="primario ancho" id="btnGuardarEtiqueta">Guardar</button>
+                <button class="ancho" id="btnCancelarEtiqueta">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabaseClient.js"></script>
+    <script src="../js/comun.js"></script>
+    <script src="../js/prepartido/formaciones-prepartido.js"></script>
+    <script src="../js/prepartido/estado.js"></script>
+    <script src="../js/prepartido/pizarra.js"></script>
+    <script src="../js/prepartido/textos.js"></script>
+    <script src="../js/prepartido/init.js"></script>
+</body>
+
+</html>

@@ -100,6 +100,21 @@ function crearFilaPartido(partido, marcador, finalizado) {
   abrir.textContent = textoBoton;
   abrir.addEventListener("click", () => { location.href = `partido.html?id=${partido.id}`; });
 
+  // 👇 NUEVO: botón pre-partido
+  const abrirPre = document.createElement("button");
+  abrirPre.type = "button";
+  abrirPre.className = "boton-prepartido";
+  abrirPre.setAttribute("aria-label", `Análisis previo del partido contra ${partido.rival}`);
+  abrirPre.title = "Pre-partido";
+  abrirPre.innerHTML = `
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <circle cx="12" cy="12" r="3"></circle>
+    </svg>`;
+  abrirPre.addEventListener("click", () => { location.href = `prepartido.html?id=${partido.id}`; });
+
   const menu = document.createElement("button");
   menu.type = "button";
   menu.className = "pequeno-accion";
@@ -107,7 +122,9 @@ function crearFilaPartido(partido, marcador, finalizado) {
   menu.setAttribute("aria-haspopup", "dialog");
   menu.textContent = "⋯";
   menu.addEventListener("click", () => abrirAcciones(partido));
-  acciones.append(abrir, menu);
+
+  // 👇 ahora incluye abrirPre entre "abrir" y "menu"
+  acciones.append(abrir, abrirPre, menu);
   
   fila.append(jornadaDatos, resultadoPartido, acciones);
   return fila;

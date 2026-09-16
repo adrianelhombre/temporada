@@ -1,0 +1,366 @@
+/* ============================================================
+   PRE-PARTIDO
+   ============================================================ */
+
+.contenedor-prepartido {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 1400px;
+}
+
+/* ---- Tabs ---- */
+.tabs-prepartido {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 0.35rem;
+  overflow-x: auto;
+}
+
+.tab-prepartido {
+  flex: 1;
+  min-width: 100px;
+  padding: 0.6rem 0.75rem;
+  border: none;
+  border-radius: calc(var(--radio) - 4px);
+  background: transparent;
+  color: var(--texto-secundario);
+  font-family: Oswald, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: var(--transicion);
+  white-space: nowrap;
+}
+
+.tab-prepartido:hover {
+  background: var(--gris-100);
+  color: var(--texto);
+}
+
+.tab-prepartido.activo {
+  background: var(--amarillo);
+  color: var(--blanco);
+}
+
+/* ---- Layout 70/30 ---- */
+.distribucion-prepartido {
+  display: grid;
+  grid-template-columns: 70fr 30fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .distribucion-prepartido {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel-pizarra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+/* ---- Barra superior de la pizarra ---- */
+.barra-pizarra {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 0.5rem 0.75rem;
+  flex-wrap: wrap;
+}
+
+.controles-pizarra {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-ficha-propia,
+.btn-ficha-rival {
+  padding: 0.5rem 0.9rem;
+  font-size: 0.8rem;
+  font-family: Oswald, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  border-radius: var(--radio);
+  border: 2px solid var(--borde);
+  background: var(--superficie);
+  cursor: pointer;
+  transition: var(--transicion);
+}
+
+.btn-ficha-propia {
+  border-color: var(--amarillo);
+  color: var(--amarillo-oscuro);
+}
+
+.btn-ficha-propia:hover {
+  background: var(--amarillo-claro);
+}
+
+.btn-ficha-rival {
+  border-color: var(--gris-400);
+  color: var(--texto);
+}
+
+.btn-ficha-rival:hover {
+  background: var(--gris-100);
+}
+
+.control-color-rival {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.control-color-rival label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--texto-secundario);
+  margin: 0;
+}
+
+#inputColorRival {
+  width: 44px;
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  border: 2px solid var(--borde);
+  border-radius: 6px;
+  cursor: pointer;
+  background: none;
+}
+
+/* ---- Campo de la pizarra ---- */
+.pizarra-campo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 1.4;
+  background: repeating-linear-gradient(
+    90deg,
+    #15803d 0px,
+    #15803d 10%,
+    #16a34a 10%,
+    #16a34a 20%
+  );
+  border-radius: var(--radio);
+  overflow: hidden;
+  border: 3px solid var(--negro);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Línea central vertical */
+.pizarra-campo::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.4);
+  transform: translateX(-1px);
+  pointer-events: none;
+}
+
+/* Círculo central */
+.pizarra-campo::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 22%;
+  aspect-ratio: 1;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.area-pizarra {
+  position: absolute;
+  top: 22%;
+  bottom: 22%;
+  width: 14%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+}
+
+.area-pizarra.area-izquierda {
+  left: 0;
+  border-left: none;
+}
+
+.area-pizarra.area-derecha {
+  right: 0;
+  border-right: none;
+}
+
+/* ---- Fichas ---- */
+.ficha-pizarra {
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  transform: translate(-50%, -50%);
+  transition: box-shadow 0.15s;
+  touch-action: none;
+  z-index: 5;
+}
+
+.ficha-pizarra:active {
+  cursor: grabbing;
+}
+
+.ficha-pizarra.seleccionada {
+  box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px rgba(234, 179, 8, 0.6);
+  z-index: 10;
+}
+
+/* ---- Panel de texto ---- */
+.panel-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 1rem;
+  min-height: 300px;
+}
+
+.panel-texto label {
+  font-family: Oswald, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--texto-secundario);
+  margin: 0;
+}
+
+#textoAnalisis {
+  flex: 1;
+  min-height: 260px;
+  margin: 0;
+  resize: vertical;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* ---- Menú flotante de ficha ---- */
+.menu-ficha-flotante {
+  position: fixed;
+  display: flex;
+  gap: 0.25rem;
+  background: var(--negro);
+  border-radius: 30px;
+  padding: 0.35rem;
+  box-shadow: var(--sombra-fuerte);
+  border: 1px solid var(--gris-700);
+  z-index: 100;
+  transform: translate(-50%, -110%);
+}
+
+.menu-ficha-flotante .btn-ficha-accion {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--blanco);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transicion);
+  padding: 0;
+}
+
+.menu-ficha-flotante .btn-ficha-accion:hover {
+  background: var(--gris-700);
+}
+
+.menu-ficha-flotante .btn-ficha-accion.borrar:hover {
+  color: var(--rojo);
+  background: rgba(239, 68, 68, 0.15);
+}
+
+/* ---- Selects de formación ---- */
+.select-formacion select {
+  padding: 0.5rem 0.7rem;
+  margin: 0;
+  border: 2px solid var(--borde);
+  border-radius: var(--radio);
+  font-family: Oswald, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--superficie);
+  color: var(--texto);
+  cursor: pointer;
+  transition: var(--transicion);
+}
+
+.select-formacion select:hover {
+  border-color: var(--amarillo);
+}
+
+.select-formacion select:focus {
+  outline: none;
+  border-color: var(--amarillo);
+  box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.15);
+}
+
+.select-formacion.oculto {
+  display: none !important;
+}
+
+/* ---- Botón borrar todas ---- */
+.btn-borrar-todas {
+  padding: 0.5rem 0.9rem;
+  font-size: 0.8rem;
+  font-family: Oswald, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  border-radius: var(--radio);
+  border: 2px solid var(--borde);
+  background: var(--superficie);
+  color: var(--rojo);
+  cursor: pointer;
+  transition: var(--transicion);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-borrar-todas:hover {
+  border-color: var(--rojo);
+  background: var(--rojo-claro);
+  transform: translateY(-1px);
+}

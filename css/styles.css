@@ -2308,3 +2308,25 @@ label {
     padding: 0 4px;
   }
 }
+
+
+/* ===== BOTÓN PRE-PARTIDO ===== */
+button.boton-prepartido {
+  padding: 0.35rem 0.55rem;
+  border: 2px solid var(--gris-300);
+  background: var(--superficie);
+  color: var(--texto-secundario);
+  border-radius: var(--radio);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transicion);
+  cursor: pointer;
+}
+
+button.boton-prepartido:hover {
+  border-color: var(--amarillo);
+  color: var(--amarillo-oscuro);
+  background: var(--amarillo-claro);
+  transform: translateY(-1px);
+}
