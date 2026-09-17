@@ -213,8 +213,8 @@
 /* ---- Fichas ---- */
 .ficha-pizarra {
   position: absolute;
-  width: 35px;
-  height: 35px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 2.5px solid rgba(0, 0, 0, 0.55);
   display: flex;
