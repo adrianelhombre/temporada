@@ -9,6 +9,7 @@ let fichaSeleccionadaId = null;
 const TABS = ["resumen", "ataque", "defensa", "corners_favor", "corners_contra"];
 const COLOR_PROPIO = "#eab308";
 const COLOR_RIVAL_DEFECTO = "#c0392b";
+const COLOR_PORTERO = "#404040"; 
 
 const NUM_ULTIMOS_PARTIDOS = 5;
 const NUM_JUGADORES_DESTACADOS = 5;
@@ -190,6 +191,7 @@ function fichasActuales() {
 }
 
 function colorDeFicha(ficha) {
+  if (ficha.posicion === "por") return COLOR_PORTERO;
   return ficha.equipo === "rival" ? analisis.color_rival : COLOR_PROPIO;
 }
 

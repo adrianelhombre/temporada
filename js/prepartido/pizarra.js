@@ -19,9 +19,18 @@ function pintarPizarra() {
     el.style.left = (ficha.x * 100) + "%";
     el.style.top  = (ficha.y * 100) + "%";
 
-    const color = colorDeFicha(ficha);
-    el.style.background = color;
-    el.style.color = colorTextoContraste(color);
+    // Fichas rayadas: Balsas y no portero
+    const esRayada = ficha.equipo !== "rival" && ficha.posicion !== "por";
+
+    if (esRayada) {
+      el.classList.add("ficha-rayada");
+      // El fondo viene del CSS y el texto se fuerza a blanco
+    } else {
+      const color = colorDeFicha(ficha);
+      el.style.background = color;
+      el.style.color = colorTextoContraste(color);
+    }
+
     el.textContent = ficha.label || "";
     el.dataset.indice = idx;
 

@@ -212,14 +212,14 @@
 /* ---- Fichas ---- */
 .ficha-pizarra {
   position: absolute;
-  width: 32px;
-  height: 32px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   border: 2.5px solid rgba(0, 0, 0, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.85rem;
+  font-size: 1.3rem;
   font-weight: 800;
   cursor: grab;
   user-select: none;
@@ -237,6 +237,18 @@
 .ficha-pizarra.seleccionada {
   box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px rgba(234, 179, 8, 0.6);
   z-index: 10;
+}
+
+/* ---- Ficha rayada (Balsas, sin portero) ---- */
+.ficha-pizarra.ficha-rayada {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--amarillo) 0px, var(--amarillo) 6px,
+    var(--negro) 6px, var(--negro) 12px
+  );
+  color: #ffffff;
+  font-weight: 900;
+  text-shadow: 1px 1px 5px var(--negro);
 }
 
 /* ---- Panel de texto ---- */
