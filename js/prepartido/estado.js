@@ -10,10 +10,60 @@ const TABS = ["resumen", "ataque", "defensa", "corners_favor", "corners_contra"]
 const COLOR_PROPIO = "#eab308";
 const COLOR_RIVAL_DEFECTO = "#c0392b";
 
+const NUM_ULTIMOS_PARTIDOS = 5;
+const NUM_JUGADORES_DESTACADOS = 5;
+
+// ---------- Estructuras vacías ----------
+
+function clasificacionVacia() {
+  return { pos: "", g: "", e: "", p: "", gf: "", gc: "", pts: "" };
+}
+
+function filaPartidoVacia() {
+  return { estado: "", local: "", resultado: "", visitante: "" };
+}
+
+function filaDestacadoVacia() {
+  return { num: "", nombre: "", posicion: "" };
+}
+
+function textosVacios() {
+  return {
+    resumen: {
+      ultimos_partidos: Array.from({ length: NUM_ULTIMOS_PARTIDOS }, filaPartidoVacia),
+      clasificacion: {
+        propio: { nombre: "Balsas", ...clasificacionVacia() },
+        rival:  { nombre: "",       ...clasificacionVacia() }
+      },
+      jugadores_destacados: Array.from({ length: NUM_JUGADORES_DESTACADOS }, filaDestacadoVacia)
+    },
+    ataque: {
+      salida_balon: "",
+      estilo_juego: "",
+      transiciones: ""
+    },
+    defensa: {
+      presion_salida: "",
+      estilo_defensivo: "",
+      transiciones: ""
+    },
+    corners_favor: {
+      jugadores_referencia: "",
+      jugadas_habituales: "",
+      otros: ""
+    },
+    corners_contra: {
+      tipo_marcaje: "",
+      debilidades: "",
+      atacantes_sin_defender: ""
+    }
+  };
+}
+
 function analisisVacio() {
   return {
     color_rival: COLOR_RIVAL_DEFECTO,
-    textos: { resumen: "", ataque: "", defensa: "", corners_favor: "", corners_contra: "" },
+    textos: textosVacios(),
     pizarras: { resumen: [], ataque: [], defensa: [], corners_favor: [], corners_contra: [] },
     formaciones: {
       resumen: { rival: "4-3-3", propio: null },
@@ -29,6 +79,68 @@ function analisisVacio() {
   };
 }
 
+// ---------- Normalización ----------
+
+function mergeSimple(obj, campos) {
+  const out = {};
+  campos.forEach(k => {
+    out[k] = (obj && typeof obj[k] === "string") ? obj[k] : "";
+  });
+  return out;
+}
+
+function mergeClasificacionFila(base, obj) {
+  const out = {
+    nombre: (obj && typeof obj.nombre === "string") ? obj.nombre : base.nombre
+  };
+  ["pos", "g", "e", "p", "gf", "gc", "pts"].forEach(k => {
+    out[k] = (obj && typeof obj[k] === "string") ? obj[k] : "";
+  });
+  return out;
+}
+
+function mergeResumen(r) {
+  const base = textosVacios().resumen;
+  if (!r || typeof r !== "object") return base;
+
+  // Últimos partidos: array de hasta N filas
+  const up = Array.isArray(r.ultimos_partidos) ? r.ultimos_partidos : [];
+  const ultimos = [];
+  for (let i = 0; i < NUM_ULTIMOS_PARTIDOS; i++) {
+    const f = up[i] || {};
+    ultimos.push({
+      estado:    typeof f.estado === "string" ? f.estado : "",
+      local:     typeof f.local === "string" ? f.local : "",
+      resultado: typeof f.resultado === "string" ? f.resultado : "",
+      visitante: typeof f.visitante === "string" ? f.visitante : ""
+    });
+  }
+
+  // Clasificación: dos filas con nombre + 7 campos
+  const clasif = r.clasificacion || {};
+  const propio = mergeClasificacionFila(base.clasificacion.propio, clasif.propio);
+  const rival  = mergeClasificacionFila(base.clasificacion.rival,  clasif.rival);
+  if (!propio.nombre) propio.nombre = "Balsas";
+
+  // Jugadores destacados: array de hasta N filas
+  const jd = Array.isArray(r.jugadores_destacados) ? r.jugadores_destacados : [];
+  const destacados = [];
+  for (let i = 0; i < NUM_JUGADORES_DESTACADOS; i++) {
+    const f = jd[i] || {};
+    destacados.push({
+      num:      typeof f.num === "string" ? f.num : "",
+      nombre:   typeof f.nombre === "string" ? f.nombre : "",
+      posicion: typeof f.posicion === "string" ? f.posicion : ""
+    });
+  }
+
+  return {
+    ultimos_partidos: ultimos,
+    clasificacion: { propio, rival },
+    jugadores_destacados: destacados
+  };
+}
+
 function normalizarAnalisis(a) {
   const base = analisisVacio();
   if (!a || typeof a !== "object") return base;
@@ -36,10 +148,17 @@ function normalizarAnalisis(a) {
   const p = a.pizarras || {};
   const f = a.formaciones || {};
   const g = a.generado || {};
+  const t = a.textos || {};
 
   return {
     color_rival: typeof a.color_rival === "string" ? a.color_rival : base.color_rival,
-    textos: { ...base.textos, ...(a.textos || {}) },
+    textos: {
+      resumen: mergeResumen(t.resumen),
+      ataque: mergeSimple(t.ataque, ["salida_balon", "estilo_juego", "transiciones"]),
+      defensa: mergeSimple(t.defensa, ["presion_salida", "estilo_defensivo", "transiciones"]),
+      corners_favor: mergeSimple(t.corners_favor, ["jugadores_referencia", "jugadas_habituales", "otros"]),
+      corners_contra: mergeSimple(t.corners_contra, ["tipo_marcaje", "debilidades", "atacantes_sin_defender"])
+    },
     pizarras: {
       resumen: Array.isArray(p.resumen) ? p.resumen : [],
       ataque: Array.isArray(p.ataque) ? p.ataque : [],
@@ -63,6 +182,8 @@ function normalizarAnalisis(a) {
     }
   };
 }
+
+// ---------- Helpers ----------
 
 function fichasActuales() {
   return analisis.pizarras[tabActiva];

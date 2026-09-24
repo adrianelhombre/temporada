@@ -46,8 +46,8 @@ const TABS_CON_FORMACIONES = ["resumen", "ataque", "defensa"];
     btn.addEventListener("click", () => cambiarTab(btn.dataset.tab));
   });
 
-  // --- Texto ---
-  document.getElementById("textoAnalisis").addEventListener("input", onTextoCambia);
+  // --- Panel de texto: construir grids, clasificación y listeners ---
+  construirPanelTexto();
 
   // --- Menú ficha ---
   document.getElementById("btnEditarFicha").addEventListener("click", abrirModalEtiqueta);
@@ -82,6 +82,7 @@ const TABS_CON_FORMACIONES = ["resumen", "ataque", "defensa"];
   // --- Pintar ---
   pintarPizarra();
   pintarTexto();
+  refrescarValoresTexto();
 })();
 
 // ---------- Formaciones ----------
@@ -140,4 +141,5 @@ function cambiarTab(nuevaTab) {
   actualizarControlesPorPestana();
   pintarPizarra();
   pintarTexto();
+  refrescarValoresTexto();
 }

@@ -67,9 +67,102 @@
                 </div>
             </div>
 
-            <div class="panel-texto">
-                <label for="textoAnalisis" id="etiquetaTexto">Notas del análisis</label>
-                <textarea id="textoAnalisis" placeholder="Escribe aquí el análisis de esta sección..."></textarea>
+            <div class="panel-texto" id="panelTexto">
+
+                <!-- RESUMEN -->
+                <div class="seccion-texto" data-seccion="resumen">
+
+                    <div class="campo-texto">
+                        <label>Últimos partidos</label>
+                        <div class="grid-ultimos">
+                            <!-- 5 filas x 3 columnas (local, resultado, visitante) -->
+                            <!-- Se generan desde JS -->
+                        </div>
+                    </div>
+
+                    <div class="campo-texto">
+                        <label>Clasificación</label>
+                        <div class="grid-clasificacion" id="gridClasificacion">
+                            <!-- Se genera desde JS -->
+                        </div>
+                    </div>
+
+                    <div class="campo-texto">
+                        <label>Jugadores destacados</label>
+                        <div class="grid-destacados">
+                            <div class="celda-head">NUM</div>
+                            <div class="celda-head">Nombre</div>
+                            <div class="celda-head">Posición</div>
+                            <!-- 5 filas x 3 columnas, se generan desde JS -->
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ATAQUE -->
+                <div class="seccion-texto oculto" data-seccion="ataque">
+                    <div class="campo-texto">
+                        <label for="txt_salida_balon">Salida de balón</label>
+                        <textarea id="txt_salida_balon" data-tab="ataque" data-key="salida_balon"></textarea>
+                    </div>
+                    <div class="campo-texto">
+                        <label for="txt_estilo_juego_at">Estilo de juego</label>
+                        <textarea id="txt_estilo_juego_at" data-tab="ataque" data-key="estilo_juego"></textarea>
+                    </div>
+                    <div class="campo-texto">
+                        <label for="txt_transiciones_at">Transiciones</label>
+                        <textarea id="txt_transiciones_at" data-tab="ataque" data-key="transiciones"></textarea>
+                    </div>
+                </div>
+
+                <!-- DEFENSA -->
+                <div class="seccion-texto oculto" data-seccion="defensa">
+                    <div class="campo-texto">
+                        <label for="txt_presion_salida">Presión a salida</label>
+                        <textarea id="txt_presion_salida" data-tab="defensa" data-key="presion_salida"></textarea>
+                    </div>
+                    <div class="campo-texto">
+                        <label for="txt_estilo_defensivo">Estilo defensivo</label>
+                        <textarea id="txt_estilo_defensivo" data-tab="defensa" data-key="estilo_defensivo"></textarea>
+                    </div>
+                    <div class="campo-texto">
+                        <label for="txt_transiciones_def">Transiciones</label>
+                        <textarea id="txt_transiciones_def" data-tab="defensa" data-key="transiciones"></textarea>
+                    </div>
+                </div>
+
+                <!-- CORNERS FAVOR -->
+                <div class="seccion-texto oculto" data-seccion="corners_favor">
+                    <div class="campo-texto">
+                        <label for="txt_jugadores_referencia">Jugadores referencia</label>
+                        <textarea id="txt_jugadores_referencia" data-tab="corners_favor" data-key="jugadores_referencia"></textarea>
+                    </div>
+                    <div class="campo-texto">
+                        <label for="txt_jugadas_habituales">Jugadas habituales</label>
+                        <textarea id="txt_jugadas_habituales" data-tab="corners_favor" data-key="jugadas_habituales"></textarea>
+                    </div>
+                    <div class="campo-texto">
+                        <label for="txt_otros_cf">Otros</label>
+                        <textarea id="txt_otros_cf" data-tab="corners_favor" data-key="otros"></textarea>
+                    </div>
+                </div>
+
+                <!-- CORNERS CONTRA -->
+                <div class="seccion-texto oculto" data-seccion="corners_contra">
+                    <div class="campo-texto">
+                        <label for="txt_tipo_marcaje">Tipo marcaje</label>
+                        <textarea id="txt_tipo_marcaje" data-tab="corners_contra" data-key="tipo_marcaje"></textarea>
+                    </div>
+                    <div class="campo-texto">
+                        <label for="txt_debilidades">Debilidades</label>
+                        <textarea id="txt_debilidades" data-tab="corners_contra" data-key="debilidades"></textarea>
+                    </div>
+                    <div class="campo-texto">
+                        <label for="txt_atacantes_sin_defender">Atacantes sin defender</label>
+                        <textarea id="txt_atacantes_sin_defender" data-tab="corners_contra" data-key="atacantes_sin_defender"></textarea>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

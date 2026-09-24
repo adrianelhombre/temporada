@@ -85,6 +85,7 @@
 .controles-pizarra {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .btn-ficha-propia,
@@ -164,7 +165,6 @@
   -webkit-user-select: none;
 }
 
-/* Línea central vertical */
 .pizarra-campo::before {
   content: "";
   position: absolute;
@@ -177,7 +177,6 @@
   pointer-events: none;
 }
 
-/* Círculo central */
 .pizarra-campo::after {
   content: "";
   position: absolute;
@@ -244,17 +243,30 @@
 .panel-texto {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1rem;
   background: var(--superficie);
   border: 1px solid var(--borde);
   border-radius: var(--radio);
   padding: 1rem;
-  min-height: 300px;
+  min-height: 75vh;
 }
 
-.panel-texto label {
+.seccion-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.campo-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.campo-texto label {
   font-family: Oswald, sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -262,13 +274,191 @@
   margin: 0;
 }
 
-#textoAnalisis {
-  flex: 1;
-  min-height: 260px;
+.campo-texto textarea {
+  width: 100%;
+  min-height: 100px;
   margin: 0;
   resize: vertical;
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  padding: 0.5rem 0.6rem;
+}
+
+/* ---- Grid últimos partidos ---- */
+.grid-ultimos {
+  display: grid;
+  grid-template-columns: 20px 1fr 0.4fr 1fr;
+  gap: 3px;
+  align-items: center;
+}
+
+.grid-ultimos input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.3rem 0.4rem;
+  margin: 0;
+  font-size: 0.78rem;
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+  background: var(--superficie);
+}
+
+.grid-ultimos input.local {
+  text-align: right;
+}
+
+.grid-ultimos input.resultado {
+  text-align: center;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.grid-ultimos input.visitante {
+  text-align: left;
+}
+
+.grid-ultimos input:focus {
+  outline: none;
+  border-color: var(--amarillo);
+  box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.15);
+}
+
+/* ---- Círculo de estado (últimos partidos) ---- */
+.circulo-estado {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid var(--gris-300);
+  background: var(--gris-100);
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  transition: var(--transicion);
+  justify-self: center;
+}
+
+.circulo-estado:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.2);
+}
+
+.circulo-estado.estado-v {
+  background: var(--verde);
+  border-color: var(--verde);
+}
+
+.circulo-estado.estado-e {
+  background: var(--amarillo);
+  border-color: var(--amarillo);
+}
+
+.circulo-estado.estado-d {
+  background: var(--rojo);
+  border-color: var(--rojo);
+}
+
+/* ---- Grid clasificación ---- */
+.grid-clasificacion {
+  display: grid;
+  grid-template-columns: minmax(60px, 1.4fr) repeat(7, 1fr);
+  gap: 2px;
+  align-items: center;
+}
+
+.grid-clasificacion .celda-head {
+  font-family: Oswald, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--texto-secundario);
+  text-align: center;
+  letter-spacing: 0.03em;
+  padding: 2px 0;
+}
+
+.grid-clasificacion .celda-nombre {
+  font-family: Oswald, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--texto);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0.25rem 0.35rem;
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+  background: var(--superficie);
+  cursor: text;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.grid-clasificacion .celda-nombre:focus {
+  outline: none;
+  border-color: var(--amarillo);
+  box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.15);
+}
+
+.grid-clasificacion input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.25rem 0.1rem;
+  margin: 0;
+  text-align: center;
+  font-size: 0.75rem;
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+  background: var(--superficie);
+}
+
+.grid-clasificacion input:focus {
+  outline: none;
+  border-color: var(--amarillo);
+  box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.15);
+}
+
+/* ---- Grid jugadores destacados ---- */
+.grid-destacados {
+  display: grid;
+  grid-template-columns: 36px 1.5fr 1fr;
+  gap: 3px;
+  align-items: center;
+}
+
+.grid-destacados .celda-head {
+  font-family: Oswald, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--texto-secundario);
+  text-align: center;
+  letter-spacing: 0.03em;
+  padding: 2px 0;
+}
+
+.grid-destacados input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.3rem 0.4rem;
+  margin: 0;
+  font-size: 0.78rem;
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+  background: var(--superficie);
+}
+
+.grid-destacados input.num {
+  text-align: center;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.grid-destacados input:focus {
+  outline: none;
+  border-color: var(--amarillo);
+  box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.15);
 }
 
 /* ---- Menú flotante de ficha ---- */
