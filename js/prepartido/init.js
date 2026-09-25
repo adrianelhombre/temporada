@@ -41,6 +41,9 @@ const TABS_CON_FORMACIONES = ["resumen", "ataque", "defensa"];
   // --- Botón borrar todas ---
   document.getElementById("btnBorrarTodas").addEventListener("click", borrarTodasFichas);
 
+  // --- Modo pizarra ---
+  document.getElementById("btnModoPizarra").addEventListener("click", toggleModoPizarra);
+
   // --- Tabs ---
   document.querySelectorAll(".tab-prepartido").forEach(btn => {
     btn.addEventListener("click", () => cambiarTab(btn.dataset.tab));
@@ -132,6 +135,7 @@ function cambiarTab(nuevaTab) {
   if (nuevaTab === tabActiva) return;
 
   deseleccionarFicha();
+  limpiarFichasMarcadas();
   tabActiva = nuevaTab;
 
   document.querySelectorAll(".tab-prepartido").forEach(btn => {

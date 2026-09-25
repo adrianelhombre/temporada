@@ -5,6 +5,13 @@ let arrastreInicio = null;         // { x, y }
 let arrastreOffset = { x: 0, y: 0 };
 let arrastreMovido = false;
 
+// Modo pizarra: solo se puede marcar con doble clic (clase "seleccionada").
+// El clic normal nunca aplica la clase "activa" en este modo, solo sirve para arrastrar.
+let modoPizarraActivo = false;
+
+// Índices de fichas marcadas con doble clic (solo en modo pizarra).
+let fichasMarcadas = new Set();
+
 // ---------- Pintado ----------
 
 function pintarPizarra() {
@@ -24,7 +31,6 @@ function pintarPizarra() {
 
     if (esRayada) {
       el.classList.add("ficha-rayada");
-      // El fondo viene del CSS y el texto se fuerza a blanco
     } else {
       const color = colorDeFicha(ficha);
       el.style.background = color;
@@ -34,7 +40,15 @@ function pintarPizarra() {
     el.textContent = ficha.label || "";
     el.dataset.indice = idx;
 
-    if (fichaSeleccionadaId === idx) el.classList.add("seleccionada");
+    // Marcada por doble clic (solo en modo pizarra)
+    if (fichasMarcadas.has(idx)) {
+      el.classList.add("seleccionada");
+    }
+
+    // Activa por clic normal (solo en modo normal)
+    if (!modoPizarraActivo && fichaSeleccionadaId === idx) {
+      el.classList.add("activa");
+    }
 
     el.addEventListener("pointerdown", (e) => iniciarArrastre(e, idx, el));
 
@@ -55,6 +69,10 @@ function pintarPizarra() {
 // ---------- Menú flotante ----------
 
 function mostrarMenuFicha(el) {
+  if (modoPizarraActivo) {
+    document.getElementById("menuAccionesFicha").classList.add("oculto");
+    return;
+  }
   const menu = document.getElementById("menuAccionesFicha");
   const rect = el.getBoundingClientRect();
   menu.style.left = (rect.left + rect.width / 2) + "px";
@@ -66,10 +84,33 @@ function ocultarMenuFicha() {
   document.getElementById("menuAccionesFicha").classList.add("oculto");
 }
 
+// Deselecciona la ficha activa (clic normal, solo modo normal).
+// NO toca las marcadas con doble clic.
 function deseleccionarFicha() {
   fichaSeleccionadaId = null;
-  document.querySelectorAll(".ficha-pizarra").forEach(f => f.classList.remove("seleccionada"));
+  document.querySelectorAll(".ficha-pizarra.activa").forEach(f => {
+    f.classList.remove("activa");
+  });
   ocultarMenuFicha();
+}
+
+// ---------- Modo pizarra ----------
+
+function toggleModoPizarra() {
+  modoPizarraActivo = !modoPizarraActivo;
+
+  const btn = document.getElementById("btnModoPizarra");
+  btn.classList.toggle("activo", modoPizarraActivo);
+
+  // Al cambiar de modo, limpiamos la selección normal y las marcas
+  deseleccionarFicha();
+  fichasMarcadas.clear();
+
+  pintarPizarra();
+}
+
+function limpiarFichasMarcadas() {
+  fichasMarcadas.clear();
 }
 
 // ---------- Arrastre ----------
@@ -77,10 +118,53 @@ function deseleccionarFicha() {
 function iniciarArrastre(e, indice, el) {
   e.preventDefault();
 
+  // --- Modo pizarra: doble clic marca/desmarca; clic simple solo arrastra ---
+  if (modoPizarraActivo) {
+    const ahora = Date.now();
+    const ultimo = el.dataset.ultimoClic ? Number(el.dataset.ultimoClic) : 0;
+    const esDobleClic = (ahora - ultimo) < 400;
+
+    if (esDobleClic) {
+      el.dataset.ultimoClic = 0;
+
+      if (fichasMarcadas.has(indice)) {
+        fichasMarcadas.delete(indice);
+        el.classList.remove("seleccionada");
+      } else {
+        fichasMarcadas.add(indice);
+        el.classList.add("seleccionada");
+      }
+      // El doble clic no inicia arrastre
+      return;
+    }
+
+    el.dataset.ultimoClic = ahora;
+
+    // Clic simple en modo pizarra: solo arrastre, sin clase "activa", sin menú
+    arrastrandoFicha = { indice, el };
+    arrastreInicio = { x: e.clientX, y: e.clientY };
+    arrastreMovido = false;
+
+    const rect = el.getBoundingClientRect();
+    arrastreOffset.x = e.clientX - (rect.left + rect.width / 2);
+    arrastreOffset.y = e.clientY - (rect.top + rect.height / 2);
+
+    try { el.setPointerCapture(e.pointerId); } catch (_) {}
+
+    el.addEventListener("pointermove", moverFicha);
+    el.addEventListener("pointerup", soltarFicha);
+    el.addEventListener("pointercancel", soltarFicha);
+    return;
+  }
+
+  // --- Modo normal: clic simple selecciona con "activa" y muestra menú ---
+  document.querySelectorAll(".ficha-pizarra.activa").forEach(f => {
+    if (Number(f.dataset.indice) !== indice) f.classList.remove("activa");
+  });
+
+  el.classList.add("activa");
   fichaSeleccionadaId = indice;
-  document.querySelectorAll(".ficha-pizarra").forEach(f => f.classList.remove("seleccionada"));
-  el.classList.add("seleccionada");
-  ocultarMenuFicha();
+  mostrarMenuFicha(el);
 
   arrastrandoFicha = { indice, el };
   arrastreInicio = { x: e.clientX, y: e.clientY };
@@ -139,7 +223,10 @@ async function soltarFicha(e) {
 
   if (movido) await guardarAnalisis();
 
-  if (fichaSeleccionadaId === indice) mostrarMenuFicha(el);
+  // En modo normal, si sigue activa tras soltar, reabrimos el menú
+  if (!modoPizarraActivo && fichaSeleccionadaId === indice) {
+    mostrarMenuFicha(el);
+  }
 }
 
 // ---------- Añadir / borrar ----------
@@ -163,6 +250,14 @@ async function borrarFichaSeleccionada() {
   if (fichaSeleccionadaId === null) return;
   const fichas = fichasActuales();
   fichas.splice(fichaSeleccionadaId, 1);
+
+  const nuevasMarcadas = new Set();
+  fichasMarcadas.forEach(i => {
+    if (i < fichaSeleccionadaId) nuevasMarcadas.add(i);
+    else if (i > fichaSeleccionadaId) nuevasMarcadas.add(i - 1);
+  });
+  fichasMarcadas = nuevasMarcadas;
+
   deseleccionarFicha();
   pintarPizarra();
   await guardarAnalisis();
@@ -171,6 +266,7 @@ async function borrarFichaSeleccionada() {
 async function borrarTodasFichas() {
   analisis.pizarras[tabActiva] = [];
   deseleccionarFicha();
+  limpiarFichasMarcadas();
   pintarPizarra();
   await guardarAnalisis();
 }
@@ -216,10 +312,6 @@ async function cambiarColorRival(nuevoColor) {
 
 // ---------- Formaciones ----------
 
-// Genera 11 fichas a partir de una formación del prepartido.
-// Estructura en formaciones-prepartido.js:
-//   FORMACIONES_PREPARTIDO[tab][equipo][nombreFormacion] = [[id, x, y], ...]
-// Las coordenadas son las finales: 0-100 en ambos ejes.
 function generarFichasFormacion(tab, equipo, nombreFormacion) {
   const formacion = FORMACIONES_PREPARTIDO[tab]?.[equipo]?.[nombreFormacion];
   if (!formacion) return [];
@@ -234,7 +326,6 @@ function generarFichasFormacion(tab, equipo, nombreFormacion) {
   }));
 }
 
-// Borra las fichas de formación de ese equipo y regenera con la nueva
 async function aplicarFormacion(equipo, nombreFormacion) {
   const tab = tabActiva;
   const pizarra = analisis.pizarras[tab];
@@ -257,11 +348,11 @@ async function aplicarFormacion(equipo, nombreFormacion) {
   analisis.generado[tab] = true;
 
   deseleccionarFicha();
+  limpiarFichasMarcadas();
   pintarPizarra();
   await guardarAnalisis();
 }
 
-// Genera las fichas si es la primera vez que se abre la pestaña
 async function generarSiEsNecesario() {
   let cambios = false;
 
@@ -289,33 +380,3 @@ async function generarSiEsNecesario() {
 
   if (cambios) await guardarAnalisis();
 }
-
-// ============================================================
-// MODO DEBUG DE COORDENADAS (temporal, quitar cuando no haga falta)
-// ------------------------------------------------------------
-// Ctrl + Shift + D  → activa / desactiva
-// Con el modo activo, cada clic sobre el campo imprime en consola
-// el par [x, y] en % listo para pegar en formaciones-prepartido.js
-// ============================================================
-
-let __debugCoords = false;
-
-document.addEventListener("keydown", (e) => {
-  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "d") {
-    __debugCoords = !__debugCoords;
-    console.log("Modo coordenadas:", __debugCoords ? "ACTIVADO" : "desactivado");
-  }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  const campo = document.getElementById("pizarraCampo");
-  if (!campo) return;
-  campo.addEventListener("click", (e) => {
-    if (!__debugCoords) return;
-    if (e.target.closest(".ficha-pizarra")) return;
-    const rect = campo.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width)  * 100;
-    const y = ((e.clientY - rect.top)  / rect.height) * 100;
-    console.log(`[${x.toFixed(1)}, ${y.toFixed(1)}]`);
-  });
-});

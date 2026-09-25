@@ -65,7 +65,7 @@ function construirGridDestacados() {
   cont.innerHTML = "";
 
   // Encabezados (3 columnas, sin celda fantasma)
-  ["NUM", "Nombre", "Posición"].forEach(txt => {
+  ["NUM", "NOMBRE", "POSICIÓN"].forEach(txt => {
     const h = document.createElement("div");
     h.className = "celda-head";
     h.textContent = txt;
