@@ -900,7 +900,11 @@ label {
 }
 @media (max-width: 600px) {
   .campo {
-    aspect-ratio: 2.4 / 1.3;
+    aspect-ratio: 1.2 / 1;
+  }
+
+  .panel-derecho {
+    flex-direction: column-reverse !important;
   }
 }
 
