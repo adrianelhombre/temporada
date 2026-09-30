@@ -512,6 +512,7 @@ label {
 
 .jornada-div {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-width: 60px;
@@ -529,13 +530,13 @@ label {
 .rival-partidos {
   text-transform: uppercase;
   font-weight: 800;
-  font-size: 1.5rem;
+  font-size: 2rem;
   margin: 0;
   color: var(--negro-suave);
 }
 
 .rival-partidos-campo {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--gris-500);
   letter-spacing: 0.05rem;
@@ -2521,33 +2522,91 @@ label {
     padding: 0 4px;
   }
 
-
-  button {
-    font-size: 0.6rem;
-  }
-
   .fila-botones {
-    gap: 0.2rem !important;
+    overflow: auto;
+    flex-wrap: nowrap !important;
+    padding: 1rem 0 0.5rem 0;
   }
 
-  .lista-partidos .item {
-    flex-direction: column;
-    gap: 20px;
-    align-items: flex-start;
+  .fila-botones button {
+    flex: 0;
+    padding: 0.6rem 3rem;
   }
+
+  .pendientes {
+    margin-top: 0;
+  }
+
+
+  /* PARTIDOS EN MÓVIL */
+  .lista-partidos .item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    column-gap: 0;
+    row-gap: 25px;
+    align-items: center;
+  }
+
+  .jornada-div-h3 {
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--amarillo);
+  text-align: center;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.rival-partidos {
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--negro-suave);
+}
+
+.rival-partidos-campo {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gris-500);
+  letter-spacing: 0.05rem;
+}
 
   .jornada-datos {
-    align-items: flex-start;
+    grid-column: 1;
+    grid-row: 1;
     gap: 30px;
-    flex: 2;
+    min-width: 0;
+  }
+
+  .resultado-partido {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .acciones-partidos {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 20px;
+  }
+  .acciones-partidos button {
+    flex: 1;
+    padding: 0.5rem 1rem;
+  }
+
+  .acciones-partidos .boton-prepartido {
+    flex: 1;
+    padding: 0.65rem 1rem;
+  }
+  .acciones-partidos .pequeno-accion {
+    flex: 0.1;
+    padding: 0;
   }
 
   .jornada-div {
     min-width: 0;
-  }
-
-  .acciones-partidos {
-    gap: 20px;
   }
 
   .marcador-nombre-equipo {
@@ -2555,7 +2614,15 @@ label {
   }
 
   #botonPantallaCompleta {
-    display: none;
+    display: none !important;
+  }
+
+  #acciones-rapidas .fila-botones {
+    overflow: auto;
+    flex-wrap: wrap !important;
+  }
+  #acciones-rapidas .fila-botones button {
+    padding: 0.65rem 1rem;
   }
 }
 

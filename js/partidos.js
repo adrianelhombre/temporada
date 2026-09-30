@@ -29,7 +29,12 @@ function crearFilaPartido(partido, marcador, finalizado) {
   jornadaDivH3.classList = "jornada-div-h3"
   jornadaDivH3.textContent = partido.jornada || '—';
 
-  jornadaDiv.append(jornadaDivH3)
+  // Indicador de local/visitante (estilo neutro, sin verde/rojo)
+  const indicador = document.createElement("span");
+  indicador.classList.add("rival-partidos-campo")
+  indicador.textContent = partido.condicion === 'local' ? '(L)' : '(V)';
+
+  jornadaDiv.append(jornadaDivH3, indicador)
 
   const datos = document.createElement("div");
   
@@ -42,16 +47,12 @@ function crearFilaPartido(partido, marcador, finalizado) {
   rival.classList.add("rival-partidos");
   rival.style.cssText = "margin:0;";
   
-  // Indicador de local/visitante (estilo neutro, sin verde/rojo)
-  const indicador = document.createElement("span");
-  indicador.classList.add("rival-partidos-campo")
-  indicador.textContent = partido.condicion === 'local' ? '(L)' : '(V)';
+
   
   headerRival.appendChild(rival);
-  headerRival.appendChild(indicador);
   
   const detalle = document.createElement("div");
-  detalle.style.cssText = "font-size:.8rem;color:var(--texto-secundario);";
+  detalle.style.cssText = "font-size:1rem;color:var(--texto-secundario);";
   
   const tipo = partido.tipo_partido || 'Liga';
   detalle.textContent = `${tipo} · ${formatoFecha(partido.fecha)}`;

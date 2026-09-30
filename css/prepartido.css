@@ -633,3 +633,15 @@
   background: var(--rojo-claro);
   transform: translateY(-1px);
 }
+
+
+@media (max-width: 480px) {
+  .barra-pizarra {
+    gap: 10px;
+    flex-direction: column;
+  }
+
+  .controles-pizarra {
+    width: 100%;
+  }
+}
