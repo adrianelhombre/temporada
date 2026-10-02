@@ -1,38 +1,42 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-<title>Balsas - Plantilla</title>
-<link rel="stylesheet" href="../css/styles.css" />
-<link rel="stylesheet" href="../css/plantilla.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Balsas - Plantilla</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/plantilla.css" />
 </head>
+
 <body>
-<header class="cabecera-app">
-  <a href="inicio.html">
-    <img src="../assets/volver.svg" class="icono-cabecera" alt="icono para volver">
-  </a>
-  <h1>Plantilla</h1>
-  <div style="display:flex; gap:0.5rem; align-items:center;">
-    <a href="control-fisico.html" class="enlace" style="color:var(--blanco); text-decoration:none; font-size:0.75rem; background:var(--gris-700); padding:0.3rem 0.7rem; border-radius:var(--radio);">
-      Control físico
+  <header class="cabecera-app">
+    <a href="inicio.html">
+      <img src="../assets/volver.svg" class="icono-cabecera" alt="icono para volver">
     </a>
-    <a href="trabajo-semanal.html" class="enlace" style="color:var(--blanco); text-decoration:none; font-size:0.75rem; background:var(--gris-700); padding:0.3rem 0.7rem; border-radius:var(--radio);">
-      Trabajo semanal
-    </a>
-    <button class="enlace" id="botonPantallaCompleta" style="display: inline-flex; align-items: center;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
-        <polyline points="15 3 21 3 21 9"></polyline>
-        <polyline points="9 21 3 21 3 15"></polyline>
-        <line x1="21" y1="3" x2="14" y2="10"></line>
-        <line x1="3" y1="21" x2="10" y2="14"></line>
-      </svg>
-    </button>
-  </div>
-</header>
+    <h1>Plantilla</h1>
+    <div style="display:flex; gap:0.5rem; align-items:center;">
+      <button class="enlace" id="botonPantallaCompleta" style="display: inline-flex; align-items: center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <polyline points="9 21 3 21 3 15"></polyline>
+          <line x1="21" y1="3" x2="14" y2="10"></line>
+          <line x1="3" y1="21" x2="10" y2="14"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
 
   <div class="contenedor">
+    <div class="botones-plantilla">
+      <a href="control-fisico.html" class="enlace">
+        Control físico
+      </a>
+      <a href="trabajo-semanal.html" class="enlace">
+        Trabajo semanal
+      </a>
+    </div>
     <button class="primario ancho" id="botonNuevoJugador">+ Añadir jugador</button>
 
     <div id="formularioJugador" class="tarjeta oculto" style="margin-top:0.75rem;">
@@ -41,13 +45,13 @@
       <input type="text" id="nombreJugador" />
       <label for="dorsalJugador">Dorsal</label>
       <input type="number" id="dorsalJugador" min="1" />
-      
+
       <label>Posición principal</label>
       <div class="selector-posiciones" id="selectorPrincipal"></div>
-      
+
       <label>Posiciones secundarias (opcional)</label>
       <div class="selector-posiciones" id="selectorSecundario"></div>
-      
+
       <label for="esDeOtroEquipo" style="display: flex; align-items: center; gap: 8px; margin: 8px 0;">
         <input type="checkbox" id="esDeOtroEquipo" />
         <span>Jugador de otro equipo (refuerzo)</span>
@@ -75,22 +79,23 @@
         <tbody></tbody>
       </table>
     </div>
-  </div>
+    </iv>
 
-  <div id="modalConfirmarBorrado" class="superposicion oculto">
-    <div class="hoja-modal">
-      <p style="font-weight:600;">¿Seguro que quieres borrar este jugador?</p>
-      <div class="fila-botones">
-        <button class="ancho peligro" id="botonConfirmarBorrado">Borrar</button>
-        <button class="ancho" id="botonCancelarBorrado">Cancelar</button>
+    <div id="modalConfirmarBorrado" class="superposicion oculto">
+      <div class="hoja-modal">
+        <p style="font-weight:600;">¿Seguro que quieres borrar este jugador?</p>
+        <div class="fila-botones">
+          <button class="ancho peligro" id="botonConfirmarBorrado">Borrar</button>
+          <button class="ancho" id="botonCancelarBorrado">Cancelar</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../js/supabaseClient.js"></script>
-  <script src="../js/comun.js"></script>
-  <script src="../js/formaciones.js"></script>
-  <script src="../js/plantilla.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabaseClient.js"></script>
+    <script src="../js/comun.js"></script>
+    <script src="../js/formaciones.js"></script>
+    <script src="../js/plantilla.js"></script>
 </body>
+
 </html>

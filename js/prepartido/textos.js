@@ -159,6 +159,21 @@ function crearFilaClasificacion(equipo) {
 // ---------- Relleno de valores ----------
 
 function refrescarValoresTexto() {
+  // --- Textareas simples (ataque, defensa, corners) ---
+  document.querySelectorAll(".panel-texto textarea[data-tab][data-key]").forEach(el => {
+    const tab = el.dataset.tab;
+    const key = el.dataset.key;
+    el.value = (analisis.textos[tab] && analisis.textos[tab][key]) || "";
+  });
+
+  // --- Inputs sueltos fuera de las grids del resumen ---
+  document.querySelectorAll('.panel-texto input[data-tab][data-key]').forEach(el => {
+    if (el.closest(".grid-ultimos") || el.closest(".grid-destacados") || el.closest(".grid-clasificacion")) return;
+    const tab = el.dataset.tab;
+    const key = el.dataset.key;
+    el.value = (analisis.textos[tab] && analisis.textos[tab][key]) || "";
+  });
+
   // --- Últimos partidos ---
   document.querySelectorAll('.grid-ultimos input[data-key="ultimos_partidos"]').forEach(el => {
     const i = Number(el.dataset.idx);

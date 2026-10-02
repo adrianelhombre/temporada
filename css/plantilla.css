@@ -2,6 +2,29 @@
    PLANTILLA - ESTILOS ESPECÍFICOS
    ============================================ */
 
+.botones-plantilla {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.botones-plantilla .enlace {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  color: var(--blanco);
+  text-decoration: none;
+  font-size: 0.8rem;
+  background: var(--gris-600);
+  border-radius: var(--radio);
+  transition: all 0.3s ease-in-out;
+}
+
+.botones-plantilla .enlace:hover {
+  background: var(--gris-700);
+}
+
 /* ---------- TABLA JUGADORES ---------- */
 #tablaJugadores {
   width: 100%;

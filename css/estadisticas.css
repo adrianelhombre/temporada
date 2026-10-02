@@ -194,3 +194,19 @@
   font-size: 0.85rem;
   color: var(--texto-secundario);
 }
+
+
+@media (max-width: 480px) {
+  .estadisticas-jugador-datos {
+    gap: 0;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .estadisticas-jugador-fila:not(:first-child) {
+    gap: 10px;
+    justify-content: space-between;
+    width: 100%;
+  }
+}
