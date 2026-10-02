@@ -566,7 +566,17 @@ async function confirmarCambios() {
 
     consolidarJugador(c.saleJugadorId);
     estadoDirecto.huecos[c.saleSlotId] = c.entraJugadorId;
-    arrancarJugador(c.entraJugadorId);
+
+    // ===== NUEVO =====
+    // Si el tiempo ya se cumplió, NO arrancamos el reloj del que entra:
+    // el reloj está congelado y el añadido se repartirá al cerrar la parte.
+    if (!estadoDirecto.tiempoCumplido) {
+      arrancarJugador(c.entraJugadorId);
+    } else {
+      if (estadoDirecto.minutos[c.entraJugadorId] === undefined) {
+        estadoDirecto.minutos[c.entraJugadorId] = 0;
+      }
+    }
 
     eventos.push(
       {
@@ -787,8 +797,11 @@ async function asignarJugadorAHueco(jugadorId) {
 
   estadoDirecto.huecos[slotHuecoActual] = jugadorId;
 
-  // Si el partido está en curso, el jugador que entra arranca su reloj ya mismo.
-  if (estadoDirecto.estado === "en_curso") {
+  // ===== NUEVO =====
+  // Si el partido está en curso y NO se ha cumplido el tiempo, el jugador que entra
+  // arranca su reloj ya mismo. Si el tiempo ya se cumplió, NO arrancamos su reloj:
+  // el reloj está congelado y el añadido se repartirá al cerrar la parte.
+  if (estadoDirecto.estado === "en_curso" && !estadoDirecto.tiempoCumplido) {
     arrancarJugador(jugadorId);
   } else if (estadoDirecto.minutos[jugadorId] === undefined) {
     estadoDirecto.minutos[jugadorId] = 0;

@@ -30,7 +30,13 @@ function pintarCabecera() {
 
   const segundos = segundosMarcador();
   document.getElementById("textoTiempo").textContent = formatoMMSS(segundos);
-  document.getElementById("textoEstado").textContent = enVivo ? `${estadoDirecto.parte}ª Parte en Juego` : etiquetaEstado;
+
+  // ===== NUEVO =====
+  // Si el tiempo está cumplido, mostrar aviso en el estado.
+  document.getElementById("textoEstado").textContent =
+    estadoDirecto.tiempoCumplido && estadoDirecto.estado === "en_curso"
+      ? `${estadoDirecto.parte}ª Parte - Tiempo cumplido`
+      : (enVivo ? `${estadoDirecto.parte}ª Parte en Juego` : etiquetaEstado);
 
   pintarTarjetasCabecera(esLocal);
 }

@@ -573,6 +573,10 @@ async function empezar1aParte() {
   estadoDirecto.estado = "en_curso";
   estadoDirecto.parte = 1;
   estadoDirecto.segundosAcumulados = 0;
+  // ===== NUEVO =====
+  estadoDirecto.tiempoCumplido = false;
+  estadoDirecto.anadidoParte1 = null;
+  estadoDirecto.anadidoParte2 = null;
 
   const titulares = Object.values(estadoDirecto.huecos).filter(Boolean);
   estadoDirecto.titulares = titulares;
@@ -605,6 +609,17 @@ async function reanudar() {
     return;
   }
 
+  // ===== NUEVO =====
+  // Si el tiempo ya se cumplió, volvemos a "en_curso" pero SIN arrancar el reloj.
+  // Así el usuario puede pulsar Descanso (o Finalizar) y aplicar el añadido.
+  if (estadoDirecto.tiempoCumplido) {
+    estadoDirecto.estado = "en_curso";
+    await persistirEstadoDirecto();
+    pintarTodo();
+    mostrarNotificacion("Tiempo cumplido. Pulsa Descanso (o Finalizar) para aplicar el añadido.", "exito");
+    return;
+  }
+
   estadoDirecto.estado = "en_curso";
 
   // Arrancar de nuevo el tramo y los jugadores en campo desde el acumulado consolidado.
@@ -623,6 +638,16 @@ async function irADescanso() {
     return;
   }
 
+  // ===== NUEVO =====
+  // Pedimos el añadido (si el tiempo ya se cumplió) y luego ejecutamos la lógica real.
+  pedirAnadido(async (anadidoSegundos) => {
+    await ejecutarIrADescanso(anadidoSegundos);
+  });
+}
+
+// ===== NUEVO =====
+// Lógica real de ir a descanso, extraída para poder llamarla tras la modal.
+async function ejecutarIrADescanso(anadidoSegundos) {
   const objetivo = partido.duracion_parte_minutos * 60;
 
   // Consolidamos el tramo con su valor REAL en este instante (puede incluir descuento).
@@ -648,7 +673,21 @@ async function irADescanso() {
     consolidarTodosLosJugadoresEnCampo();
   }
 
+  // ===== NUEVO =====
+  // Aplicar el añadido a los jugadores que están en el campo AHORA MISMO.
+  // Los que salieron durante el añadido NO lo reciben.
+  if (anadidoSegundos > 0) {
+    Object.values(estadoDirecto.huecos)
+      .filter(Boolean)
+      .forEach((jugadorId) => {
+        if (estaExpulsado(jugadorId)) return;
+        estadoDirecto.minutos[jugadorId] = (estadoDirecto.minutos[jugadorId] || 0) + anadidoSegundos;
+      });
+    estadoDirecto.anadidoParte1 = anadidoSegundos;
+  }
+
   estadoDirecto.estado = "descanso";
+  estadoDirecto.tiempoCumplido = false;
 
   await persistirEstadoDirecto();
   pintarTodo();
@@ -667,6 +706,9 @@ async function empezar2aParte() {
   estadoDirecto.parte = 2;
   estadoDirecto.segundosAcumulados = 0;
   estadoDirecto.inicioSegundaParteTimestamp = new Date().toISOString();
+  // ===== NUEVO =====
+  estadoDirecto.tiempoCumplido = false;
+  estadoDirecto.anadidoParte2 = null;
 
   // Arrancamos el tramo y a todos los jugadores que están en el campo ahora mismo.
   arrancarTramo();
@@ -697,45 +739,68 @@ function finalizarPartido() {
     return;
   }
 
-  mostrarConfirmacion("¿Finalizar el partido?", async () => {
-    cerrarConfirmacion();
-
-    const objetivo = partido.duracion_parte_minutos * 60;
-
-    // Consolidamos el tramo con su valor real (puede incluir descuento) ANTES de decidir nada.
-    consolidarTramo();
-    const jugado = estadoDirecto.segundosAcumulados || 0;
-
-    if (jugado < objetivo) {
-      const faltante = objetivo - jugado;
-
-      Object.values(estadoDirecto.huecos)
-        .filter(Boolean)
-        .forEach((jugadorId) => {
-          if (estaExpulsado(jugadorId)) return;
-          consolidarJugador(jugadorId);
-          estadoDirecto.minutos[jugadorId] = (estadoDirecto.minutos[jugadorId] || 0) + faltante;
-        });
-
-      estadoDirecto.segundosAcumulados = objetivo;
-    } else {
-      // Con descuento: se conserva el tiempo real, no se recorta a 35:00.
-      consolidarTodosLosJugadoresEnCampo();
-    }
-
-    estadoDirecto.estado = "finalizado";
-
-    const ok = await persistirEstadoDirecto();
-    if (!ok) return;
-
-    const okPartido = await persistirPartido({ estado: "finalizado" });
-    if (!okPartido) return;
-
-    partido.estado = "finalizado";
-    pintarTodo();
-
-    mostrarNotificacion("Partido finalizado correctamente.", "exito");
+  // ===== NUEVO =====
+  // Pedimos el añadido (si el tiempo ya se cumplió) y luego confirmamos y ejecutamos.
+  pedirAnadido(async (anadidoSegundos) => {
+    mostrarConfirmacion("¿Finalizar el partido?", async () => {
+      cerrarConfirmacion();
+      await ejecutarFinalizarPartido(anadidoSegundos);
+    });
   });
+}
+
+// ===== NUEVO =====
+// Lógica real de finalizar partido, extraída para poder llamarla tras la modal.
+async function ejecutarFinalizarPartido(anadidoSegundos) {
+  const objetivo = partido.duracion_parte_minutos * 60;
+
+  // Consolidamos el tramo con su valor real (puede incluir descuento) ANTES de decidir nada.
+  consolidarTramo();
+  const jugado = estadoDirecto.segundosAcumulados || 0;
+
+  if (jugado < objetivo) {
+    const faltante = objetivo - jugado;
+
+    Object.values(estadoDirecto.huecos)
+      .filter(Boolean)
+      .forEach((jugadorId) => {
+        if (estaExpulsado(jugadorId)) return;
+        consolidarJugador(jugadorId);
+        estadoDirecto.minutos[jugadorId] = (estadoDirecto.minutos[jugadorId] || 0) + faltante;
+      });
+
+    estadoDirecto.segundosAcumulados = objetivo;
+  } else {
+    // Con descuento: se conserva el tiempo real, no se recorta a 35:00.
+    consolidarTodosLosJugadoresEnCampo();
+  }
+
+  // ===== NUEVO =====
+  // Aplicar el añadido a los jugadores que están en el campo AHORA MISMO.
+  // Los que salieron durante el añadido NO lo reciben.
+  if (anadidoSegundos > 0) {
+    Object.values(estadoDirecto.huecos)
+      .filter(Boolean)
+      .forEach((jugadorId) => {
+        if (estaExpulsado(jugadorId)) return;
+        estadoDirecto.minutos[jugadorId] = (estadoDirecto.minutos[jugadorId] || 0) + anadidoSegundos;
+      });
+    estadoDirecto.anadidoParte2 = anadidoSegundos;
+  }
+
+  estadoDirecto.estado = "finalizado";
+  estadoDirecto.tiempoCumplido = false;
+
+  const ok = await persistirEstadoDirecto();
+  if (!ok) return;
+
+  const okPartido = await persistirPartido({ estado: "finalizado" });
+  if (!okPartido) return;
+
+  partido.estado = "finalizado";
+  pintarTodo();
+
+  mostrarNotificacion("Partido finalizado correctamente.", "exito");
 }
 
 // ---------- Formación ----------

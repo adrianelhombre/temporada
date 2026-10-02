@@ -606,7 +606,7 @@ async function cargarPartidos() {
     const jornada = document.getElementById("jornadaPartido").value;
     const convocadosSet = partidoEnEdicion ? convocadosEditando : convocados;
     
-    if (!document.getElementById("fechaPartido").value || !rival || !Number.isInteger(duracion) || duracion < 5 || duracion > 120) {
+    if (!document.getElementById("fechaPartido").value || !rival || !Number.isInteger(duracion) || duracion < 2 || duracion > 120) {
       mostrarNotificacion("Completa los datos del partido con una duración entre 5 y 120 minutos.", "error");
       return;
     }

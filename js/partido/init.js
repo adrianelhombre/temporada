@@ -152,6 +152,11 @@
   });
   document.getElementById("botonConfirmarNo").addEventListener("click", cerrarConfirmacion);
 
+  // ===== NUEVO =====
+  // --- Modal de tiempo añadido ---
+  document.getElementById("botonConfirmarAnadido").addEventListener("click", () => ejecutarAccion(confirmarAnadido));
+  document.getElementById("botonCancelarAnadido").addEventListener("click", () => ejecutarAccion(cancelarAnadido));
+
   document.getElementById("botonAbrirNotas").addEventListener("click", () => {
     document.getElementById("modalNotas").classList.remove("oculto");
   });

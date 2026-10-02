@@ -39,7 +39,7 @@
         </svg>Historial
       </button>
       
-      <button class="enlace" id="botonPantallaCompleta" style="display: inline-flex; align-items: center;">
+      <button class="enlace solo-escritorio" id="botonPantallaCompleta" style="display: inline-flex; align-items: center;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
           <polyline points="15 3 21 3 21 9"></polyline>
@@ -167,7 +167,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;">
                 <rect x="4" y="4" width="16" height="16" rx="2" fill="currentColor"></rect>
-              </svg>Finalizar partido
+              </svg>Final
             </button>
           </div>
         </div>
@@ -517,6 +517,23 @@
       <div class="fila-botones" style="margin-top: 0.5rem;">
         <button class="primario ancho" id="botonGuardarEdicionCambio">Guardar</button>
         <button class="ancho" id="botonCancelarEdicionCambio">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+    <!-- Modal Tiempo Añadido -->
+  <div id="modalAnadido" class="superposicion oculto">
+    <div class="hoja-modal">
+      <p style="font-weight:600; text-align:center; margin-bottom:0.5rem;">⏱ Tiempo añadido</p>
+      <p style="color: var(--texto-secundario); font-size: 0.9rem; text-align:center; margin-bottom:1rem;">
+        El tiempo reglamentario ha finalizado.<br>
+        ¿Cuántos minutos de añadido han sido?
+      </p>
+      <label for="inputAnadido">Minutos de añadido</label>
+      <input type="number" inputmode="numeric" id="inputAnadido" min="0" value="0" />
+      <div class="fila-botones" style="margin-top:0.75rem; display:flex; gap:0.5rem;">
+        <button class="ancho btn-accion-modal confirmar" id="botonConfirmarAnadido" style="flex:1;">Confirmar</button>
+        <button class="ancho btn-accion-modal cancelar" id="botonCancelarAnadido" style="flex:1;">Cancelar</button>
       </div>
     </div>
   </div>

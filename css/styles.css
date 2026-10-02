@@ -372,11 +372,14 @@ button[disabled] {
   transform: none !important;
 }
 
-.fila-botones {
+.fila-botones,
+.fila-botones-partidos {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
+
+
 
 .fila-botones-arriba {
   width: 100%;
@@ -2425,10 +2428,17 @@ label {
 
 /* Móvil pequeño */
 @media (max-width: 480px) {
+  .solo-escritorio {
+    display: none !important;
+  }
+
   .menu-acciones-flotante {
     min-width: 160px;
-    max-width: 200px;
-    width: 180px;
+    padding: 0.5rem;
+  }
+    .menu-acciones-flotante.visible {
+    min-width: 80%;
+    transform: translate(-55vw, -50%) !important;
     padding: 0.5rem;
   }
 
@@ -2437,18 +2447,40 @@ label {
   }
 
   .menu-acciones-flotante .btn-accion-flotante {
-    font-size: 0.55rem;
-    padding: 0.35rem 0.2rem;
+    font-size: 0.75rem;
+    padding: 2rem 0.2rem;
     gap: 0.2rem;
     min-height: 36px;
   }
 
   .menu-acciones-titulo {
-    font-size: 0.7rem;
+    font-size: 1rem;
   }
 
   .btn-cancelar-flotante {
-    font-size: 0.85rem;
+    font-size: 1.5rem;
+  }
+
+  .hoja-modal {
+    border-radius: 16px;
+  }
+
+  .hoja-modal-ancha {
+    position: fixed;
+    top: 10vh;
+    width: 90%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .superposicion {
+    width: 100%;
+  }
+
+  #listaHistorial {
+    overflow: auto;
+    padding: 20px 0;
   }
 }
 
@@ -2530,7 +2562,19 @@ label {
   }
 
   .fila-botones button {
-    flex: 0;
+    flex: 1;
+    padding: 0.6rem 1rem;
+  }
+
+  .fila-botones-partidos {
+    display: flex; 
+    gap: 0.5rem; 
+    margin: 0.75rem 0; 
+    flex-wrap: nowrap;
+    overflow: auto;
+  }
+
+  .fila-botones-partidos button {
     padding: 0.6rem 3rem;
   }
 

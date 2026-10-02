@@ -16,6 +16,10 @@ let operacionEnCurso = false;
 // Timestamp global de inicio del partido (NUNCA cambia)
 let inicioPartidoTimestamp = null;
 
+// ===== NUEVO =====
+// Callback pendiente de la modal de tiempo añadido
+let callbackAnadido = null;
+
 // ---------- Helpers ----------
 
 function jugadorPorId(id) {
@@ -54,7 +58,13 @@ function estadoVacio(formacion) {
     minutos: {},
     inicioJugador: {},
     expulsados: [],
-    titulares: []
+    titulares: [],
+    // ===== NUEVO =====
+    // tiempoCumplido: true cuando el reloj ha llegado al reglamentario y se ha pausado solo.
+    // anadidoParte1 / anadidoParte2: segundos de añadido aplicados a cada parte (null = no aplicado).
+    tiempoCumplido: false,
+    anadidoParte1: null,
+    anadidoParte2: null,
   };
 }
 
@@ -148,6 +158,10 @@ async function cargarPartido() {
       inicioJugador: partido.estado_directo.inicioJugador || {},
       expulsados: Array.isArray(partido.estado_directo.expulsados) ? partido.estado_directo.expulsados : [],
       titulares: Array.isArray(partido.estado_directo.titulares) ? partido.estado_directo.titulares : [],
+      // ===== NUEVO =====
+      tiempoCumplido: partido.estado_directo.tiempoCumplido || false,
+      anadidoParte1: partido.estado_directo.anadidoParte1 ?? null,
+      anadidoParte2: partido.estado_directo.anadidoParte2 ?? null,
     };
   }
 
@@ -270,6 +284,50 @@ function mostrarConfirmacion(mensaje, alConfirmar) {
 function cerrarConfirmacion() {
   document.getElementById("modalConfirmacion").classList.add("oculto");
   callbackConfirmacion = null;
+}
+
+// ===== NUEVO =====
+// ---------- Modal de tiempo añadido ----------
+//
+// Uso:
+//   pedirAnadido((segundosAnadido) => { ...continuar... });
+//
+// Si no se ha cumplido el tiempo reglamentario, llama al callback con 0 directamente.
+// Si se ha cumplido, abre la modal y espera a que el usuario confirme.
+
+function pedirAnadido(callback) {
+  if (!estadoDirecto.tiempoCumplido) {
+    callback(0);
+    return;
+  }
+  callbackAnadido = callback;
+  document.getElementById("inputAnadido").value = "0";
+  document.getElementById("modalAnadido").classList.remove("oculto");
+  // Enfocar el input para que el usuario pueda escribir directamente
+  setTimeout(() => {
+    const input = document.getElementById("inputAnadido");
+    if (input) {
+      input.focus();
+      input.select();
+    }
+  }, 100);
+}
+
+function confirmarAnadido() {
+  const input = document.getElementById("inputAnadido");
+  const mins = Math.max(0, parseInt(input.value, 10) || 0);
+  document.getElementById("modalAnadido").classList.add("oculto");
+  const cb = callbackAnadido;
+  callbackAnadido = null;
+  if (cb) cb(mins * 60);
+}
+
+function cancelarAnadido() {
+  // Cancelar = 0 minutos de añadido
+  document.getElementById("modalAnadido").classList.add("oculto");
+  const cb = callbackAnadido;
+  callbackAnadido = null;
+  if (cb) cb(0);
 }
 
 // ---------- Wrapper anti-colisión ----------

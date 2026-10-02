@@ -26,7 +26,7 @@
 
   <main class="contenedor contenedor-partidos">
     <!-- FILTROS -->
-    <div class="fila-botones" style="display: flex; gap: 0.5rem; margin: 0.75rem 0; flex-wrap: wrap;">
+    <div class="fila-botones-partidos">
       <button class="ancho btn-equipo" data-tipo="todos" style="flex:1; min-width:60px;">Todos</button>
       <button class="ancho btn-equipo activo" data-tipo="Liga" style="flex:1; min-width:60px;">Liga</button>
       <button class="ancho btn-equipo" data-tipo="Amistoso" style="flex:1; min-width:60px;">Amistosos</button>
@@ -100,6 +100,7 @@
           <div class="campo-modal">
             <label for="duracionPartido">Duración (min)</label>
             <select id="duracionPartido">
+              <option value="2">2</option>
               <option value="5">5</option>
               <option value="20">20</option>
               <option value="25">25</option>

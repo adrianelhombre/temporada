@@ -1,11 +1,14 @@
 // ---------- Cronómetro (solo redibuja; nunca acumula) ----------
 
 function segundosMarcador() {
-  const segundosDeLaParte = segundosParteActual();
+  const objetivo = partido.duracion_parte_minutos * 60;
+  // ===== NUEVO =====
+  // Si ya se cumplió el tiempo, el marcador se queda clavado en el objetivo.
+  const segundosDeLaParte = Math.min(segundosParteActual(), objetivo);
 
   if (estadoDirecto.parte === 2) {
     // La segunda parte comienza en 35:00 (duración de la primera parte)
-    return (partido.duracion_parte_minutos * 60) + segundosDeLaParte;
+    return objetivo + segundosDeLaParte;
   }
 
   // Para la primera parte, mostramos el tiempo real jugado (puede ser >35 si hay descuento)
@@ -42,13 +45,33 @@ function iniciarTick() {
 
     const enVivo = estadoDirecto.estado === "en_curso";
 
+    // ===== NUEVO =====
+    // Pausa automática al llegar al tiempo reglamentario.
+    // Consolidamos tramo y jugadores, marcamos tiempoCumplido y redibujamos.
+    // El estado sigue siendo "en_curso" para no confundir con una pausa manual.
+    if (enVivo && !estadoDirecto.tiempoCumplido) {
+      const objetivo = partido.duracion_parte_minutos * 60;
+      if (segundosParteActual() >= objetivo) {
+        consolidarTramo();
+        consolidarTodosLosJugadoresEnCampo();
+        estadoDirecto.tiempoCumplido = true;
+        await persistirEstadoDirecto();
+        pintarTodo();
+        return;
+      }
+    }
+
     document.getElementById("textoTiempo").textContent =
       estadoDirecto.estado === "descanso" ? "DESCANSO" : formatoMMSS(segundosMarcador());
-    document.getElementById("textoEstado").textContent = enVivo
-      ? `${estadoDirecto.parte}ª Parte en Juego`
-      : etiquetaEstadoTexto();
 
-    if (enVivo) {
+    // ===== NUEVO =====
+    // Texto de estado: si el tiempo está cumplido, lo indicamos.
+    document.getElementById("textoEstado").textContent =
+      estadoDirecto.tiempoCumplido && estadoDirecto.estado === "en_curso"
+        ? `${estadoDirecto.parte}ª Parte - Tiempo cumplido`
+        : (enVivo ? `${estadoDirecto.parte}ª Parte en Juego` : etiquetaEstadoTexto());
+
+    if (enVivo && !estadoDirecto.tiempoCumplido) {
       actualizarMinutosEnPantalla();
 
       contadorPersistencia++;
