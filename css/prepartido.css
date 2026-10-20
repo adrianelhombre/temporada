@@ -352,9 +352,11 @@
   margin: 0;
   resize: vertical;
   font-size: 0.85rem;
-  line-height: 1.4;
+  line-height: 1.35;
   padding: 0.5rem 0.6rem;
   flex: 1;
+  letter-spacing: 0.02rem;
+  text-transform: uppercase;
 }
 
 /* ---- Grid últimos partidos ---- */
@@ -434,7 +436,6 @@
 .grid-clasificacion {
   display: grid;
   grid-template-columns: minmax(90px, 1.4fr) repeat(7, 1fr);
-
   align-items: center;
 }
 
@@ -574,7 +575,7 @@
 
 /* ---- Selects de formación ---- */
 
-.select-formacion{ flex: 1;}
+.select-formacion { flex: 1; }
 
 .select-formacion select {
   flex: 1;
@@ -633,7 +634,7 @@
   transform: translateY(-1px);
 }
 
-
+/* ---- Responsive móvil ---- */
 @media (max-width: 480px) {
   .barra-pizarra {
     gap: 10px;
@@ -651,4 +652,97 @@
     height: 25px;
     font-size: .8rem;
   }
+}
+
+/* ============================================================
+   MODO CÓRNERS: media cancha con portería arriba
+   Solo cambia el dibujo del fondo. No afecta a datos ni a lógica.
+   ============================================================ */
+
+/* Ocultamos los elementos del campo horizontal */
+.pizarra-campo.modo-corners .area-pizarra {
+  display: none;
+}
+
+/* Anulamos los pseudo-elementos del campo horizontal
+   (línea central vertical + círculo central). */
+.pizarra-campo.modo-corners::before,
+.pizarra-campo.modo-corners::after {
+  display: none;
+}
+
+/* Elementos exclusivos del modo córner: ocultos por defecto */
+.pizarra-campo .corner-area-grande,
+.pizarra-campo .corner-area-pequena,
+.pizarra-campo .corner-punto-penalti,
+.pizarra-campo .corner-linea-medio,
+.pizarra-campo .corner-semicirculo {
+  display: none;
+  pointer-events: none;
+}
+
+/* En modo córner, los mostramos */
+.pizarra-campo.modo-corners .corner-area-grande,
+.pizarra-campo.modo-corners .corner-area-pequena,
+.pizarra-campo.modo-corners .corner-punto-penalti,
+.pizarra-campo.modo-corners .corner-linea-medio,
+.pizarra-campo.modo-corners .corner-semicirculo {
+  display: block;
+}
+
+/* ---- Área grande (portería arriba) ---- */
+.pizarra-campo .corner-area-grande {
+  position: absolute;
+  top: 0;
+  left: 18%;
+  right: 18%;
+  height: 40%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-top: none;
+}
+
+/* ---- Área pequeña (portería arriba) ---- */
+.pizarra-campo .corner-area-pequena {
+  position: absolute;
+  top: 0;
+  left: 33%;
+  right: 33%;
+  height: 18%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-top: none;
+}
+
+/* ---- Punto de penalti ---- */
+.pizarra-campo .corner-punto-penalti {
+  position: absolute;
+  top: 28%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ---- Línea de medio campo (abajo) ---- */
+.pizarra-campo .corner-linea-medio {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* ---- Semicírculo del medio campo (abajo) ---- */
+.pizarra-campo .corner-semicirculo {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 30%;
+  aspect-ratio: 1;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  transform: translate(-50%, 50%);
+  clip-path: inset(0 0 50% 0);
 }

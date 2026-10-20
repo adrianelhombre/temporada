@@ -91,9 +91,6 @@ const TABS_CON_FORMACIONES = ["resumen", "ataque", "defensa"];
 // ---------- Formaciones ----------
 
 function poblarSelectFormaciones() {
-  // Las formaciones válidas son las definidas para la pestaña "resumen".
-  // Como todas las pestañas tienen las mismas 4 formaciones (4-3-3, 4-4-2,
-  // 4-2-3-1, 3-5-2), basta con leer las claves de cualquiera de ellas.
   const formaciones = Object.keys(FORMACIONES_PREPARTIDO.resumen.rival);
   const opciones = formaciones.map(n => `<option value="${n}">${n}</option>`).join("");
   document.getElementById("selectFormRival").innerHTML = opciones;
@@ -126,6 +123,10 @@ function actualizarControlesPorPestana() {
   const selPropia = document.getElementById("selectFormPropia");
   selRival.value = form.rival || "";
   selPropia.value = form.propio || "";
+
+  // Campo reducido en pestañas de córners
+  const esCorner = tab === "corners_favor" || tab === "corners_contra";
+  document.getElementById("pizarraCampo").classList.toggle("modo-corners", esCorner);
 }
 
 // ---------- Cambio de pestaña ----------

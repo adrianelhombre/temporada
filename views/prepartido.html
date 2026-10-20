@@ -3,11 +3,11 @@
 
 <head>
     <link rel="manifest" href="../manifest.json" />
-<meta name="theme-color" content="#ffcc00" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-title" content="Balsas" />
-<link rel="apple-touch-icon" href="../icons/icon-192.png" />
-<meta charset="UTF-8" />
+    <meta name="theme-color" content="#ffcc00" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Balsas" />
+    <link rel="apple-touch-icon" href="../icons/icon-192.png" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <title>Balsas - Pre-partido</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,8 +39,8 @@
             <button class="tab-prepartido activo" data-tab="resumen">Resumen</button>
             <button class="tab-prepartido" data-tab="ataque">Ataque</button>
             <button class="tab-prepartido" data-tab="defensa">Defensa</button>
-            <button class="tab-prepartido" data-tab="corners_favor">Corners favor</button>
-            <button class="tab-prepartido" data-tab="corners_contra">Corners contra</button>
+            <button class="tab-prepartido" data-tab="corners_favor">Corners ataque</button>
+            <button class="tab-prepartido" data-tab="corners_contra">Corners defensa</button>
         </nav>
 
         <div class="distribucion-prepartido">
@@ -90,6 +90,13 @@
                 <div class="pizarra-campo" id="pizarraCampo">
                     <div class="area-pizarra area-izquierda"></div>
                     <div class="area-pizarra area-derecha"></div>
+
+                    <!-- Elementos exclusivos del modo córner (media cancha vertical) -->
+                    <div class="corner-area-grande"></div>
+                    <div class="corner-area-pequena"></div>
+                    <div class="corner-punto-penalti"></div>
+                    <div class="corner-linea-medio"></div>
+                    <div class="corner-semicirculo"></div>
                 </div>
             </div>
 
