@@ -89,9 +89,9 @@ export async function generarPdf(semanaId) {
             background: white;
             display: flex;
             flex-direction: column;
-            min-height: 145px;
-            max-height: 145px;
-            height: 145px;
+            min-height: 160px;
+            max-height: 160px;
+            height: 160px;
             page-break-inside: avoid;
             overflow: hidden;
         `;
