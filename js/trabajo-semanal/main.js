@@ -267,14 +267,6 @@ function setupEventListeners() {
         }
     });
 
-    // Pantalla completa
-    DOM.btnPantallaCompleta.addEventListener('click', () => {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(() => {});
-        } else {
-            document.exitFullscreen().catch(() => {});
-        }
-    });
 
     // Modal eliminar
     DOM.btnConfirmarEliminar.addEventListener('click', eliminarSemanaConfirmada);

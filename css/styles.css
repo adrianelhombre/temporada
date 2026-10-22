@@ -149,6 +149,7 @@ header.cabecera-app h1 {
   letter-spacing: 0.03em;
   text-transform: uppercase;
   text-align: center;
+  flex: 1;
 }
 
 header.cabecera-app a,
@@ -266,8 +267,7 @@ h3 {
 button,
 .boton {
   font-family: inherit;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 1rem;
   padding: 0.65rem 1rem;
   border-radius: var(--radio);
   border: 2px solid transparent;
@@ -293,7 +293,6 @@ button:active {
 button.primario {
   background: var(--amarillo);
   color: var(--blanco);
-  font-weight: 700;
   font-family: Oswald;
   text-transform: uppercase;
   letter-spacing: 0.08rem;
@@ -348,8 +347,8 @@ button.peligro:hover {
 button.ancho {
   width: 100%;
   border: 1px solid var(--gris-300);
-  font-weight: 700;
   font-family: Oswald;
+  font-size: 1.1rem;
   text-transform: uppercase;
   letter-spacing: 0.08rem;
 }
@@ -420,7 +419,6 @@ button[disabled] {
   background: var(--amarillo);
   border-color: var(--amarillo);
   color: var(--blanco);
-  font-weight: 700;
 }
 
 .btn-equipo.activo:hover {
@@ -493,13 +491,18 @@ label {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0;
+  padding: 2rem 0;
   border-bottom: 1px solid var(--borde);
   transition: var(--transicion);
+}
+  
+.lista-partidos .item:nth-child(1) {
+  padding-top: 1rem;
 }
 
 .lista-partidos .item:last-child {
   border-bottom: none;
+  padding-bottom: 1rem;
 }
 
 .lista-partidos .item:hover {
@@ -554,9 +557,17 @@ label {
 
 .acciones-partidos {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
   align-items: center;
   justify-content: flex-end;
+  flex: 1;
+}
+
+.acciones-partidos .primario {
+  flex: 2;
+}
+
+.acciones-partidos .boton-prepartido {
   flex: 1;
 }
 
@@ -2480,7 +2491,7 @@ label {
 
   #listaHistorial {
     overflow: auto;
-    padding: 20px 0;
+    padding: 10px 0;
   }
 }
 
@@ -2572,6 +2583,7 @@ label {
     margin: 0.75rem 0; 
     flex-wrap: nowrap;
     overflow: auto;
+    padding-bottom: 10px;
   }
 
   .fila-botones-partidos button {
@@ -2592,7 +2604,7 @@ label {
     row-gap: 25px;
     align-items: center;
   }
-
+  
   .jornada-div-h3 {
   font-weight: 800;
   font-size: 1.5rem;
@@ -2627,6 +2639,13 @@ label {
   .resultado-partido {
     grid-column: 2;
     grid-row: 1;
+    height: 100%;
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .estado-finalizado {
+    font-size: 1.5rem;
   }
 
   .acciones-partidos {
@@ -2638,12 +2657,12 @@ label {
   }
   .acciones-partidos button {
     flex: 1;
-    padding: 0.5rem 1rem;
+    padding: 0.35rem 1rem;
   }
 
   .acciones-partidos .boton-prepartido {
     flex: 1;
-    padding: 0.65rem 1rem;
+    padding: 0.3rem 0.8rem;
   }
   .acciones-partidos .pequeno-accion {
     flex: 0.1;
@@ -2674,7 +2693,7 @@ label {
 
 /* ===== BOTÓN PRE-PARTIDO ===== */
 button.boton-prepartido {
-  padding: 0.35rem 0.55rem;
+  padding: 0.65rem 1rem;
   border: 2px solid var(--gris-300);
   background: var(--superficie);
   color: var(--texto-secundario);

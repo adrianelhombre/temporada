@@ -200,17 +200,16 @@ function renderizarGridEdicion() {
           </select>
         </div>
         <div class="cell cell-peso">
-          <span class="valor-anterior">${pesoAnterior !== '' ? `<span class="label-ant">ant:</span> ${parseFloat(pesoAnterior).toFixed(1)} kg` : ''}</span>
+          <span class="valor-anterior">${pesoAnterior !== '' ? `<span class="label-ant">ant:</span> ${parseFloat(pesoAnterior).toFixed(1)}` : ''}</span>
           <div class="select-peso-wrapper">
-            <select class="select-peso" data-jugador="${j.id}" data-campo="peso_entero">
+            <select class="select-peso peso-entero" data-jugador="${j.id}" data-campo="peso_entero">
               <option value="">-</option>
               ${generarOpcionesPesoEntero(peso)}
             </select>
-            <span class="peso-decimal">.</span>
-            <select class="select-peso" data-jugador="${j.id}" data-campo="peso_decimal">
+            <span class="peso-punto">.</span>
+            <select class="select-peso peso-decimal" data-jugador="${j.id}" data-campo="peso_decimal">
               ${generarOpcionesPesoDecimal(peso)}
             </select>
-            <span class="peso-decimal">kg</span>
           </div>
         </div>
         <div class="cell cell-imc">

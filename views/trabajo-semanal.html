@@ -20,25 +20,15 @@
             <img src="../assets/volver.svg" class="icono-cabecera" alt="Volver" />
         </a>
         <h1 id="header-titulo">Trabajo semanal</h1>
-        <div style="display:flex; gap:0.5rem; align-items:center;">
-            <button id="btn-pantalla-completa" style="background:none; border:none; color:var(--blanco); cursor:pointer;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
-                    <polyline points="15 3 21 3 21 9"></polyline>
-                    <polyline points="9 21 3 21 3 15"></polyline>
-                    <line x1="21" y1="3" x2="14" y2="10"></line>
-                    <line x1="3" y1="21" x2="10" y2="14"></line>
-                </svg>
-            </button>
-        </div>
     </header>
 
     <div class="contenedor" id="app">
         <!-- Pantalla 1: Historial -->
         <section id="historial-screen" class="screen active">
             <div class="historial-header">
-                <button id="btn-nueva-semana" class="primario" style="display:flex; align-items:center; gap:8px;">
-                    <i class="fas fa-plus-circle"></i> Nueva Semana
+                <button id="btn-nueva-semana" class="primario" style="display:flex; align-items:baseline; gap:8px;">
+                    <i class="fas fa-plus-circle"></i>
+                    <p>nueva semana</p>
                 </button>
             </div>
             <div id="lista-semanas-container" class="tarjeta" style="padding:0; overflow:hidden;"></div>

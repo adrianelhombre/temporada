@@ -647,52 +647,81 @@
     font-size: 0.65rem;
   }
 
+  .lista-historial {
+    flex: 1;
+    justify-content: flex-start;
+  }
+
   .lista-historial .item-historial {
     padding: 0.2rem 0.5rem;
-    font-size: 0.65rem;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .historial-buttons {
+    width: 100%;
+    gap: 1rem;
   }
 
   .historial-buttons button.pequeno {
-    font-size: 0.6rem;
-    padding: 0.2rem 0.5rem;
+    font-size: 1rem;
+    padding: 0.5rem 0.5rem;
+  }
+
+    #btnNuevaEvaluacion {
+    flex: 1;
+  }
+
+  .grid-header-edicion {
+    text-align: center;
   }
 
   .grid-header-edicion,
   .grid-row-edicion {
-    grid-template-columns: 0.2fr 0.3fr 1.2fr 0.6fr 0.6fr 0.4fr 0.3fr !important;
-    gap: 0.1rem;
-    padding: 0.2rem 0.1rem;
+    grid-template-columns: 0.2fr 0.2fr 0.8fr 0.6fr 1.1fr 0.4fr 0.3fr !important;
+    gap: 0.4rem;
+    padding: 0.3rem 0.1rem;
   }
 
   .select-altura {
-    max-width: 45px;
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     padding: 0.1rem 0.1rem;
+    flex: 1;
   }
 
   .select-peso-wrapper .select-peso {
     min-width: 28px;
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     padding: 0.1rem 0.1rem;
   }
 
+  .select-peso-wrapper .peso-entero {
+    flex: 3;
+  }
+
   .select-peso-wrapper .peso-decimal {
+    flex: 2;
+  }
+  
+
+  .select-peso-wrapper .peso-punto {
     font-size: 0.6rem;
   }
 
   .col-header,
   .cell-nombre {
-    font-size: 0.6rem;
+    font-size: 0.8rem;
   }
 
   .cell-dorsal {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
   }
 
   .imc-badge {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     min-width: 26px;
-    padding: 0.1rem 0.2rem;
+    padding: 0.2rem 0.2rem;
+    flex: 1;
   }
 
   .btn-borrar-fila {

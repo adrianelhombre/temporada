@@ -15,7 +15,9 @@
   padding: 10px;
   color: var(--blanco);
   text-decoration: none;
-  font-size: 0.8rem;
+  text-transform: uppercase;
+  font-family: Oswald;
+  letter-spacing: 0.08rem;
   background: var(--gris-600);
   border-radius: var(--radio);
   transition: all 0.3s ease-in-out;

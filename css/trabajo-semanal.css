@@ -191,9 +191,17 @@ body {
 }
 
 /* 1 columna en móvil */
-@media (max-width: 600px) {
+@media (max-width: 480px) {
     .editor-grid {
         grid-template-columns: 1fr;
+    }
+
+    .historial-header {
+        width: 100%;
+    }
+
+    #btn-nueva-semana {
+        width: 100%;
     }
 }
 
