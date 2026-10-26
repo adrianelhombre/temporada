@@ -593,7 +593,7 @@
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 5/3;
+  aspect-ratio: 10/7;
 }
 
 .ejercicio-sesion-texto {
@@ -768,7 +768,7 @@
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 5/3;
+  aspect-ratio: 10/7;
   touch-action: none;
   user-select: none;
 }
@@ -847,8 +847,8 @@
 .tarjeta-ejercicio {
   display: flex;
   flex-direction: column;
-  height: 470px;
-  min-height: 470px;
+  height: 600px;
+  min-height: 600px;
   overflow: hidden;
 }
 
@@ -867,7 +867,7 @@
 }
 
 .tarjeta-ejercicio .biblioteca-grafico {
-  flex: 0 0 auto;
+  flex: 1 0 auto;
 }
 
 .tarjeta-ejercicio>p:not(.descripcion-biblioteca) {
@@ -888,6 +888,7 @@
   overflow: hidden;
   min-height: 3.9em;
   max-height: 3.9em;
+  margin-bottom: 5px 0;
 }
 
 .tarjeta-ejercicio>p:last-child {

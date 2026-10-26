@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <link rel="manifest" href="../manifest.json" />
   <meta name="theme-color" content="#ffcc00" />
@@ -12,11 +13,11 @@
   <link rel="stylesheet" href="../css/styles.css" />
   <link rel="stylesheet" href="../css/entrenamientos.css" />
 </head>
+
 <body>
   <header class="cabecera-app">
     <a href="inicio.html"><img src="../assets/volver.svg" class="icono-cabecera" alt="Volver"></a>
     <h1>Entrenamientos</h1>
-    <button class="enlace" id="botonCerrarSesion">Salir</button>
   </header>
 
   <main class="contenedor entrenamientos-app">
@@ -25,86 +26,225 @@
         <button class="tab-entrenamiento activa" data-vista="planificacion">Planificación</button>
         <button class="tab-entrenamiento" data-vista="biblioteca">Biblioteca de ejercicios</button>
       </nav>
-      <section id="vista-planificacion" class="vista-planificacion">
+      <section id="vista-planificacion">
         <div class="tarjeta cabecera-semana">
-          <div><label for="fechaSemana">Semana de entrenamiento</label><input type="date" id="fechaSemana"><p class="texto-secundario" id="rangoSemana"></p></div>
+          <div><label for="fechaSemana">Semana de entrenamiento</label><input type="date" id="fechaSemana">
+            <p class="texto-secundario" id="rangoSemana"></p>
+          </div>
           <button class="primario" id="btnNuevaSesion">+ Nueva sesión</button>
         </div>
-        <div id="listaSesiones" class="lista-sesiones"><div class="tarjeta estado-vacio">Cargando planificación…</div></div>
+        <div id="listaSesiones" class="lista-sesiones">
+          <div class="tarjeta estado-vacio">Cargando planificación…</div>
+        </div>
       </section>
       <section id="vista-biblioteca" class="oculto">
-        <div class="cabecera-biblioteca"><div><h2>Biblioteca de ejercicios</h2><p class="texto-secundario">Crea ejercicios reutilizables para tus sesiones.</p></div><button class="primario" id="btnNuevoEjercicio">+ Crear ejercicio</button></div>
-        <div class="filtros-biblioteca"><input type="search" id="buscarEjercicio" placeholder="Buscar ejercicio…" aria-label="Buscar ejercicio"><select id="filtroCategoria" aria-label="Filtrar por categoría"><option value="">Todas las categorías</option><option>Posesiones</option><option>Finalizaciones</option><option>Transiciones</option><option>Defensa</option><option>Físico</option><option>Partidos</option><option>Técnica</option><option>Otros</option></select></div>
-        <div id="listaEjercicios" class="lista-ejercicios"><div class="tarjeta estado-vacio">Cargando ejercicios…</div></div>
+        <div class="cabecera-biblioteca">
+          <div>
+            <h2>Biblioteca de ejercicios</h2>
+            <p class="texto-secundario">Crea ejercicios reutilizables para tus sesiones.</p>
+          </div><button class="primario" id="btnNuevoEjercicio">+ Crear ejercicio</button>
+        </div>
+        <div class="filtros-biblioteca"><input type="search" id="buscarEjercicio" placeholder="Buscar ejercicio…"
+            aria-label="Buscar ejercicio"><select id="filtroCategoria" aria-label="Filtrar por categoría">
+            <option value="">Todas las categorías</option>
+            <option>Posesiones</option>
+            <option>Finalizaciones</option>
+            <option>Transiciones</option>
+            <option>Defensa</option>
+            <option>Físico</option>
+            <option>Partidos</option>
+            <option>Técnica</option>
+            <option>Otros</option>
+          </select></div>
+        <div id="listaEjercicios" class="lista-ejercicios">
+          <div class="tarjeta estado-vacio">Cargando ejercicios…</div>
+        </div>
       </section>
     </div>
 
     <section id="vista-detalle-sesion" class="oculto detalle-sesion-pagina">
-      <div class="detalle-barra-superior"><button type="button" class="secundario" id="btnVolverSesiones">← Volver a la semana</button><span id="detalleEstadoAsistencia" class="pildora pendiente">Asistencia pendiente</span></div>
-      <div class="detalle-titulo"><div><p class="texto-secundario" id="detalleFechaEtiqueta"></p><h2 id="detalleTituloCabecera">Entrenamiento</h2></div><button type="button" class="primario" id="btnGuardarDetalle">Guardar cambios</button></div>
+      <div class="detalle-barra-superior"><button type="button" class="secundario" id="btnVolverSesiones">← Volver a la
+          semana</button><span id="detalleEstadoAsistencia" class="pildora pendiente">Asistencia pendiente</span></div>
+      <div class="detalle-titulo">
+        <div>
+          <p class="texto-secundario" id="detalleFechaEtiqueta"></p>
+          <h2 id="detalleTituloCabecera">Entrenamiento</h2>
+        </div><button type="button" class="primario" id="btnGuardarDetalle">Guardar cambios</button>
+      </div>
       <section class="tarjeta detalle-datos">
-        <div class="grid-formulario"><div><label for="detalleTitulo">Nombre de la sesión</label><input id="detalleTitulo" maxlength="100"></div><div><label for="detalleFecha">Fecha</label><input type="date" id="detalleFecha"></div><div><label for="detalleDuracion">Duración prevista (min)</label><input type="number" id="detalleDuracion" min="1" max="240"></div><div><label for="detalleDuracionReal">Duración real (min)</label><input type="number" id="detalleDuracionReal" min="0" max="300" placeholder="Sin registrar"></div></div>
-        <label for="detalleObjetivo">Objetivo principal</label><textarea id="detalleObjetivo" rows="2" placeholder="¿Qué queremos mejorar hoy?"></textarea>
-        <label for="detalleObservaciones">Observaciones de la sesión</label><textarea id="detalleObservaciones" rows="2" placeholder="Notas para el cuerpo técnico"></textarea>
+        <div class="grid-formulario">
+          <div>
+            <label for="detalleTitulo">Nombre de la sesión</label>
+            <input id="detalleTitulo" maxlength="100">
+          </div>
+          <div>
+            <label for="detalleFecha">Fecha</label>
+            <input type="date" id="detalleFecha">
+          </div>
+          <div>
+            <label for="detalleDuracion">Duración prevista (min)</label>
+            <input type="number" id="detalleDuracion" min="1" max="240">
+          </div>
+          <div><label for="detalleDuracionReal">Duración real (min)</label><input type="number" id="detalleDuracionReal"
+              min="0" max="300" placeholder="Sin registrar"></div>
+        </div>
+        <label for="detalleObjetivo">Objetivo principal</label><textarea id="detalleObjetivo" rows="2"
+          placeholder="¿Qué queremos mejorar hoy?"></textarea>
+        <label for="detalleObservaciones">Observaciones de la sesión</label><textarea id="detalleObservaciones" rows="2"
+          placeholder="Notas para el cuerpo técnico"></textarea>
       </section>
 
       <section class="bloque-detalle">
-        <div class="titulo-bloque-detalle"><div><h3>Ejercicios de la sesión</h3><p class="texto-secundario">Orden, descripción y campo gráfico de cada tarea.</p></div></div>
-        <div class="anadir-ejercicio-sesion"><div class="selector-ejercicio-buscable"><label for="buscarEjercicioSesion">Añadir un ejercicio de la biblioteca</label><input type="search" id="buscarEjercicioSesion" placeholder="Buscar por nombre, categoría u objetivo…" aria-label="Buscar ejercicio para añadir"><div id="resultadosEjerciciosSesion" class="resultados-ejercicios-sesion" role="listbox" aria-label="Resultados de ejercicios"></div></div><button type="button" class="secundario boton-crear-ejercicio-sesion" id="btnCrearEjercicioDesdeSesion">＋ Crear ejercicio</button></div>
-        <div id="ejerciciosDeSesion" class="ejercicios-de-sesion"><p class="texto-secundario">Cargando ejercicios…</p></div>
+        <div class="titulo-bloque-detalle">
+          <div>
+            <h3>Ejercicios de la sesión</h3>
+            <p class="texto-secundario">Orden, descripción y campo gráfico de cada tarea.</p>
+          </div>
+        </div>
+        <div class="anadir-ejercicio-sesion">
+          <div class="selector-ejercicio-buscable"><label for="buscarEjercicioSesion">Añadir un ejercicio de la
+              biblioteca</label><input type="search" id="buscarEjercicioSesion"
+              placeholder="Buscar por nombre, categoría u objetivo…" aria-label="Buscar ejercicio para añadir">
+            <div id="resultadosEjerciciosSesion" class="resultados-ejercicios-sesion" role="listbox"
+              aria-label="Resultados de ejercicios"></div>
+          </div><button type="button" class="secundario boton-crear-ejercicio-sesion"
+            id="btnCrearEjercicioDesdeSesion">＋ Crear ejercicio</button>
+        </div>
+        <div id="ejerciciosDeSesion" class="ejercicios-de-sesion">
+          <p class="texto-secundario">Cargando ejercicios…</p>
+        </div>
       </section>
 
       <section class="bloque-detalle bloque-asistencia">
-        <button type="button" id="btnAlternarAsistencia" class="asistencia-desplegable" aria-expanded="false" aria-controls="panelAsistencia">
-          <span class="asistencia-icono" aria-hidden="true">＋</span><span class="asistencia-resumen-texto"><strong>Asistencia</strong><small id="resumenAsistencia">Cargando resumen…</small></span><span id="contadorAsistencia" class="contador-asistencia">—</span><span class="asistencia-chevron" aria-hidden="true">⌄</span>
+        <button type="button" id="btnAlternarAsistencia" class="asistencia-desplegable" aria-expanded="false"
+          aria-controls="panelAsistencia">
+          <span class="asistencia-icono" aria-hidden="true">＋</span><span
+            class="asistencia-resumen-texto"><strong>Asistencia</strong><small id="resumenAsistencia">Cargando
+              resumen…</small></span><span id="contadorAsistencia" class="contador-asistencia">—</span><span
+            class="asistencia-chevron" aria-hidden="true">⌄</span>
         </button>
         <div id="panelAsistencia" class="panel-asistencia oculto">
           <p class="texto-secundario">Por defecto, todos están presentes. Marca solo ausencias o retrasos.</p>
-          <div id="listaAsistencia" class="lista-asistencia"><p class="texto-secundario">Cargando plantilla…</p></div>
-          <div class="estado-asistencia"><label><input type="checkbox" id="asistenciaConfirmada"> He revisado y confirmado la asistencia</label></div>
+          <div id="listaAsistencia" class="lista-asistencia">
+            <p class="texto-secundario">Cargando plantilla…</p>
+          </div>
+          <div class="estado-asistencia"><label><input type="checkbox" id="asistenciaConfirmada"> He revisado y
+              confirmado la asistencia</label></div>
           <button type="button" class="primario ancho" id="btnGuardarAsistencia">Guardar asistencia</button>
         </div>
       </section>
-      <div class="detalle-acciones-inferiores"><button type="button" class="secundario" id="btnVolverSesionesAbajo">Volver a la semana</button><button type="button" class="primario" id="btnGuardarDetalleAbajo">Guardar cambios</button></div>
+      <div class="detalle-acciones-inferiores"><button type="button" class="secundario"
+          id="btnVolverSesionesAbajo">Volver a la semana</button><button type="button" class="primario"
+          id="btnGuardarDetalleAbajo">Guardar cambios</button></div>
     </section>
   </main>
 
-  <div id="modalSesion" class="superposicion oculto"><div class="hoja-modal modal-entrenamiento">
-    <div class="modal-titulo"><h2>Nueva sesión</h2><button class="boton-cerrar-modal" data-cerrar="modalSesion" aria-label="Cerrar">×</button></div>
-    <p class="texto-secundario">Crea la sesión y después podrás añadir ejercicios y pasar lista desde su página completa.</p>
-    <label for="sesionTitulo">Nombre de la sesión</label><input id="sesionTitulo" maxlength="100" placeholder="Ej. Defensa y transición tras pérdida">
-    <div class="grid-formulario"><div><label for="sesionFecha">Fecha</label><input type="date" id="sesionFecha" required></div><div><label for="sesionDuracion">Duración prevista (min)</label><input type="number" id="sesionDuracion" min="1" max="240" value="90"></div></div>
-    <label for="sesionObjetivo">Objetivo principal</label><textarea id="sesionObjetivo" rows="2" placeholder="¿Qué queremos mejorar hoy?"></textarea>
-    <label for="sesionObservaciones">Observaciones</label><textarea id="sesionObservaciones" rows="2" placeholder="Notas para el cuerpo técnico"></textarea>
-    <div class="fila-botones botones-modal-entrenamiento"><button class="primario ancho" id="btnGuardarSesion">Crear sesión</button><button class="secundario ancho" data-cerrar="modalSesion">Cancelar</button></div>
-  </div></div>
-
-  <div id="modalEjercicio" class="superposicion oculto"><div class="hoja-modal modal-entrenamiento modal-ejercicio-amplio">
-    <div class="modal-titulo"><h2 id="tituloModalEjercicio">Nuevo ejercicio</h2><button class="boton-cerrar-modal" data-cerrar="modalEjercicio" aria-label="Cerrar">×</button></div>
-    <input type="hidden" id="ejercicioId">
-    <label for="ejercicioNombre">Nombre del ejercicio</label><input id="ejercicioNombre" maxlength="120" required placeholder="Ej. Rondo 6 contra 3">
-    <div class="grid-formulario"><div><label for="ejercicioCategoria">Categoría</label><select id="ejercicioCategoria"><option>Posesiones</option><option>Finalizaciones</option><option>Transiciones</option><option>Defensa</option><option>Físico</option><option>Partidos</option><option>Técnica</option><option>Otros</option></select></div><div><label for="ejercicioDuracion">Duración (min)</label><input type="number" id="ejercicioDuracion" min="1" max="120" value="12"></div></div>
-    <label for="ejercicioObjetivo">Objetivo</label><textarea id="ejercicioObjetivo" rows="2" placeholder="Conducta o principio que se trabaja"></textarea>
-    <label for="ejercicioDescripcion">Descripción y desarrollo</label><textarea id="ejercicioDescripcion" rows="4" placeholder="Organización, reglas, puntuación y correcciones…"></textarea>
-    <label for="ejercicioMaterial">Material</label><input id="ejercicioMaterial" placeholder="Conos, petos, balones…">
-    <div class="editor-grafico-ejercicio">
-      <div class="editor-grafico-cabecera"><div><h3>Campo del ejercicio</h3><p class="texto-secundario">Para crear una zona, mantén pulsado y arrastra. Selecciona una línea, flecha o zona para cambiar sus ajustes; usa los puntos de control para editar su forma.</p></div><select id="graficoTipoCampo" aria-label="Tipo de campo"><option value="entero">Campo entero</option><option value="medio">Medio campo</option></select></div>
-      <div class="herramientas-grafico" role="toolbar" aria-label="Herramientas del campo">
-        <button type="button" class="herramienta-grafico activa" data-herramienta="seleccionar">Mover / editar</button><button type="button" class="herramienta-grafico" data-herramienta="jugadorA">Jugador A</button><button type="button" class="herramienta-grafico" data-herramienta="jugadorB">Jugador B</button><button type="button" class="herramienta-grafico" data-herramienta="comodin">Comodín</button><button type="button" class="herramienta-grafico" data-herramienta="flecha">Flecha</button><button type="button" class="herramienta-grafico" data-herramienta="linea">Línea</button><button type="button" class="herramienta-grafico" data-herramienta="cono">Cono</button><button type="button" class="herramienta-grafico" data-herramienta="porteria">Portería</button><button type="button" class="herramienta-grafico" data-herramienta="zona">Zona</button><button type="button" class="herramienta-grafico herramienta-borrar" data-herramienta="borrar">Borrar elemento</button>
+  <div id="modalSesion" class="superposicion oculto">
+    <div class="hoja-modal modal-entrenamiento">
+      <div class="modal-titulo">
+        <h2>Nueva sesión</h2><button class="boton-cerrar-modal" data-cerrar="modalSesion" aria-label="Cerrar">×</button>
       </div>
-      <div class="ajustes-grafico" aria-label="Estilo de líneas y zonas">
-        <label for="graficoColor">Color</label><input type="color" id="graficoColor" value="#facc15" aria-label="Color de línea o zona">
-        <label class="ajuste-discontinua" for="graficoDiscontinua"><input type="checkbox" id="graficoDiscontinua"> Línea discontinua</label>
-        <label id="graficoEtiquetaJugadorLabel" for="graficoEtiquetaJugador" class="oculto">Número del jugador</label><input type="text" id="graficoEtiquetaJugador" class="oculto" maxlength="3" aria-label="Número o etiqueta del jugador" placeholder="N.º" autocomplete="off">
-        <span id="ayudaElementoSeleccionado" class="ayuda-elemento-seleccionado">Selecciona una línea, flecha o zona para editarla. Para cambiar el número, selecciona un jugador.</span>
+      <p class="texto-secundario">Crea la sesión y después podrás añadir ejercicios y pasar lista desde su página
+        completa.</p>
+      <label for="sesionTitulo">Nombre de la sesión</label><input id="sesionTitulo" maxlength="100"
+        placeholder="Ej. Defensa y transición tras pérdida">
+      <div class="grid-formulario">
+        <div><label for="sesionFecha">Fecha</label><input type="date" id="sesionFecha" required></div>
+        <div><label for="sesionDuracion">Duración prevista (min)</label><input type="number" id="sesionDuracion" min="1"
+            max="240" value="90"></div>
       </div>
-      <div class="lienzo-campo" id="lienzoCampo"><svg id="graficoCampo" viewBox="0 0 1000 600" role="img" aria-label="Editor gráfico del ejercicio"></svg></div>
-      <div class="pie-editor-grafico"><span id="estadoHerramienta">Herramienta: Mover / editar</span><button type="button" class="boton-mini" id="btnLimpiarGrafico">Limpiar campo</button></div>
+      <label for="sesionObjetivo">Objetivo principal</label><textarea id="sesionObjetivo" rows="2"
+        placeholder="¿Qué queremos mejorar hoy?"></textarea>
+      <label for="sesionObservaciones">Observaciones</label><textarea id="sesionObservaciones" rows="2"
+        placeholder="Notas para el cuerpo técnico"></textarea>
+      <div class="fila-botones botones-modal-entrenamiento"><button class="primario ancho" id="btnGuardarSesion">Crear
+          sesión</button><button class="secundario ancho" data-cerrar="modalSesion">Cancelar</button></div>
     </div>
-    <div class="fila-botones botones-modal-entrenamiento"><button class="primario ancho" id="btnGuardarEjercicio">Guardar ejercicio</button><button class="secundario ancho" data-cerrar="modalEjercicio">Cancelar</button></div>
-  </div></div>
+  </div>
+
+  <div id="modalEjercicio" class="superposicion oculto">
+    <div class="hoja-modal modal-entrenamiento modal-ejercicio-amplio">
+      <div class="modal-titulo">
+        <h2 id="tituloModalEjercicio">Nuevo ejercicio</h2><button class="boton-cerrar-modal"
+          data-cerrar="modalEjercicio" aria-label="Cerrar">×</button>
+      </div>
+      <input type="hidden" id="ejercicioId">
+      <label for="ejercicioNombre">Nombre del ejercicio</label><input id="ejercicioNombre" maxlength="120" required
+        placeholder="Ej. Rondo 6 contra 3">
+      <div class="grid-formulario">
+        <div><label for="ejercicioCategoria">Categoría</label><select id="ejercicioCategoria">
+            <option>Posesiones</option>
+            <option>Finalizaciones</option>
+            <option>Transiciones</option>
+            <option>Defensa</option>
+            <option>Físico</option>
+            <option>Partidos</option>
+            <option>Técnica</option>
+            <option>Otros</option>
+          </select></div>
+        <div><label for="ejercicioDuracion">Duración (min)</label><input type="number" id="ejercicioDuracion" min="1"
+            max="120" value="12"></div>
+      </div>
+      <label for="ejercicioObjetivo">Objetivo</label><textarea id="ejercicioObjetivo" rows="2"
+        placeholder="Conducta o principio que se trabaja"></textarea>
+      <label for="ejercicioDescripcion">Descripción y desarrollo</label><textarea id="ejercicioDescripcion" rows="4"
+        placeholder="Organización, reglas, puntuación y correcciones…"></textarea>
+      <label for="ejercicioMaterial">Material</label><input id="ejercicioMaterial" placeholder="Conos, petos, balones…">
+      <div class="editor-grafico-ejercicio">
+        <div class="editor-grafico-cabecera">
+          <div>
+            <h3>Campo del ejercicio</h3>
+            <p class="texto-secundario">Para crear una zona, mantén pulsado y arrastra. Selecciona una línea, flecha o
+              zona para cambiar sus ajustes; usa los puntos de control para editar su forma.</p>
+          </div><select id="graficoTipoCampo" aria-label="Tipo de campo">
+            <option value="entero">Campo entero</option>
+            <option value="medio">Medio campo</option>
+          </select>
+        </div>
+        <div class="herramientas-grafico" role="toolbar" aria-label="Herramientas del campo">
+          <button type="button" class="herramienta-grafico activa" data-herramienta="seleccionar">Mover /
+            editar</button><button type="button" class="herramienta-grafico" data-herramienta="jugadorA">Jugador
+            A</button><button type="button" class="herramienta-grafico" data-herramienta="jugadorB">Jugador
+            B</button><button type="button" class="herramienta-grafico"
+            data-herramienta="comodin">Comodín</button><button type="button" class="herramienta-grafico"
+            data-herramienta="flecha">Flecha</button><button type="button" class="herramienta-grafico"
+            data-herramienta="linea">Línea</button><button type="button" class="herramienta-grafico"
+            data-herramienta="cono">Cono</button><button type="button" class="herramienta-grafico"
+            data-herramienta="porteria">Portería</button><button type="button" class="herramienta-grafico"
+            data-herramienta="zona">Zona</button><button type="button" class="herramienta-grafico herramienta-borrar"
+            data-herramienta="borrar">Borrar elemento</button>
+        </div>
+        <div class="ajustes-grafico" aria-label="Estilo de líneas y zonas">
+          <label for="graficoColor">Color</label><input type="color" id="graficoColor" value="#facc15"
+            aria-label="Color de línea o zona">
+          <label class="ajuste-discontinua" for="graficoDiscontinua"><input type="checkbox" id="graficoDiscontinua">
+            Línea discontinua</label>
+          <label id="graficoEtiquetaJugadorLabel" for="graficoEtiquetaJugador" class="oculto">Número del
+            jugador</label><input type="text" id="graficoEtiquetaJugador" class="oculto" maxlength="3"
+            aria-label="Número o etiqueta del jugador" placeholder="N.º" autocomplete="off">
+          <span id="ayudaElementoSeleccionado" class="ayuda-elemento-seleccionado">Selecciona una línea, flecha o zona
+            para editarla. Para cambiar el número, selecciona un jugador.</span>
+        </div>
+        <div class="lienzo-campo" id="lienzoCampo"><svg id="graficoCampo" viewBox="0 0 1000 700" role="img"
+            aria-label="Editor gráfico del ejercicio"></svg></div>
+        <div class="pie-editor-grafico"><span id="estadoHerramienta">Herramienta: Mover / editar</span><button
+            type="button" class="boton-mini" id="btnLimpiarGrafico">Limpiar campo</button></div>
+      </div>
+      <div class="fila-botones botones-modal-entrenamiento"><button class="primario ancho"
+          id="btnGuardarEjercicio">Guardar ejercicio</button><button class="secundario ancho"
+          data-cerrar="modalEjercicio">Cancelar</button></div>
+    </div>
+  </div>
 
   <div id="notificaciones" class="notificaciones" aria-live="polite"></div>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../js/supabaseClient.js"></script><script src="../js/comun.js"></script><script src="../js/entrenamientos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabaseClient.js"></script>
+  <script src="../js/comun.js"></script>
+  <script src="../js/entrenamientos/grafico.js"></script>
+  <script src="../js/entrenamientos/asistencia.js"></script>
+  <script src="../js/entrenamientos/ejercicios.js"></script>
+  <script src="../js/entrenamientos/sesiones.js"></script>
+  <script src="../js/entrenamientos.js"></script>
 </body>
+
 </html>
