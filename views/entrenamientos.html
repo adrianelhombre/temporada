@@ -94,23 +94,90 @@
           placeholder="Notas para el cuerpo técnico"></textarea>
       </section>
 
-      <section class="bloque-detalle">
-        <div class="titulo-bloque-detalle">
-            <h3>Añadir ejercicios de la biblioteca</h3>
-        </div>
-        <div class="anadir-ejercicio-sesion">
-          <div class="selector-ejercicio-buscable">
-              <input type="search" id="buscarEjercicioSesion"
-              placeholder="Buscar por nombre, categoría u objetivo…" aria-label="Buscar ejercicio para añadir">
-            <div id="resultadosEjerciciosSesion" class="resultados-ejercicios-sesion" role="listbox"
-              aria-label="Resultados de ejercicios"></div>
-          </div><button type="button" class="secundario boton-crear-ejercicio-sesion"
-            id="btnCrearEjercicioDesdeSesion">＋ Crear ejercicio</button>
-        </div>
-        <div id="ejerciciosDeSesion" class="ejercicios-de-sesion">
-          <p class="texto-secundario">Cargando ejercicios…</p>
+      <section class="bloque-detalle bloque-ejercicios-sesion">
+        <div class="panel-ejercicios">
+
+          <div class="anadir-ejercicio-sesion">
+            <div class="titulo-bloque-detalle">
+              <div>
+                <h3>Ejercicios para añadir</h3>
+                <p class="texto-secundario" id="resumenEjercicios">Todavía no hay ejercicios añadidos</p>
+              </div>
+            </div>
+            <div class="selector-ejercicio-disponibles">
+              <button type="button" class="secundario boton-alternar-ejercicios-disponibles"
+                id="btnAlternarEjerciciosDisponibles" aria-expanded="false"
+                aria-controls="selectorEjerciciosDisponibles">
+                <span aria-hidden="true">▸</span> Mostrar ejercicios disponibles
+              </button>
+              <div id="selectorEjerciciosDisponibles" class="selector-ejercicio-contenido oculto">
+                <div class="selector-ejercicio-buscable">
+                  <input type="search" id="buscarEjercicioSesion" placeholder="Buscar por nombre, categoría u objetivo…"
+                    aria-label="Buscar ejercicio para añadir">
+                  <div id="resultadosEjerciciosSesion" class="resultados-ejercicios-sesion" role="listbox"
+                    aria-label="Resultados de ejercicios"></div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="secundario boton-crear-ejercicio-sesion" id="btnCrearEjercicioDesdeSesion">＋
+              Crear ejercicio</button>
+          </div>
+
+          <div class="bloque-detalle bloque-equipos-sesion">
+            <div class="titulo-bloque-detalle">
+                <h3>Equipos</h3>
+              <button type="button" class="primario" id="btnGuardarEquipos">Guardar equipos</button>
+            </div>
+
+            <div class="opciones-equipos-sesion">
+              <label><input type="checkbox" id="usarDosEquipos" checked disabled> Dos equipos</label>
+              <label><input type="checkbox" id="usarTresEquipos"> Tres equipos</label>
+            </div>
+
+            <div class="distribuciones-equipos">
+              <div class="distribucion-equipos distribucion-dos-equipos">
+                <h4>Distribución en dos equipos</h4>
+                <div class="columnas-equipos columnas-dos">
+                  <label class="campo-equipo"><span>Equipo A</span>
+                    <textarea id="jugadoresEquipoA" rows="6"
+                      placeholder="Escribe los nombres de los jugadores…"></textarea>
+                  </label>
+                  <label class="campo-equipo"><span>Equipo B</span>
+                    <textarea id="jugadoresEquipoB" rows="6"
+                      placeholder="Escribe los nombres de los jugadores…"></textarea>
+                  </label>
+                  <label class="campo-equipo"><span>Comodines</span>
+                    <textarea id="jugadoresComodines" rows="6" placeholder="Nombres de los comodines…"></textarea>
+                  </label>
+                </div>
+              </div>
+
+              <div class="distribucion-equipos distribucion-tres-equipos oculto" id="distribucionTresEquipos">
+                <h4>Distribución en tres equipos</h4>
+                <div class="columnas-equipos columnas-tres">
+                  <label class="campo-equipo"><span>Equipo A</span>
+                    <textarea id="jugadoresEquipo3A" rows="6" placeholder="Nombres…"></textarea>
+                  </label>
+                  <label class="campo-equipo"><span>Equipo B</span>
+                    <textarea id="jugadoresEquipo3B" rows="6" placeholder="Nombres…"></textarea>
+                  </label>
+                  <label class="campo-equipo"><span>Equipo C</span>
+                    <textarea id="jugadoresEquipo3C" rows="6" placeholder="Nombres…"></textarea>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="ejerciciosDeSesion" class="ejercicios-de-sesion">
+            <p class="texto-secundario">Cargando ejercicios…</p>
+          </div>
+
         </div>
       </section>
+
+
+
 
       <section class="bloque-detalle bloque-asistencia">
         <button type="button" id="btnAlternarAsistencia" class="asistencia-desplegable" aria-expanded="false"
@@ -202,7 +269,8 @@
           <button type="button" class="herramienta-grafico activa" data-herramienta="seleccionar">Mover /
             editar</button><button type="button" class="herramienta-grafico" data-herramienta="jugadorA">Equipo
             A</button><button type="button" class="herramienta-grafico" data-herramienta="jugadorB">Equipo
-            B</button><button type="button" class="herramienta-grafico" data-herramienta="jugadorC">Equipo C</button><button type="button" class="herramienta-grafico" data-herramienta="comodin">Comodín</button>
+            B</button><button type="button" class="herramienta-grafico" data-herramienta="jugadorC">Equipo
+            C</button><button type="button" class="herramienta-grafico" data-herramienta="comodin">Comodín</button>
           <button type="button" class="herramienta-grafico" data-herramienta="portero">Portero</button>
           <button type="button" class="herramienta-grafico" data-herramienta="pelota">Pelota</button>
           <button type="button" class="herramienta-grafico" data-herramienta="flecha">Flecha</button><button

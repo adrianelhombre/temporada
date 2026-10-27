@@ -52,7 +52,14 @@ async function abrirDetalleSesion(sesion) {
   $('zonaListado').classList.add('oculto'); $('vista-detalle-sesion').classList.remove('oculto');
   $('detalleTitulo').value = sesion.titulo || 'Entrenamiento'; $('detalleFecha').value = sesion.fecha || ''; $('detalleDuracion').value = sesion.duracion_prevista ?? 90; $('detalleDuracionReal').value = sesion.duracion_real ?? ''; $('detalleObjetivo').value = sesion.objetivo || ''; $('detalleObservaciones').value = sesion.observaciones || '';
   $('detalleTituloCabecera').textContent = sesion.titulo || 'Entrenamiento'; $('detalleFechaEtiqueta').textContent = formatearFecha(sesion.fecha, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  $('asistenciaConfirmada').checked = Boolean(sesion.asistencia_confirmada); $('panelAsistencia').classList.add('oculto'); $('btnAlternarAsistencia').setAttribute('aria-expanded', 'false'); $('btnAlternarAsistencia').querySelector('.asistencia-icono').textContent = '＋';
+  $('asistenciaConfirmada').checked = Boolean(sesion.asistencia_confirmada);
+  cargarEquiposSesion(sesion);
+  let estadoGuardadoEjercicios = sesion.estado_ejercicios;
+  if (typeof estadoGuardadoEjercicios === 'string') { try { estadoGuardadoEjercicios = JSON.parse(estadoGuardadoEjercicios); } catch { estadoGuardadoEjercicios = {}; } }
+  estadoContraidoEjerciciosSesion = estadoGuardadoEjercicios && typeof estadoGuardadoEjercicios === 'object' ? estadoGuardadoEjercicios : {};
+  ejerciciosContraidos.clear();
+  Object.entries(estadoContraidoEjerciciosSesion).forEach(([id, contraido]) => { if (contraido) ejerciciosContraidos.add(String(id)); });
+  $('panelAsistencia').classList.add('oculto'); $('btnAlternarAsistencia').setAttribute('aria-expanded', 'false'); $('btnAlternarAsistencia').querySelector('.asistencia-icono').textContent = '＋';
   estadosAsistencia = new Map(); ejerciciosSesion = [];
   $('ejerciciosDeSesion').innerHTML = '<p class="texto-secundario">Cargando ejercicios…</p>'; $('listaAsistencia').innerHTML = '<p class="texto-secundario">Cargando plantilla…</p>';
   const [itemsRes, asistenciaRes] = await Promise.all([
@@ -66,6 +73,83 @@ async function abrirDetalleSesion(sesion) {
   jugadoresEntrenamiento.forEach(j => { if (!estadosAsistencia.has(j.id)) estadosAsistencia.set(j.id, { estado: 'presente', justificada: false, minutos_retraso: 0 }); });
   actualizarSelectorEjercicios(); renderizarAsistencia(); renderizarEjerciciosSesion(); actualizarEstadoAsistencia(); window.scrollTo({ top: 0, behavior: 'auto' });
 }
+function obtenerDatosEquiposSesion() {
+  return {
+    dosEquipos: true,
+    tresEquipos: $('usarTresEquipos').checked,
+    equipos2: [
+      $('jugadoresEquipoA').value,
+      $('jugadoresEquipoB').value,
+      $('jugadoresComodines').value
+    ],
+    equipos3: [
+      $('jugadoresEquipo3A').value,
+      $('jugadoresEquipo3B').value,
+      $('jugadoresEquipo3C').value
+    ]
+  };
+}
+
+function cargarEquiposSesion(sesion) {
+  let equipos = sesion.equipos_sesion;
+
+  if (typeof equipos === 'string') {
+    try { equipos = JSON.parse(equipos); } catch { equipos = null; }
+  }
+
+  equipos = equipos && typeof equipos === 'object' ? equipos : {};
+
+  $('usarTresEquipos').checked = Boolean(equipos.tresEquipos);
+  $('jugadoresEquipoA').value = equipos.equipos2?.[0] || '';
+  $('jugadoresEquipoB').value = equipos.equipos2?.[1] || '';
+  $('jugadoresComodines').value = equipos.equipos2?.[2] || '';
+  $('jugadoresEquipo3A').value = equipos.equipos3?.[0] || '';
+  $('jugadoresEquipo3B').value = equipos.equipos3?.[1] || '';
+  $('jugadoresEquipo3C').value = equipos.equipos3?.[2] || '';
+
+  renderizarOpcionesEquiposSesion();
+}
+
+function renderizarOpcionesEquiposSesion() {
+  const usarTres = $('usarTresEquipos').checked;
+
+  $('distribucionTresEquipos').classList.toggle('oculto', !usarTres);
+  document.querySelector('.distribuciones-equipos')
+    .classList.toggle('con-tres-equipos', usarTres);
+}
+
+async function guardarEquiposSesion() {
+  if (!sesionActual?.id) return;
+
+  const boton = $('btnGuardarEquipos');
+  boton.disabled = true;
+  boton.textContent = 'Guardando…';
+
+  try {
+    const equipos = obtenerDatosEquiposSesion();
+    const { data, error } = await supabaseClient
+      .from('entrenamientos_sesiones')
+      .update({ equipos_sesion: equipos })
+      .eq('id', sesionActual.id)
+      .select('*')
+      .single();
+
+    if (error) throw error;
+
+    sesionActual = data;
+    mostrarNotificacion('Equipos del entrenamiento guardados.', 'exito');
+  } catch (error) {
+    console.error(error);
+    mostrarNotificacion(
+      'No se pudieron guardar los equipos. Comprueba que has añadido la columna equipos_sesion en Supabase.',
+      'error'
+    );
+  } finally {
+    boton.disabled = false;
+    boton.textContent = 'Guardar equipos';
+  }
+}
+
 function volverAPlanificacion() { $('vista-detalle-sesion').classList.add('oculto'); $('zonaListado').classList.remove('oculto'); cambiarVista('planificacion'); cargarSemana(); }
 async function guardarDetalleSesion() {
   if (!sesionActual?.id) return;

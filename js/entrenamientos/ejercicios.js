@@ -1,4 +1,17 @@
 // Biblioteca de ejercicios y asociación de tareas a una sesión.
+const ejerciciosContraidos = new Set();
+let estadoContraidoEjerciciosSesion = {};
+
+function alternarEjerciciosDisponibles() {
+  const panel = $('selectorEjerciciosDisponibles');
+  const boton = $('btnAlternarEjerciciosDisponibles');
+  if (!panel || !boton) return;
+  const mostrar = panel.classList.contains('oculto');
+  panel.classList.toggle('oculto', !mostrar);
+  boton.setAttribute('aria-expanded', String(mostrar));
+  boton.innerHTML = `<span aria-hidden="true">${mostrar ? '▾' : '▸'}</span> ${mostrar ? 'Ocultar ejercicios disponibles' : 'Mostrar ejercicios disponibles'}`;
+  if (mostrar) $('buscarEjercicioSesion')?.focus();
+}
 
 function actualizarSelectorEjercicios() {
   const cont = $('resultadosEjerciciosSesion'); if (!cont) return;
@@ -12,6 +25,9 @@ function actualizarSelectorEjercicios() {
 
 function renderizarEjerciciosSesion() {
   const cont = $('ejerciciosDeSesion'); if (!cont) return;
+  const esMovil = window.matchMedia('(max-width: 700px)').matches;
+  const resumen = $('resumenEjercicios');
+  if (resumen) resumen.textContent = `${ejerciciosSesion.length} ${ejerciciosSesion.length === 1 ? 'ejercicio añadido' : 'ejercicios añadidos'}`;
   if (!ejerciciosSesion.length) { cont.innerHTML = '<div class="tarjeta estado-vacio">Todavía no has añadido ejercicios. Selecciona uno de la biblioteca o créalo desde la pestaña Biblioteca de ejercicios.</div>'; return; }
   cont.innerHTML = '<h2>EJERCICIOS PARA EL ENTRENAMIENTO</h2>';
   ejerciciosSesion.forEach((item, index) => {
@@ -22,12 +38,42 @@ function renderizarEjerciciosSesion() {
     articulo.addEventListener('dragleave', () => articulo.classList.remove('destino-arrastre-ejercicio'));
     articulo.addEventListener('drop', async ev => { ev.preventDefault(); articulo.classList.remove('destino-arrastre-ejercicio'); const fromId = ejercicioArrastradoId || ev.dataTransfer.getData('text/plain'); if (!fromId || fromId === item.id) return; const arr = [...ejerciciosSesion]; const from = arr.findIndex(x => String(x.id) === String(fromId)); const to = arr.findIndex(x => String(x.id) === String(item.id)); if (from < 0 || to < 0) return; const [moved] = arr.splice(from,1); arr.splice(to,0,moved); await guardarOrdenEjercicios(arr); });
     const grafico = normalizarGrafico(item.grafico_snapshot);
-    articulo.innerHTML = `<div class="ejercicio-sesion-detalle-cabecera"><div class="numero-ejercicio">${index + 1}</div><div class="ejercicio-sesion-titulo"><h4>${escaparHTML(item.nombre_snapshot || 'Ejercicio')}</h4><div class="sesion-meta"><span class="pildora">${Number(item.duracion_prevista || 0)} min</span><span class="ejercicio-categoria">${escaparHTML(item.categoria_snapshot || 'Otros')}</span></div></div><button type="button" class="boton-mini peligro" data-quitar="${escaparHTML(item.id)}">Quitar</button></div>
+    const idEjercicio = String(item.id);
+    const tieneEstadoGuardado = Object.prototype.hasOwnProperty.call(estadoContraidoEjerciciosSesion, idEjercicio);
+    const contraido = tieneEstadoGuardado
+      ? Boolean(estadoContraidoEjerciciosSesion[idEjercicio])
+      : (esMovil || ejerciciosContraidos.has(idEjercicio));
+    articulo.classList.toggle('ejercicio-contraido', contraido);
+    articulo.innerHTML = `<div class="ejercicio-sesion-detalle-cabecera" role="button" tabindex="0" aria-expanded="${!contraido}" aria-label="${contraido ? 'Expandir' : 'Contraer'} ${escaparHTML(item.nombre_snapshot || 'ejercicio')}"><div class="numero-ejercicio">${index + 1}</div><div class="ejercicio-sesion-titulo"><h4>${escaparHTML(item.nombre_snapshot || 'Ejercicio')}</h4><div class="sesion-meta"><span class="pildora">${Number(item.duracion_prevista || 0)} min</span><span class="ejercicio-categoria">${escaparHTML(item.categoria_snapshot || 'Otros')}</span></div></div><button type="button" class="boton-mini peligro" data-quitar="${escaparHTML(item.id)}">Quitar</button></div>
       <div class="ejercicio-sesion-contenido"><div class="grafico-miniatura">${crearSVGGrafico(grafico, `ejercicio-${index}`)}</div><div class="ejercicio-sesion-texto">${item.objetivo_snapshot ? `<p><strong>Objetivo:</strong> ${escaparHTML(item.objetivo_snapshot)}</p>` : ''}<p class="descripcion-ejercicio-sesion">${escaparHTML(item.descripcion_snapshot || 'Sin descripción añadida.')}</p>${item.material_snapshot ? `<p class="texto-secundario"><strong>Material:</strong> ${escaparHTML(item.material_snapshot)}</p>` : ''}<label for="duracion-real-${escaparHTML(item.id)}">Duración real (min)</label><input type="number" min="0" max="240" id="duracion-real-${escaparHTML(item.id)}" class="duracion-real-ejercicio" value="${item.duracion_real ?? ''}" placeholder="Sin registrar" data-duracion-real="${escaparHTML(item.id)}"><label for="observaciones-ejercicio-${escaparHTML(item.id)}">Notas de la tarea</label><textarea rows="2" id="observaciones-ejercicio-${escaparHTML(item.id)}" data-observaciones-ejercicio="${escaparHTML(item.id)}" placeholder="Correcciones o ajustes realizados">${escaparHTML(item.observaciones || '')}</textarea><button type="button" class="boton-mini" data-guardar-ejercicio="${escaparHTML(item.id)}">Guardar datos de la tarea</button></div></div>`;
+    const alternarDetalle = () => {
+      const id = String(item.id);
+      const estaContraido = !articulo.classList.contains('ejercicio-contraido');
+      estadoContraidoEjerciciosSesion[id] = estaContraido;
+      if (estaContraido) ejerciciosContraidos.add(id); else ejerciciosContraidos.delete(id);
+      articulo.classList.toggle('ejercicio-contraido', estaContraido);
+      const cabecera = articulo.querySelector('.ejercicio-sesion-detalle-cabecera');
+      cabecera.setAttribute('aria-expanded', String(!estaContraido));
+      cabecera.setAttribute('aria-label', `${estaContraido ? 'Expandir' : 'Contraer'} ${item.nombre_snapshot || 'ejercicio'}`);
+      guardarEstadoContraidoEjerciciosSesion();
+    };
+    articulo.querySelector('.ejercicio-sesion-detalle-cabecera').addEventListener('click', ev => {
+      if (ev.target.closest('button, input, textarea, select, a, label')) return;
+      alternarDetalle();
+    });
+    articulo.querySelector('.ejercicio-sesion-detalle-cabecera').addEventListener('keydown', ev => {
+      if (ev.target.closest('button, input, textarea, select, a, label')) return;
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); alternarDetalle(); }
+    });
+    // Pulsar el artículo fuera de controles también permite abrir/cerrar, especialmente cómodo en móvil.
+    articulo.addEventListener('click', ev => {
+      if (ev.target.closest('.ejercicio-sesion-detalle-cabecera, button, input, textarea, select, a, label')) return;
+      alternarDetalle();
+    });
     articulo.querySelector('[data-quitar]').addEventListener('click', async () => {
       if (!confirm(`¿Quitar «${item.nombre_snapshot}» de esta sesión?`)) return;
       const { error } = await supabaseClient.from('entrenamientos_sesion_ejercicios').delete().eq('id', item.id); if (error) { console.error(error); mostrarNotificacion('No se pudo quitar el ejercicio.', 'error'); return; }
-      ejerciciosSesion = ejerciciosSesion.filter(x => x.id !== item.id); renderizarEjerciciosSesion();
+      ejerciciosContraidos.delete(String(item.id)); ejerciciosSesion = ejerciciosSesion.filter(x => x.id !== item.id); renderizarEjerciciosSesion();
     });
     articulo.querySelector('[data-guardar-ejercicio]').addEventListener('click', async () => {
       const duracionInput = articulo.querySelector(`[data-duracion-real="${item.id}"]`); const obsInput = articulo.querySelector(`[data-observaciones-ejercicio="${item.id}"]`);
@@ -39,6 +85,22 @@ function renderizarEjerciciosSesion() {
     cont.appendChild(articulo);
   });
   actualizarSelectorEjercicios();
+}
+
+async function guardarEstadoContraidoEjerciciosSesion() {
+  if (!sesionActual?.id) return;
+  const { data, error } = await supabaseClient
+    .from('entrenamientos_sesiones')
+    .update({ estado_ejercicios: estadoContraidoEjerciciosSesion })
+    .eq('id', sesionActual.id)
+    .select('*')
+    .single();
+  if (error) {
+    console.error(error);
+    mostrarNotificacion('No se pudo guardar el estado de los ejercicios. Ejecuta la actualización SQL incluida en el proyecto.', 'error');
+    return;
+  }
+  sesionActual = data;
 }
 
 async function guardarOrdenEjercicios(lista) {

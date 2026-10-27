@@ -34,12 +34,15 @@ const NOMBRES_HERRAMIENTAS = { seleccionar: 'Mover / editar', jugadorA: 'Añadir
   $('btnGuardarDetalle').addEventListener('click', guardarDetalleSesion);
   $('btnGuardarDetalleAbajo').addEventListener('click', guardarDetalleSesion);
   $('btnGuardarAsistencia').addEventListener('click', guardarAsistencia);
+  $('usarTresEquipos').addEventListener('change', renderizarOpcionesEquiposSesion);
+  $('btnGuardarEquipos').addEventListener('click', guardarEquiposSesion);
   $('btnAlternarAsistencia').addEventListener('click', alternarAsistencia);
   $('btnCrearEjercicioDesdeSesion').addEventListener('click', () => abrirModalEjercicio());
   $('btnNuevoEjercicio').addEventListener('click', () => abrirModalEjercicio());
   $('btnGuardarEjercicio').addEventListener('click', guardarEjercicio);
   $('buscarEjercicio').addEventListener('input', renderizarEjercicios);
   $('buscarEjercicioSesion').addEventListener('input', actualizarSelectorEjercicios);
+  $('btnAlternarEjerciciosDisponibles').addEventListener('click', alternarEjerciciosDisponibles);
   ['graficoColor','graficoDiscontinua'].forEach(id => { $(id).addEventListener('input', actualizarEstiloSeleccionadoEnVivo); $(id).addEventListener('change', actualizarEstiloSeleccionadoEnVivo); });
   $('graficoEtiquetaJugador').addEventListener('input', actualizarEtiquetaJugadorSeleccionado);
   $('filtroCategoria').addEventListener('change', renderizarEjercicios);

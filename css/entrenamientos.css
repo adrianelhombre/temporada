@@ -439,10 +439,10 @@
 }
 
 .anadir-ejercicio-sesion {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px;
-  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
 }
 
 .anadir-ejercicio-sesion select {
@@ -1106,6 +1106,7 @@
   padding: 9px 12px;
   white-space: nowrap;
   font-size: .86rem;
+  background-color: var(--gris-300);
 }
 
 .ayuda-elemento-seleccionado {
@@ -1288,4 +1289,184 @@
 
 .tarjeta-ejercicio .descripcion-biblioteca {
   flex: 1;
+}
+
+/* Equipos asignados a cada sesión de entrenamiento */
+.bloque-equipos-sesion .titulo-bloque-detalle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.opciones-equipos-sesion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  margin: 1rem 0;
+}
+
+.opciones-equipos-sesion label {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  margin: 0;
+}
+
+.opciones-equipos-sesion input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.distribuciones-equipos {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--borde, #d1d5db);
+  border-radius: 14px;
+  background: var(--fondo-tarjeta, #fff);
+}
+
+.distribucion-equipos {
+  min-width: 0;
+  padding: .9rem;
+  border: 1px solid var(--borde, #d1d5db);
+  border-radius: 10px;
+  background: transparent;
+}
+
+.distribucion-equipos h4 {
+  margin: 0 0 .85rem;
+}
+
+.columnas-equipos {
+  display: grid;
+  gap: .85rem;
+}
+
+.columnas-dos {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.columnas-tres {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.campo-equipo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: .4rem;
+  margin: 0;
+}
+
+.campo-equipo > span {
+  font-weight: 700;
+}
+
+.campo-equipo textarea {
+  width: 100%;
+  min-height: 170px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+/* La distribución de tres equipos siempre queda debajo de la de dos. */
+.distribuciones-equipos.con-tres-equipos {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (max-width: 700px) {
+  .bloque-equipos-sesion .titulo-bloque-detalle {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .columnas-dos,
+  .columnas-tres {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 701px) and (max-width: 999px) {
+  .columnas-tres {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+
+/* Cada ejercicio se puede contraer de forma independiente. */
+.panel-ejercicios {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding-top: .5rem;
+}
+
+.ejercicio-sesion-detalle-cabecera {
+  align-items: center;
+}
+
+.boton-alternar-detalle-ejercicio {
+  min-width: 34px;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.ejercicio-sesion-detalle.ejercicio-contraido .ejercicio-sesion-contenido {
+  display: none;
+}
+
+.ejercicio-sesion-detalle.ejercicio-contraido {
+  padding-bottom: 14px;
+}
+
+
+/* Ajustes específicos de móvil. El estado plegado de cada ejercicio lo controla JavaScript. */
+@media (max-width: 700px) {
+  .campo-equipo textarea#jugadoresComodines {
+    min-height: 70px;
+  }
+}
+
+
+/* Selector plegable de ejercicios existentes en la sesión */
+.selector-ejercicio-disponibles {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+}
+
+.boton-alternar-ejercicios-disponibles {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 700;
+}
+
+.selector-ejercicio-contenido {
+  min-width: 0;
+}
+
+.ejercicio-sesion-detalle-cabecera {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ejercicio-sesion-detalle-cabecera:focus-visible {
+  outline: 2px solid #ca8a04;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+@media (max-width: 700px) {
+  .ejercicio-sesion-detalle { cursor: default; }
+  .ejercicio-sesion-detalle:active { cursor: default; }
+  .ejercicio-sesion-detalle-cabecera { gap: 10px; }
+  .boton-alternar-ejercicios-disponibles { width: 100%; justify-content: flex-start; }
 }
