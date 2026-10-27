@@ -110,16 +110,22 @@
 
 .sesion-meta {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 7px;
 }
 
+.sesion-meta .ejercicio-categoria,
+.sesion-meta .pildora {
+  padding: 8px 15px;
+}
+
 .pildora {
   display: inline-flex;
   align-items: center;
-  border-radius: 999px;
-  padding: 3px 8px;
+  border-radius: 50px;
+  padding: 1px 15px;
   font-size: .72rem;
   font-weight: 600;
   background: var(--gris-200);
@@ -548,8 +554,8 @@
 
 .ejercicio-sesion-detalle-cabecera {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 20px;
 }
 
 .numero-ejercicio {

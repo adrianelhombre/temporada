@@ -13,7 +13,7 @@ function actualizarSelectorEjercicios() {
 function renderizarEjerciciosSesion() {
   const cont = $('ejerciciosDeSesion'); if (!cont) return;
   if (!ejerciciosSesion.length) { cont.innerHTML = '<div class="tarjeta estado-vacio">Todavía no has añadido ejercicios. Selecciona uno de la biblioteca o créalo desde la pestaña Biblioteca de ejercicios.</div>'; return; }
-  cont.innerHTML = '';
+  cont.innerHTML = '<h2>EJERCICIOS PARA EL ENTRENAMIENTO</h2>';
   ejerciciosSesion.forEach((item, index) => {
     const articulo = document.createElement('article'); articulo.className = 'tarjeta ejercicio-sesion-detalle'; articulo.draggable = true; articulo.dataset.ordenId = item.id; articulo.title = 'Arrastra para cambiar el orden';
     articulo.addEventListener('dragstart', ev => { ejercicioArrastradoId = item.id; articulo.classList.add('arrastrando-ejercicio'); ev.dataTransfer.effectAllowed = 'move'; ev.dataTransfer.setData('text/plain', String(item.id)); });
