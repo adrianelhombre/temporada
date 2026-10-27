@@ -35,6 +35,7 @@ const NOMBRES_HERRAMIENTAS = { seleccionar: 'Mover / editar', jugadorA: 'Añadir
   $('btnGuardarDetalleAbajo').addEventListener('click', guardarDetalleSesion);
   $('btnGuardarAsistencia').addEventListener('click', guardarAsistencia);
   $('usarTresEquipos').addEventListener('change', renderizarOpcionesEquiposSesion);
+  document.querySelectorAll('[data-alternar-distribucion]').forEach(btn => btn.addEventListener('click', () => alternarDistribucionEquipos(btn)));
   $('btnGuardarEquipos').addEventListener('click', guardarEquiposSesion);
   $('btnAlternarAsistencia').addEventListener('click', alternarAsistencia);
   $('btnCrearEjercicioDesdeSesion').addEventListener('click', () => abrirModalEjercicio());
@@ -43,6 +44,7 @@ const NOMBRES_HERRAMIENTAS = { seleccionar: 'Mover / editar', jugadorA: 'Añadir
   $('buscarEjercicio').addEventListener('input', renderizarEjercicios);
   $('buscarEjercicioSesion').addEventListener('input', actualizarSelectorEjercicios);
   $('btnAlternarEjerciciosDisponibles').addEventListener('click', alternarEjerciciosDisponibles);
+  $('btnAlternarDetallesEntrenamiento').addEventListener('click', alternarDetallesEntrenamiento);
   ['graficoColor','graficoDiscontinua'].forEach(id => { $(id).addEventListener('input', actualizarEstiloSeleccionadoEnVivo); $(id).addEventListener('change', actualizarEstiloSeleccionadoEnVivo); });
   $('graficoEtiquetaJugador').addEventListener('input', actualizarEtiquetaJugadorSeleccionado);
   $('filtroCategoria').addEventListener('change', renderizarEjercicios);
@@ -64,6 +66,26 @@ const NOMBRES_HERRAMIENTAS = { seleccionar: 'Mover / editar', jugadorA: 'Añadir
     mostrarNotificacion('No se pudo iniciar Entrenamientos. Comprueba que has ejecutado el SQL de configuración.', 'error');
   }
 })();
+
+function alternarDistribucionEquipos(boton) {
+  const panel = $(boton.getAttribute('aria-controls'));
+  if (!panel) return;
+  const mostrar = panel.classList.contains('oculto');
+  panel.classList.toggle('oculto', !mostrar);
+  boton.setAttribute('aria-expanded', String(mostrar));
+  boton.innerHTML = `<span aria-hidden="true">${mostrar ? '▾' : '▸'}</span> ${mostrar ? 'Ocultar distribución' : 'Mostrar distribución'}`;
+  boton.closest('.distribucion-equipos')?.classList.toggle('distribucion-contraida', !mostrar);
+}
+
+function alternarDetallesEntrenamiento() {
+  const panel = $('gridDetallesEntrenamiento');
+  const boton = $('btnAlternarDetallesEntrenamiento');
+  if (!panel || !boton) return;
+  const mostrar = panel.classList.contains('oculto');
+  panel.classList.toggle('oculto', !mostrar);
+  boton.setAttribute('aria-expanded', String(mostrar));
+  boton.innerHTML = `<span aria-hidden="true">${mostrar ? '▾' : '▸'}</span> ${mostrar ? 'Ocultar detalles' : 'Mostrar detalles'}`;
+}
 
 function cambiarVista(vista) {
   $('zonaListado').classList.remove('oculto');

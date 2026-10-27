@@ -250,6 +250,12 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 1.25rem;
+  box-shadow: var(--sombra);
+  transition: var(--transicion);
 }
 
 .modal-entrenamiento label {
@@ -441,8 +447,8 @@
 .anadir-ejercicio-sesion {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  width: 100%;
+  gap: 20px;
+  margin-top: 10px;
 }
 
 .anadir-ejercicio-sesion select {
@@ -475,11 +481,6 @@
   color: var(--texto-secundario);
 }
 
-@media(max-width:430px) {
-  .anadir-ejercicio-sesion {
-    grid-template-columns: 1fr;
-  }
-}
 
 /* Página completa de detalle de sesión */
 .detalle-sesion-pagina {
@@ -510,7 +511,7 @@
 }
 
 .detalle-datos {
-  padding: 16px;
+  padding: 16px 0;
 }
 
 .detalle-datos label,
@@ -991,9 +992,6 @@
     align-items: stretch !important;
   }
 
-  .anadir-ejercicio-sesion {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
 }
 
 @media(max-width:649px) {
@@ -1106,7 +1104,7 @@
   padding: 9px 12px;
   white-space: nowrap;
   font-size: .86rem;
-  background-color: var(--gris-300);
+  background-color: var(--gris-200);
 }
 
 .ayuda-elemento-seleccionado {
@@ -1129,17 +1127,8 @@
   cursor: grab;
 }
 
-@media(min-width:650px) {
-  .anadir-ejercicio-sesion {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: start;
-  }
-}
 
 @media(max-width:649px) {
-  .anadir-ejercicio-sesion {
-    grid-template-columns: minmax(0, 1fr);
-  }
 
   .boton-crear-ejercicio-sesion {
     justify-self: start;
@@ -1160,7 +1149,7 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     margin: 5px 0;
-}
+  }
 }
 
 /* Ajustes de asistencia: controles estables aunque aparezcan opciones extra */
@@ -1321,11 +1310,17 @@
 .distribuciones-equipos {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 1rem;
+  gap: 2rem;
   padding: 1rem;
   border: 1px solid var(--borde, #d1d5db);
   border-radius: 14px;
   background: var(--fondo-tarjeta, #fff);
+}
+
+.cabecera-distribucion-equipos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .distribucion-equipos {
@@ -1336,9 +1331,13 @@
   background: transparent;
 }
 
-.distribucion-equipos h4 {
-  margin: 0 0 .85rem;
+.distribucion-dos-equipos {
+  border: 2px solid var(--amarillo);
 }
+.distribucion-tres-equipos {
+  border: 2px solid green;
+}
+
 
 .columnas-equipos {
   display: grid;
@@ -1346,8 +1345,18 @@
 }
 
 .columnas-dos {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+
+.columnas-dos .comodines {
+  grid-column: span 2;
+}
+
+.columnas-dos .comodines textarea {
+  height: 70px;
+  min-height: 0;
+}
+
 
 .columnas-tres {
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1361,7 +1370,7 @@
   margin: 0;
 }
 
-.campo-equipo > span {
+.campo-equipo>span {
   font-weight: 700;
 }
 
@@ -1375,6 +1384,15 @@
 /* La distribución de tres equipos siempre queda debajo de la de dos. */
 .distribuciones-equipos.con-tres-equipos {
   grid-template-columns: minmax(0, 1fr);
+}
+
+.boton-alternar-distribucion {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 700;
+  background-color: transparent;
 }
 
 @media (max-width: 700px) {
@@ -1400,7 +1418,7 @@
 .panel-ejercicios {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 50px;
   padding-top: .5rem;
 }
 
@@ -1438,7 +1456,6 @@
   flex-direction: column;
   gap: 8px;
   min-width: 0;
-  width: 100%;
 }
 
 .boton-alternar-ejercicios-disponibles {
@@ -1465,8 +1482,20 @@
 }
 
 @media (max-width: 700px) {
-  .ejercicio-sesion-detalle { cursor: default; }
-  .ejercicio-sesion-detalle:active { cursor: default; }
-  .ejercicio-sesion-detalle-cabecera { gap: 10px; }
-  .boton-alternar-ejercicios-disponibles { width: 100%; justify-content: flex-start; }
+  .ejercicio-sesion-detalle {
+    cursor: default;
+  }
+
+  .ejercicio-sesion-detalle:active {
+    cursor: default;
+  }
+
+  .ejercicio-sesion-detalle-cabecera {
+    gap: 10px;
+  }
+
+  .boton-alternar-ejercicios-disponibles {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }

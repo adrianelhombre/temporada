@@ -71,45 +71,62 @@
           <h2 id="detalleTituloCabecera">Entrenamiento</h2>
         </div><button type="button" class="primario" id="btnGuardarDetalle">Guardar cambios</button>
       </div>
-      <section class="tarjeta detalle-datos">
-        <div class="grid-formulario">
-          <div>
-            <label for="detalleTitulo">Nombre de la sesión</label>
-            <input id="detalleTitulo" maxlength="100">
-          </div>
-          <div>
-            <label for="detalleFecha">Fecha</label>
-            <input type="date" id="detalleFecha">
-          </div>
-          <div>
-            <label for="detalleDuracion">Duración prevista (min)</label>
-            <input type="number" id="detalleDuracion" min="1" max="240">
-          </div>
-          <div><label for="detalleDuracionReal">Duración real (min)</label><input type="number" id="detalleDuracionReal"
-              min="0" max="300" placeholder="Sin registrar"></div>
+
+      <section class="bloque-detalle bloque-detalles-entrenamiento">
+        <div class="titulo-bloque-detalle cabecera-detalles-entrenamiento">
+          <h3>Detalles del entrenamiento</h3>
+          <button type="button" class="secundario boton-alternar-ejercicios-disponibles"
+            id="btnAlternarDetallesEntrenamiento" aria-expanded="false" aria-controls="gridDetallesEntrenamiento">
+            <span aria-hidden="true">▸</span> Mostrar detalles
+          </button>
         </div>
-        <label for="detalleObjetivo">Objetivo principal</label><textarea id="detalleObjetivo" rows="2"
-          placeholder="¿Qué queremos mejorar hoy?"></textarea>
-        <label for="detalleObservaciones">Observaciones de la sesión</label><textarea id="detalleObservaciones" rows="2"
-          placeholder="Notas para el cuerpo técnico"></textarea>
+        <div class="detalle-datos">
+          <div class="grid-formulario oculto" id="gridDetallesEntrenamiento">
+            <div>
+              <label for="detalleTitulo">Nombre de la sesión</label>
+              <input id="detalleTitulo" maxlength="100">
+            </div>
+            <div>
+              <label for="detalleFecha">Fecha</label>
+              <input type="date" id="detalleFecha">
+            </div>
+            <div>
+              <label for="detalleDuracion">Duración prevista (min)</label>
+              <input type="number" id="detalleDuracion" min="1" max="240">
+            </div>
+            <div>
+              <label for="detalleDuracionReal">Duración real (min)</label>
+              <input type="number" id="detalleDuracionReal" min="0" max="300" placeholder="Sin registrar">
+            </div>
+            <div>
+              <label for="detalleObjetivo">Objetivo principal</label>
+              <textarea id="detalleObjetivo" rows="2" placeholder="¿Qué queremos mejorar hoy?"></textarea>
+            </div>
+            <div>
+              <label for="detalleObservaciones">Observaciones de la sesión</label>
+              <textarea id="detalleObservaciones" rows="2" placeholder="Notas para el cuerpo técnico"></textarea>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="bloque-detalle bloque-ejercicios-sesion">
+        <div class="titulo-bloque-detalle">
+          <div>
+            <h3>Ejercicios</h3>
+            <p class="texto-secundario" id="resumenEjercicios">Todavía no hay ejercicios añadidos</p>
+          </div>
+          <button type="button" class="secundario boton-alternar-ejercicios-disponibles"
+            id="btnAlternarEjerciciosDisponibles" aria-expanded="false" aria-controls="selectorEjerciciosDisponibles">
+            <span aria-hidden="true">▸</span> Mostrar ejercicios disponibles
+          </button>
+        </div>
+
         <div class="panel-ejercicios">
 
           <div class="anadir-ejercicio-sesion">
-            <div class="titulo-bloque-detalle">
-              <div>
-                <h3>Ejercicios para añadir</h3>
-                <p class="texto-secundario" id="resumenEjercicios">Todavía no hay ejercicios añadidos</p>
-              </div>
-            </div>
             <div class="selector-ejercicio-disponibles">
-              <button type="button" class="secundario boton-alternar-ejercicios-disponibles"
-                id="btnAlternarEjerciciosDisponibles" aria-expanded="false"
-                aria-controls="selectorEjerciciosDisponibles">
-                <span aria-hidden="true">▸</span> Mostrar ejercicios disponibles
-              </button>
+
               <div id="selectorEjerciciosDisponibles" class="selector-ejercicio-contenido oculto">
                 <div class="selector-ejercicio-buscable">
                   <input type="search" id="buscarEjercicioSesion" placeholder="Buscar por nombre, categoría u objetivo…"
@@ -125,19 +142,30 @@
 
           <div class="bloque-detalle bloque-equipos-sesion">
             <div class="titulo-bloque-detalle">
-                <h3>Equipos</h3>
+              <div>
+                <h3>Equipos del entrenamiento</h3>
+                <p class="texto-secundario">Anota los jugadores que formarán cada equipo antes de empezar los
+                  ejercicios.
+                </p>
+              </div>
               <button type="button" class="primario" id="btnGuardarEquipos">Guardar equipos</button>
             </div>
 
             <div class="opciones-equipos-sesion">
               <label><input type="checkbox" id="usarDosEquipos" checked disabled> Dos equipos</label>
-              <label><input type="checkbox" id="usarTresEquipos"> Tres equipos</label>
+              <label><input type="checkbox" id="usarTresEquipos"> Añadir distribución de tres equipos</label>
             </div>
 
             <div class="distribuciones-equipos">
               <div class="distribucion-equipos distribucion-dos-equipos">
-                <h4>Distribución en dos equipos</h4>
-                <div class="columnas-equipos columnas-dos">
+                <div class="cabecera-distribucion-equipos">
+                  <h4>Dos equipos</h4>
+                  <button type="button" class="boton-alternar-distribucion" data-alternar-distribucion
+                    aria-expanded="false" aria-controls="contenidoDistribucionDos">
+                    <span aria-hidden="true">▾</span> Ocultar distribución
+                  </button>
+                </div>
+                <div class="columnas-equipos columnas-dos" id="contenidoDistribucionDos">
                   <label class="campo-equipo"><span>Equipo A</span>
                     <textarea id="jugadoresEquipoA" rows="6"
                       placeholder="Escribe los nombres de los jugadores…"></textarea>
@@ -146,15 +174,21 @@
                     <textarea id="jugadoresEquipoB" rows="6"
                       placeholder="Escribe los nombres de los jugadores…"></textarea>
                   </label>
-                  <label class="campo-equipo"><span>Comodines</span>
+                  <label class="campo-equipo comodines"><span>Comodines</span>
                     <textarea id="jugadoresComodines" rows="6" placeholder="Nombres de los comodines…"></textarea>
                   </label>
                 </div>
               </div>
 
               <div class="distribucion-equipos distribucion-tres-equipos oculto" id="distribucionTresEquipos">
-                <h4>Distribución en tres equipos</h4>
-                <div class="columnas-equipos columnas-tres">
+                <div class="cabecera-distribucion-equipos">
+                  <h4>Tres equipos</h4>
+                  <button type="button" class="boton-alternar-distribucion" data-alternar-distribucion
+                    aria-expanded="false" aria-controls="contenidoDistribucionTres">
+                    <span aria-hidden="true">▾</span> Ocultar distribución
+                  </button>
+                </div>
+                <div class="columnas-equipos columnas-tres" id="contenidoDistribucionTres">
                   <label class="campo-equipo"><span>Equipo A</span>
                     <textarea id="jugadoresEquipo3A" rows="6" placeholder="Nombres…"></textarea>
                   </label>
@@ -172,7 +206,6 @@
           <div id="ejerciciosDeSesion" class="ejercicios-de-sesion">
             <p class="texto-secundario">Cargando ejercicios…</p>
           </div>
-
         </div>
       </section>
 
