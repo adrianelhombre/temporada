@@ -9,6 +9,7 @@ function actualizarSelectorEjercicios() {
   cont.innerHTML = lista.map(e => `<button type="button" class="resultado-ejercicio-sesion" role="option" data-anadir-ejercicio="${escaparHTML(e.id)}"><span class="resultado-ejercicio-icono">＋</span><span class="resultado-ejercicio-info"><strong>${escaparHTML(e.nombre)}</strong><small>${escaparHTML(e.categoria || 'Otros')} · ${Number(e.duracion_min || 0)} min${e.objetivo ? ` · ${escaparHTML(e.objetivo)}` : ''}</small></span><span class="resultado-ejercicio-accion">Añadir</span></button>`).join('');
   cont.querySelectorAll('[data-anadir-ejercicio]').forEach(btn => btn.addEventListener('click', () => anadirEjercicioASesion(btn.dataset.anadirEjercicio)));
 }
+
 function renderizarEjerciciosSesion() {
   const cont = $('ejerciciosDeSesion'); if (!cont) return;
   if (!ejerciciosSesion.length) { cont.innerHTML = '<div class="tarjeta estado-vacio">Todavía no has añadido ejercicios. Selecciona uno de la biblioteca o créalo desde la pestaña Biblioteca de ejercicios.</div>'; return; }
@@ -39,6 +40,7 @@ function renderizarEjerciciosSesion() {
   });
   actualizarSelectorEjercicios();
 }
+
 async function guardarOrdenEjercicios(lista) {
   const cont = $('ejerciciosDeSesion'); cont?.querySelectorAll('.ejercicio-sesion-detalle').forEach(el => el.classList.add('guardando-orden-ejercicios'));
   try {
@@ -81,10 +83,12 @@ function renderizarEjercicios() {
     card.querySelector('[data-editar]').addEventListener('click', () => abrirModalEjercicio(e)); card.querySelector('[data-borrar]').addEventListener('click', () => eliminarEjercicio(e)); cont.appendChild(card);
   });
 }
+
 function abrirModalEjercicio(ejercicio = null) {
   $('tituloModalEjercicio').textContent = ejercicio ? 'Editar ejercicio' : 'Nuevo ejercicio'; $('ejercicioId').value = ejercicio?.id || ''; $('ejercicioNombre').value = ejercicio?.nombre || ''; $('ejercicioCategoria').value = ejercicio?.categoria || 'Posesiones'; $('ejercicioDuracion').value = ejercicio?.duracion_min ?? 12; $('ejercicioObjetivo').value = ejercicio?.objetivo || ''; $('ejercicioDescripcion').value = ejercicio?.descripcion || ''; $('ejercicioMaterial').value = ejercicio?.material || '';
   graficoActual = normalizarGrafico(ejercicio?.grafico_json); elementoGraficoSeleccionado=null; arrastreGrafico=null; creandoZonaGrafico=null; zonaPrevisualizacionGrafico=null; puntoInicialGrafico=null; puntoPrevisualizacionGrafico=null; $('graficoTipoCampo').value = graficoActual.campo; seleccionarHerramienta('seleccionar'); renderizarGraficoCampo(); $('modalEjercicio').classList.remove('oculto');
 }
+
 async function guardarEjercicio() {
   const nombre = $('ejercicioNombre').value.trim(); const duracion = Number($('ejercicioDuracion').value);
   if (!nombre || !Number.isFinite(duracion) || duracion < 1) { mostrarNotificacion('Indica un nombre y una duración válida.', 'error'); return; }
@@ -96,6 +100,7 @@ async function guardarEjercicio() {
   } catch (error) { console.error(error); mostrarNotificacion('No se pudo guardar el ejercicio. Comprueba que la tabla tiene la columna grafico_json.', 'error'); }
   finally { btn.disabled = false; btn.textContent = 'Guardar ejercicio'; }
 }
+
 async function eliminarEjercicio(ejercicio) {
   if (!confirm(`¿Eliminar el ejercicio «${ejercicio.nombre}» de la biblioteca?`)) return;
   const { error } = await supabaseClient.from('entrenamientos_ejercicios').delete().eq('id', ejercicio.id); if (error) { console.error(error); mostrarNotificacion('No se pudo eliminar. Puede estar vinculado a una sesión.', 'error'); return; }
