@@ -19,7 +19,7 @@ let zonaPrevisualizacionGrafico = null;
 
 const $ = (id) => document.getElementById(id);
 const CATEGORIAS_EJERCICIOS = ['Posesiones', 'Finalizaciones', 'Transiciones', 'Defensa', 'Físico', 'Partidos', 'Técnica', 'Otros'];
-const NOMBRES_HERRAMIENTAS = { seleccionar: 'Mover / editar', jugadorA: 'Añadir jugador A', jugadorB: 'Añadir jugador B', comodin: 'Añadir comodín', portero: 'Añadir portero', pelota: 'Añadir pelota', flecha: 'Dibujar flecha (marca dos puntos)', linea: 'Dibujar línea (marca dos puntos)', cono: 'Añadir cono', porteria: 'Añadir portería', zona: 'Añadir zona', borrar: 'Borrar elemento' };
+const NOMBRES_HERRAMIENTAS = { seleccionar: 'Mover / editar', jugadorA: 'Añadir jugador A', jugadorB: 'Añadir jugador B', jugadorC: 'Añadir jugador C', comodin: 'Añadir comodín', portero: 'Añadir portero', pelota: 'Añadir pelota', flecha: 'Dibujar flecha (marca dos puntos)', linea: 'Dibujar línea (marca dos puntos)', cono: 'Añadir cono', porteria: 'Añadir portería', zona: 'Añadir zona', borrar: 'Borrar elemento' };
 
 (async function iniciarEntrenamientos() {
   if (!await exigirSesion()) return;

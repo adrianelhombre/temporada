@@ -342,27 +342,33 @@ function dibujarElemento(e, interactivo) {
     ? `data-elemento-id="${id}"`
     : '';
 
-  // JUGADORES Y COMODINES
+  // JUGADORES, TERCER EQUIPO, COMODINES Y PORTERO
   if (e.tipo === 'jugador') {
     const equipoB = e.equipo === 'B';
-    const comodin = e.equipo === 'C';
+    const equipoC = e.equipo === 'C' && e.etiqueta !== 'C';
+    const comodin = e.equipo === 'COMODIN' ||
+      (e.equipo === 'C' && e.etiqueta === 'C');
     const portero = e.equipo === 'P';
 
     const fill = portero
       ? '#86efac'
       : comodin
         ? '#38bdf8'
-        : equipoB
-          ? '#f8fafc'
-          : '#facc15';
+        : equipoC
+          ? '#f87171'
+          : equipoB
+            ? '#f8fafc'
+            : '#facc15';
 
     const stroke = portero
       ? '#166534'
       : comodin
         ? '#075985'
-        : equipoB
-          ? '#1f2937'
-          : '#111827';
+        : equipoC
+          ? '#991b1b'
+          : equipoB
+            ? '#1f2937'
+            : '#111827';
 
     const etiqueta = e.etiqueta || (
       portero ? 'P' :
@@ -371,113 +377,54 @@ function dibujarElemento(e, interactivo) {
     );
 
     return `<g ${data} transform="translate(${x} ${y})" class="${interactivo ? 'elemento-arrastrable' : ''}">
-    <circle r="21" fill="${fill}" stroke="${stroke}" stroke-width="3"/>
-    <text x="0" y="1" text-anchor="middle" dominant-baseline="middle"
-      font-size="${String(etiqueta).length > 2 ? 12 : 16}"
-      font-weight="800" fill="#111827" pointer-events="none">${escaparHTML(etiqueta)}</text>
-  </g>`;
+      <circle r="21" fill="${fill}" stroke="${stroke}" stroke-width="3"/>
+      <text x="0" y="1" text-anchor="middle" dominant-baseline="middle"
+        font-size="${String(etiqueta).length > 2 ? 12 : 16}"
+        font-weight="800" fill="#111827" pointer-events="none">${escaparHTML(etiqueta)}</text>
+    </g>`;
   }
 
+  // PELOTA
   if (e.tipo === 'pelota') {
     return `<g ${data}
       transform="translate(${x} ${y})"
       class="${interactivo ? 'elemento-arrastrable' : ''}">
-
-      <circle
-        cx="0" cy="0" r="11"
-        fill="#ffffff"
-        stroke="#111827"
-        stroke-width="2"
-      />
-
-      <path
-        d="M0 -5.2 L4.9 -1.6 L3 4.2 L-3 4.2 L-4.9 -1.6 Z"
-        fill="#111827"
-        stroke="#111827"
-        stroke-width="0.8"
-        stroke-linejoin="round"
-      />
-
-      <path d="M0 -5.2 L0 -10"
-        fill="none" stroke="#111827" stroke-width="1.2"/>
-
-      <path d="M4.9 -1.6 L9.8 -3.3"
-        fill="none" stroke="#111827" stroke-width="1.2"/>
-
-      <path d="M3 4.2 L6.2 8.8"
-        fill="none" stroke="#111827" stroke-width="1.2"/>
-
-      <path d="M-3 4.2 L-6.2 8.8"
-        fill="none" stroke="#111827" stroke-width="1.2"/>
-
-      <path d="M-4.9 -1.6 L-9.8 -3.3"
-        fill="none" stroke="#111827" stroke-width="1.2"/>
-
+      <circle cx="0" cy="0" r="11" fill="#ffffff" stroke="#111827" stroke-width="2"/>
+      <path d="M0 -5.2 L4.9 -1.6 L3 4.2 L-3 4.2 L-4.9 -1.6 Z"
+        fill="#111827" stroke="#111827" stroke-width="0.8" stroke-linejoin="round"/>
+      <path d="M0 -5.2 L0 -10" fill="none" stroke="#111827" stroke-width="1.2"/>
+      <path d="M4.9 -1.6 L9.8 -3.3" fill="none" stroke="#111827" stroke-width="1.2"/>
+      <path d="M3 4.2 L6.2 8.8" fill="none" stroke="#111827" stroke-width="1.2"/>
+      <path d="M-3 4.2 L-6.2 8.8" fill="none" stroke="#111827" stroke-width="1.2"/>
+      <path d="M-4.9 -1.6 L-9.8 -3.3" fill="none" stroke="#111827" stroke-width="1.2"/>
     </g>`;
   }
 
   // CONOS
   if (e.tipo === 'cono') {
-    return `
-      <g
-        ${data}
-        transform="translate(${x} ${y})"
-        class="${interactivo ? 'elemento-arrastrable' : ''}"
-      >
-        <path
-          d="M -15 13 L 0 -18 L 15 13 Z"
-          fill="#f97316"
-          stroke="#7c2d12"
-          stroke-width="2"
-        />
-
-        <ellipse
-          cx="0"
-          cy="13"
-          rx="17"
-          ry="5"
-          fill="#fdba74"
-          stroke="#7c2d12"
-          stroke-width="2"
-        />
-      </g>
-    `;
+    return `<g ${data}
+      transform="translate(${x} ${y})"
+      class="${interactivo ? 'elemento-arrastrable' : ''}">
+      <path d="M -15 13 L 0 -18 L 15 13 Z"
+        fill="#f97316" stroke="#7c2d12" stroke-width="2"/>
+      <ellipse cx="0" cy="13" rx="17" ry="5"
+        fill="#fdba74" stroke="#7c2d12" stroke-width="2"/>
+    </g>`;
   }
 
   // PORTERÍAS
   if (e.tipo === 'porteria') {
-    return `
-      <g
-        ${data}
-        transform="translate(${x} ${y})"
-        class="${interactivo ? 'elemento-arrastrable' : ''}"
-        fill="none"
-        stroke="#fff"
-        stroke-width="4"
-      >
-        <path
-          d="M-34 18 L-34 -20 Q-34 -25 -29 -25 L29 -25 Q34 -25 34 -20 L34 18"
-          stroke="#111827"
-          stroke-width="8"
-          opacity=".35"
-        />
-
-        <path
-          d="M-34 18 L-34 -20 Q-34 -25 -29 -25 L29 -25 Q34 -25 34 -20 L34 18"
-        />
-
-        <path
-          d="M-34 -4 L34 -4 M-34 7 L34 7 M-17 -25 L-17 18 M0 -25 L0 18 M17 -25 L17 18"
-          stroke-width="1.4"
-          opacity=".85"
-        />
-
-        <path
-          d="M-34 18 L34 18"
-          stroke-width="5"
-        />
-      </g>
-    `;
+    return `<g ${data}
+      transform="translate(${x} ${y})"
+      class="${interactivo ? 'elemento-arrastrable' : ''}"
+      fill="none" stroke="#fff" stroke-width="4">
+      <path d="M-34 18 L-34 -20 Q-34 -25 -29 -25 L29 -25 Q34 -25 34 -20 L34 18"
+        stroke="#111827" stroke-width="8" opacity=".35"/>
+      <path d="M-34 18 L-34 -20 Q-34 -25 -29 -25 L29 -25 Q34 -25 34 -20 L34 18"/>
+      <path d="M-34 -4 L34 -4 M-34 7 L34 7 M-17 -25 L-17 18 M0 -25 L0 18 M17 -25 L17 18"
+        stroke-width="1.4" opacity=".85"/>
+      <path d="M-34 18 L34 18" stroke-width="5"/>
+    </g>`;
   }
 
   // ZONAS
@@ -485,24 +432,17 @@ function dibujarElemento(e, interactivo) {
     const w = Number(e.w) || 150;
     const h = Number(e.h) || 110;
 
-    return `
-      <g
-        ${data}
-        class="${interactivo ? 'elemento-arrastrable' : ''}"
-      >
-        <rect
-          x="${x - w / 2}"
-          y="${y - h / 2}"
-          width="${w}"
-          height="${h}"
-          fill="${escaparHTML(e.color || '#facc15')}"
-          fill-opacity=".18"
-          stroke="${escaparHTML(e.color || '#facc15')}"
-          stroke-width="3"
-          stroke-dasharray="${e.discontinua === false ? 'none' : '8 5'}"
-        />
-      </g>
-    `;
+    return `<g ${data} class="${interactivo ? 'elemento-arrastrable' : ''}">
+      <rect
+        x="${x - w / 2}" y="${y - h / 2}"
+        width="${w}" height="${h}"
+        fill="${escaparHTML(e.color || '#facc15')}"
+        fill-opacity=".18"
+        stroke="${escaparHTML(e.color || '#facc15')}"
+        stroke-width="3"
+        stroke-dasharray="${e.discontinua === false ? 'none' : '8 5'}"
+      />
+    </g>`;
   }
 
   // FLECHAS Y LÍNEAS
@@ -510,9 +450,9 @@ function dibujarElemento(e, interactivo) {
     const p = Array.isArray(e.puntos) && e.puntos.length >= 2
       ? e.puntos
       : [
-        { x, y },
-        { x: Math.min(1000, x + 100), y }
-      ];
+          { x, y },
+          { x: Math.min(1000, x + 100), y }
+        ];
 
     const p1 = p[0];
     const p2 = p[1];
@@ -529,51 +469,23 @@ function dibujarElemento(e, interactivo) {
     const x2 = clamp(Number(p2.x) || 0, 0, 1000);
     const y2 = clamp(Number(p2.y) || 0, 0, 700);
 
-    return `
-      <g
-        ${data}
-        class="${interactivo ? 'elemento-arrastrable' : ''}"
-      >
-        <defs>
-          <marker
-            id="flecha-${id}"
-            markerWidth="8"
-            markerHeight="8"
-            refX="5"
-            refY="3"
-            orient="auto"
-          >
-            <path
-              d="M0,0 L0,6 L6,3 z"
-              fill="${escaparHTML(color)}"
-            />
-          </marker>
-        </defs>
+    return `<g ${data} class="${interactivo ? 'elemento-arrastrable' : ''}">
+      <defs>
+        <marker id="flecha-${id}" markerWidth="8" markerHeight="8"
+          refX="5" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L6,3 z" fill="${escaparHTML(color)}"/>
+        </marker>
+      </defs>
 
-        <!-- Línea visible -->
-        <line
-          x1="${x1}"
-          y1="${y1}"
-          x2="${x2}"
-          y2="${y2}"
-          stroke="${escaparHTML(color)}"
-          stroke-width="6"
-          stroke-linecap="round"
-          ${e.discontinua ? 'stroke-dasharray="12 9"' : ''}
-          ${marcador}
-        />
+      <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
+        stroke="${escaparHTML(color)}" stroke-width="6"
+        stroke-linecap="round"
+        ${e.discontinua ? 'stroke-dasharray="12 9"' : ''}
+        ${marcador}/>
 
-        <!-- Área transparente para facilitar la selección -->
-        <line
-          x1="${x1}"
-          y1="${y1}"
-          x2="${x2}"
-          y2="${y2}"
-          stroke="transparent"
-          stroke-width="22"
-        />
-      </g>
-    `;
+      <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
+        stroke="transparent" stroke-width="22"/>
+    </g>`;
   }
 
   return '';
@@ -651,7 +563,6 @@ function manejarPulsacionCampo(evento) {
     const handleZona = evento.target.closest('[data-resize-zona]');
 
     elementoGraficoSeleccionado = id;
-
     cargarControlesElemento(el);
 
     if (el.tipo === 'jugador' && evento.detail >= 2) {
@@ -684,11 +595,8 @@ function manejarPulsacionCampo(evento) {
 
     svg.setPointerCapture?.(evento.pointerId);
     svg.style.cursor = 'grabbing';
-
     evento.preventDefault();
-
     renderizarGraficoCampo();
-
     return;
   }
 
@@ -734,7 +642,6 @@ function manejarPulsacionCampo(evento) {
         `Herramienta: ${NOMBRES_HERRAMIENTAS[herramientaGrafico]} · marca el punto final`;
 
       renderizarGraficoCampo();
-
       return;
     }
 
@@ -752,7 +659,6 @@ function manejarPulsacionCampo(evento) {
     };
 
     graficoActual.elementos.push(nuevo);
-
     elementoGraficoSeleccionado = nuevo.id;
 
     puntoInicialGrafico = null;
@@ -774,9 +680,7 @@ function manejarPulsacionCampo(evento) {
     zonaPrevisualizacionGrafico = punto;
 
     svg.setPointerCapture?.(evento.pointerId);
-
     evento.preventDefault();
-
     return;
   }
 
@@ -784,27 +688,27 @@ function manejarPulsacionCampo(evento) {
   if (
     herramientaGrafico === 'jugadorA' ||
     herramientaGrafico === 'jugadorB' ||
+    herramientaGrafico === 'jugadorC' ||
     herramientaGrafico === 'comodin' ||
     herramientaGrafico === 'portero'
   ) {
     const equipo =
-    herramientaGrafico === 'jugadorA'
-      ? 'A'
-      : herramientaGrafico === 'jugadorB'
-        ? 'B'
-        : herramientaGrafico === 'portero'
-          ? 'P'
-          : 'C';
-
-    const numeros = graficoActual.elementos
-      .filter(e => e.tipo === 'jugador' && e.equipo === equipo)
-      .map(e => parseInt(e.etiqueta, 10))
-      .filter(Number.isFinite);
+      herramientaGrafico === 'jugadorA'
+        ? 'A'
+        : herramientaGrafico === 'jugadorB'
+          ? 'B'
+          : herramientaGrafico === 'jugadorC'
+            ? 'C'
+            : herramientaGrafico === 'portero'
+              ? 'P'
+              : 'COMODIN';
 
     const etiqueta =
-      equipo === 'C' || equipo === 'P'
-        ? equipo
-        : '';
+      equipo === 'COMODIN'
+        ? 'C'
+        : equipo === 'P'
+          ? 'P'
+          : '';
 
     graficoActual.elementos.push({
       id: crearIdGrafico(),
@@ -815,7 +719,7 @@ function manejarPulsacionCampo(evento) {
       etiqueta
     });
 
-    // CREAR PELOTA
+  // CREAR PELOTA
   } else if (herramientaGrafico === 'pelota') {
     graficoActual.elementos.push({
       id: crearIdGrafico(),
@@ -824,7 +728,7 @@ function manejarPulsacionCampo(evento) {
       y: punto.y
     });
 
-    // CREAR CONOS
+  // CREAR CONOS
   } else if (herramientaGrafico === 'cono') {
     graficoActual.elementos.push({
       id: crearIdGrafico(),
@@ -833,7 +737,7 @@ function manejarPulsacionCampo(evento) {
       y: punto.y
     });
 
-    // CREAR PORTERÍAS
+  // CREAR PORTERÍAS
   } else if (herramientaGrafico === 'porteria') {
     graficoActual.elementos.push({
       id: crearIdGrafico(),
