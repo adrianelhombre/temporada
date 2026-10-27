@@ -20,9 +20,9 @@ function normalizarGrafico(grafico) {
     campo: g.campo === 'medio' ? 'medio' : 'entero',
     elementos: Array.isArray(g.elementos)
       ? g.elementos.map((e, i) => ({
-          ...e,
-          id: e.id || `el-${i}-${Math.round((Number(e.x) || 0) * 10)}`
-        }))
+        ...e,
+        id: e.id || `el-${i}-${Math.round((Number(e.x) || 0) * 10)}`
+      }))
       : []
   };
 }
@@ -346,46 +346,74 @@ function dibujarElemento(e, interactivo) {
   if (e.tipo === 'jugador') {
     const equipoB = e.equipo === 'B';
     const comodin = e.equipo === 'C';
+    const portero = e.equipo === 'P';
 
-    const fill = comodin
-      ? '#38bdf8'
-      : equipoB
-        ? '#f8fafc'
-        : '#facc15';
+    const fill = portero
+      ? '#86efac'
+      : comodin
+        ? '#38bdf8'
+        : equipoB
+          ? '#f8fafc'
+          : '#facc15';
 
-    const stroke = comodin
-      ? '#075985'
-      : equipoB
-        ? '#1f2937'
-        : '#111827';
+    const stroke = portero
+      ? '#166534'
+      : comodin
+        ? '#075985'
+        : equipoB
+          ? '#1f2937'
+          : '#111827';
 
-    return `
-      <g
-        ${data}
-        transform="translate(${x} ${y})"
-        class="${interactivo ? 'elemento-arrastrable' : ''}"
-      >
-        <circle
-          r="21"
-          fill="${fill}"
-          stroke="${stroke}"
-          stroke-width="3"
-        />
+    const etiqueta = e.etiqueta || (
+      portero ? 'P' :
+        comodin ? 'C' :
+          ''
+    );
 
-        <text
-          x="0"
-          y="1"
-          text-anchor="middle"
-          dominant-baseline="middle"
-          font-size="${String(e.etiqueta || '').length > 2 ? 12 : 16}"
-          font-weight="800"
-          fill="#111827"
-          pointer-events="none"
-        >${escaparHTML(
-          e.etiqueta || (comodin ? 'C' : equipoB ? 'B' : 'A')
-        )}</text>
-      </g>
-    `;
+    return `<g ${data} transform="translate(${x} ${y})" class="${interactivo ? 'elemento-arrastrable' : ''}">
+    <circle r="21" fill="${fill}" stroke="${stroke}" stroke-width="3"/>
+    <text x="0" y="1" text-anchor="middle" dominant-baseline="middle"
+      font-size="${String(etiqueta).length > 2 ? 12 : 16}"
+      font-weight="800" fill="#111827" pointer-events="none">${escaparHTML(etiqueta)}</text>
+  </g>`;
+  }
+
+  if (e.tipo === 'pelota') {
+    return `<g ${data}
+      transform="translate(${x} ${y})"
+      class="${interactivo ? 'elemento-arrastrable' : ''}">
+
+      <circle
+        cx="0" cy="0" r="11"
+        fill="#ffffff"
+        stroke="#111827"
+        stroke-width="2"
+      />
+
+      <path
+        d="M0 -5.2 L4.9 -1.6 L3 4.2 L-3 4.2 L-4.9 -1.6 Z"
+        fill="#111827"
+        stroke="#111827"
+        stroke-width="0.8"
+        stroke-linejoin="round"
+      />
+
+      <path d="M0 -5.2 L0 -10"
+        fill="none" stroke="#111827" stroke-width="1.2"/>
+
+      <path d="M4.9 -1.6 L9.8 -3.3"
+        fill="none" stroke="#111827" stroke-width="1.2"/>
+
+      <path d="M3 4.2 L6.2 8.8"
+        fill="none" stroke="#111827" stroke-width="1.2"/>
+
+      <path d="M-3 4.2 L-6.2 8.8"
+        fill="none" stroke="#111827" stroke-width="1.2"/>
+
+      <path d="M-4.9 -1.6 L-9.8 -3.3"
+        fill="none" stroke="#111827" stroke-width="1.2"/>
+
+    </g>`;
   }
 
   // CONOS
@@ -482,9 +510,9 @@ function dibujarElemento(e, interactivo) {
     const p = Array.isArray(e.puntos) && e.puntos.length >= 2
       ? e.puntos
       : [
-          { x, y },
-          { x: Math.min(1000, x + 100), y }
-        ];
+        { x, y },
+        { x: Math.min(1000, x + 100), y }
+      ];
 
     const p1 = p[0];
     const p2 = p[1];
@@ -752,17 +780,20 @@ function manejarPulsacionCampo(evento) {
     return;
   }
 
-  // CREAR JUGADORES Y COMODINES
+  // CREAR JUGADORES, COMODINES Y PORTERO
   if (
     herramientaGrafico === 'jugadorA' ||
     herramientaGrafico === 'jugadorB' ||
-    herramientaGrafico === 'comodin'
+    herramientaGrafico === 'comodin' ||
+    herramientaGrafico === 'portero'
   ) {
     const equipo =
-      herramientaGrafico === 'jugadorA'
-        ? 'A'
-        : herramientaGrafico === 'jugadorB'
-          ? 'B'
+    herramientaGrafico === 'jugadorA'
+      ? 'A'
+      : herramientaGrafico === 'jugadorB'
+        ? 'B'
+        : herramientaGrafico === 'portero'
+          ? 'P'
           : 'C';
 
     const numeros = graficoActual.elementos
@@ -770,9 +801,10 @@ function manejarPulsacionCampo(evento) {
       .map(e => parseInt(e.etiqueta, 10))
       .filter(Number.isFinite);
 
-    const etiqueta = equipo === 'C'
-      ? 'C'
-      : String((numeros.length ? Math.max(...numeros) : 0) + 1);
+    const etiqueta =
+      equipo === 'C' || equipo === 'P'
+        ? equipo
+        : '';
 
     graficoActual.elementos.push({
       id: crearIdGrafico(),
@@ -783,7 +815,16 @@ function manejarPulsacionCampo(evento) {
       etiqueta
     });
 
-  // CREAR CONOS
+    // CREAR PELOTA
+  } else if (herramientaGrafico === 'pelota') {
+    graficoActual.elementos.push({
+      id: crearIdGrafico(),
+      tipo: 'pelota',
+      x: punto.x,
+      y: punto.y
+    });
+
+    // CREAR CONOS
   } else if (herramientaGrafico === 'cono') {
     graficoActual.elementos.push({
       id: crearIdGrafico(),
@@ -792,7 +833,7 @@ function manejarPulsacionCampo(evento) {
       y: punto.y
     });
 
-  // CREAR PORTERÍAS
+    // CREAR PORTERÍAS
   } else if (herramientaGrafico === 'porteria') {
     graficoActual.elementos.push({
       id: crearIdGrafico(),
@@ -952,7 +993,7 @@ function moverElementoGrafico(evento) {
     el.x = el.puntos[0].x;
     el.y = el.puntos[0].y;
 
-  // REDIMENSIONAR ZONAS
+    // REDIMENSIONAR ZONAS
   } else if (
     arrastreGrafico.modo === 'resize-zona' &&
     el.tipo === 'zona'
@@ -969,7 +1010,7 @@ function moverElementoGrafico(evento) {
       650
     );
 
-  // MOVER CUALQUIER ELEMENTO
+    // MOVER CUALQUIER ELEMENTO
   } else {
     const anterior = arrastreGrafico.ultimo || punto;
 

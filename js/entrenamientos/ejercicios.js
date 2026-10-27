@@ -79,7 +79,18 @@ function renderizarEjercicios() {
       <span class="pildora">${Number(e.duracion_min || 0)} min</span>
     </div>
     
-    <div class="grafico-miniatura biblioteca-grafico">${crearSVGGrafico(grafico, `biblioteca-${e.id}`)}</div>${e.objetivo ? `<p><strong>Objetivo:</strong> ${escaparHTML(e.objetivo)}</p>` : ''}<p class="texto-secundario descripcion-biblioteca">${escaparHTML(e.descripcion || 'Sin descripción añadida.')}</p>${e.material ? `<p class="texto-secundario"><strong>Material:</strong> ${escaparHTML(e.material)}</p>` : ''}`;
+    <div class="grafico-miniatura biblioteca-grafico">${crearSVGGrafico(grafico, `biblioteca-${e.id}`)}</div>
+    
+    <div class="ejercicio-descripcion">
+      ${e.objetivo ? `<p><strong>Objetivo:</strong> ${escaparHTML(e.objetivo)}</p>` : ''}
+      
+      <p class="texto-secundario descripcion-biblioteca">${escaparHTML(e.descripcion || 'Sin descripción añadida.')}</p>
+      
+      ${e.material ? `<p class="texto-secundario"><strong>Material:</strong> ${escaparHTML(e.material)}</p>` : ''}
+    </div>
+    
+    `;
+    
     card.querySelector('[data-editar]').addEventListener('click', () => abrirModalEjercicio(e)); card.querySelector('[data-borrar]').addEventListener('click', () => eliminarEjercicio(e)); cont.appendChild(card);
   });
 }
