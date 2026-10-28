@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <link href="../manifest.json" rel="manifest" />
+  <meta content="#ffcc00" name="theme-color" />
+  <meta content="yes" name="apple-mobile-web-app-capable" />
+  <meta content="Balsas" name="apple-mobile-web-app-title" />
+  <link href="../icons/icon-192.png" rel="apple-touch-icon" />
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport" />
+  <title>Balsas - Biblioteca de ejercicios</title>
+  <link href="../css/styles.css" rel="stylesheet" />
+  <link href="../css/entrenamientos.css" rel="stylesheet" />
+</head>
+
+<body data-pagina-entrenamientos="biblioteca">
+  <header class="cabecera-app">
+    <a href="inicio.html"><img alt="Volver" class="icono-cabecera" src="../assets/volver.svg" /></a>
+    <h1>Biblioteca de ejercicios</h1>
+  </header>
+  <main class="contenedor entrenamientos-app">
+    <nav aria-label="Secciones de entrenamientos" class="entrenamientos-tabs"><a class="tab-entrenamiento"
+        href="entrenamientos.html">Planificación</a><a class="tab-entrenamiento activa"
+        href="biblioteca-ejercicios.html">Biblioteca de ejercicios</a></nav>
+    <div id="zonaListado">
+      <section class="" id="vista-biblioteca">
+        <div class="cabecera-biblioteca">
+          <button class="primario" id="btnNuevoEjercicio">+ Crear ejercicio</button>
+        </div>
+        <div class="filtros-biblioteca"><input aria-label="Buscar ejercicio" id="buscarEjercicio"
+            placeholder="Buscar ejercicio…" type="search" /><select aria-label="Filtrar por categoría"
+            id="filtroCategoria">
+            <option value="">Todas las categorías</option>
+            <option>Posesiones</option>
+            <option>Finalizaciones</option>
+            <option>Transiciones</option>
+            <option>Defensa</option>
+            <option>Físico</option>
+            <option>Partidos</option>
+            <option>Técnica</option>
+            <option>Otros</option>
+          </select></div>
+        <div class="lista-ejercicios" id="listaEjercicios">
+          <div class="tarjeta estado-vacio">Cargando ejercicios…</div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <div aria-live="polite" class="notificaciones" id="notificaciones"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabaseClient.js"></script>
+  <script src="../js/comun.js"></script>
+  <script src="../js/entrenamientos/grafico.js"></script>
+  <script src="../js/entrenamientos/asistencia.js"></script>
+  <script src="../js/entrenamientos/ejercicios.js"></script>
+  <script src="../js/entrenamientos/sesiones.js"></script>
+  <script src="../js/entrenamientos.js"></script>
+</body>
+
+</html>

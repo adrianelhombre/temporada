@@ -2,17 +2,6 @@
 const ejerciciosContraidos = new Set();
 let estadoContraidoEjerciciosSesion = {};
 
-function alternarEjerciciosDisponibles() {
-  const panel = $('selectorEjerciciosDisponibles');
-  const boton = $('btnAlternarEjerciciosDisponibles');
-  if (!panel || !boton) return;
-  const mostrar = panel.classList.contains('oculto');
-  panel.classList.toggle('oculto', !mostrar);
-  boton.setAttribute('aria-expanded', String(mostrar));
-  boton.innerHTML = `<span aria-hidden="true">${mostrar ? '▾' : '▸'}</span> ${mostrar ? 'Ocultar ejercicios disponibles' : 'Mostrar ejercicios disponibles'}`;
-  if (mostrar) $('buscarEjercicioSesion')?.focus();
-}
-
 function actualizarSelectorEjercicios() {
   const cont = $('resultadosEjerciciosSesion'); if (!cont) return;
   const buscar = ($('buscarEjercicioSesion')?.value || '').trim().toLocaleLowerCase('es');
@@ -29,7 +18,9 @@ function renderizarEjerciciosSesion() {
   const resumen = $('resumenEjercicios');
   if (resumen) resumen.textContent = `${ejerciciosSesion.length} ${ejerciciosSesion.length === 1 ? 'ejercicio añadido' : 'ejercicios añadidos'}`;
   if (!ejerciciosSesion.length) { cont.innerHTML = '<div class="tarjeta estado-vacio">Todavía no has añadido ejercicios. Selecciona uno de la biblioteca o créalo desde la pestaña Biblioteca de ejercicios.</div>'; return; }
-  cont.innerHTML = '<h2>EJERCICIOS PARA EL ENTRENAMIENTO</h2>';
+  cont.innerHTML = '';
+
+
   ejerciciosSesion.forEach((item, index) => {
     const articulo = document.createElement('article'); articulo.className = 'tarjeta ejercicio-sesion-detalle'; articulo.draggable = true; articulo.dataset.ordenId = item.id; articulo.title = 'Arrastra para cambiar el orden';
     articulo.addEventListener('dragstart', ev => { ejercicioArrastradoId = item.id; articulo.classList.add('arrastrando-ejercicio'); ev.dataTransfer.effectAllowed = 'move'; ev.dataTransfer.setData('text/plain', String(item.id)); });
@@ -153,13 +144,24 @@ function renderizarEjercicios() {
     
     `;
     
-    card.querySelector('[data-editar]').addEventListener('click', () => abrirModalEjercicio(e)); card.querySelector('[data-borrar]').addEventListener('click', () => eliminarEjercicio(e)); cont.appendChild(card);
+    card.querySelector('[data-editar]').addEventListener('click', () => { window.location.href = `ejercicio.html?id=${encodeURIComponent(e.id)}&return=biblioteca-ejercicios.html`; }); card.querySelector('[data-borrar]').addEventListener('click', () => eliminarEjercicio(e)); cont.appendChild(card);
   });
 }
 
-function abrirModalEjercicio(ejercicio = null) {
-  $('tituloModalEjercicio').textContent = ejercicio ? 'Editar ejercicio' : 'Nuevo ejercicio'; $('ejercicioId').value = ejercicio?.id || ''; $('ejercicioNombre').value = ejercicio?.nombre || ''; $('ejercicioCategoria').value = ejercicio?.categoria || 'Posesiones'; $('ejercicioDuracion').value = ejercicio?.duracion_min ?? 12; $('ejercicioObjetivo').value = ejercicio?.objetivo || ''; $('ejercicioDescripcion').value = ejercicio?.descripcion || ''; $('ejercicioMaterial').value = ejercicio?.material || '';
-  graficoActual = normalizarGrafico(ejercicio?.grafico_json); elementoGraficoSeleccionado=null; arrastreGrafico=null; creandoZonaGrafico=null; zonaPrevisualizacionGrafico=null; puntoInicialGrafico=null; puntoPrevisualizacionGrafico=null; $('graficoTipoCampo').value = graficoActual.campo; seleccionarHerramienta('seleccionar'); renderizarGraficoCampo(); $('modalEjercicio').classList.remove('oculto');
+function prepararEditorEjercicio(ejercicio = null) {
+  $('tituloModalEjercicio').textContent = ejercicio ? 'Editar ejercicio' : 'Nuevo ejercicio';
+  $('ejercicioId').value = ejercicio?.id || '';
+  $('ejercicioNombre').value = ejercicio?.nombre || '';
+  $('ejercicioCategoria').value = ejercicio?.categoria || 'Posesiones';
+  $('ejercicioDuracion').value = ejercicio?.duracion_min ?? 12;
+  $('ejercicioObjetivo').value = ejercicio?.objetivo || '';
+  $('ejercicioDescripcion').value = ejercicio?.descripcion || '';
+  $('ejercicioMaterial').value = ejercicio?.material || '';
+  graficoActual = normalizarGrafico(ejercicio?.grafico_json);
+  elementoGraficoSeleccionado=null; arrastreGrafico=null; creandoZonaGrafico=null; zonaPrevisualizacionGrafico=null; puntoInicialGrafico=null; puntoPrevisualizacionGrafico=null;
+  $('graficoTipoCampo').value = graficoActual.campo;
+  seleccionarHerramienta('seleccionar');
+  renderizarGraficoCampo();
 }
 
 async function guardarEjercicio() {
@@ -169,7 +171,10 @@ async function guardarEjercicio() {
   const id = $('ejercicioId').value; const btn = $('btnGuardarEjercicio'); btn.disabled = true; btn.textContent = 'Guardando…';
   try {
     const result = id ? await supabaseClient.from('entrenamientos_ejercicios').update(payload).eq('id', id) : await supabaseClient.from('entrenamientos_ejercicios').insert(payload);
-    if (result.error) throw result.error; cerrarModal('modalEjercicio'); await cargarEjercicios(); mostrarNotificacion('Ejercicio guardado en la biblioteca.', 'exito');
+    if (result.error) throw result.error;
+    mostrarNotificacion('Ejercicio guardado en la biblioteca.', 'exito');
+    const destino = new URLSearchParams(location.search).get('return') || 'biblioteca-ejercicios.html';
+    window.location.replace(destino);
   } catch (error) { console.error(error); mostrarNotificacion('No se pudo guardar el ejercicio. Comprueba que la tabla tiene la columna grafico_json.', 'error'); }
   finally { btn.disabled = false; btn.textContent = 'Guardar ejercicio'; }
 }

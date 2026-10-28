@@ -1,11 +1,8 @@
 // Gestión de asistencia, retrasos, ausencias y confirmación.
 
-function alternarAsistencia() {
-  const abierto = $('panelAsistencia').classList.contains('oculto'); $('panelAsistencia').classList.toggle('oculto', !abierto); $('btnAlternarAsistencia').setAttribute('aria-expanded', String(abierto)); $('btnAlternarAsistencia').querySelector('.asistencia-icono').textContent = abierto ? '−' : '＋'; $('btnAlternarAsistencia').querySelector('.asistencia-chevron').textContent = abierto ? '⌃' : '⌄';
-}
 function renderizarAsistencia() {
   const cont = $('listaAsistencia');
-  if (!jugadoresEntrenamiento.length) { cont.innerHTML = '<p class="texto-secundario">No hay jugadores activos en la plantilla.</p>'; actualizarContadorAsistencia(); return; }
+  if (!jugadoresEntrenamiento.length) { cont.innerHTML = '<p class="texto-secundario">No hay jugadores activos en la plantilla.</p>'; actualizarResumenAsistencia(); return; }
   cont.innerHTML = '';
   jugadoresEntrenamiento.forEach(j => {
     const estado = estadosAsistencia.get(j.id) || { estado: 'presente', justificada: false, minutos_retraso: 0 };
@@ -16,16 +13,16 @@ function renderizarAsistencia() {
       const btn = document.createElement('button'); btn.type = 'button'; btn.className = `opcion-asistencia ${estado.estado === valor ? 'seleccionada' : ''}`; btn.dataset.estado = valor; btn.textContent = texto;
       btn.addEventListener('click', () => { const actual = estadosAsistencia.get(j.id); actual.estado = valor; if (valor !== 'retraso') actual.minutos_retraso = 0; if (valor !== 'ausente') actual.justificada = false; estadosAsistencia.set(j.id, actual); renderizarAsistencia(); }); controles.appendChild(btn);
     });
-    if (estado.estado === 'retraso') { const minutos = document.createElement('input'); minutos.type = 'number'; minutos.min = '1'; minutos.max = '180'; minutos.className = 'retraso-minutos'; minutos.setAttribute('aria-label', `Minutos de retraso de ${j.nombre}`); minutos.placeholder = 'Min'; minutos.value = estado.minutos_retraso || ''; minutos.addEventListener('change', () => { const actual = estadosAsistencia.get(j.id); actual.minutos_retraso = Math.min(180, Math.max(1, Number(minutos.value || 1))); estadosAsistencia.set(j.id, actual); actualizarContadorAsistencia(); }); controles.appendChild(minutos); }
-    if (estado.estado === 'ausente') { const label = document.createElement('label'); label.className = 'justificada-control'; const check = document.createElement('input'); check.type = 'checkbox'; check.checked = estado.justificada; check.addEventListener('change', () => { const actual = estadosAsistencia.get(j.id); actual.justificada = check.checked; estadosAsistencia.set(j.id, actual); }); label.append(check, document.createTextNode('Justificada')); controles.appendChild(label); }
+    if (estado.estado === 'retraso') { const extra = document.createElement('div'); extra.className = 'asistencia-extra'; const minutos = document.createElement('input'); minutos.type = 'number'; minutos.min = '1'; minutos.max = '180'; minutos.className = 'retraso-minutos'; minutos.setAttribute('aria-label', `Minutos de retraso de ${j.nombre}`); minutos.placeholder = 'Min'; minutos.value = estado.minutos_retraso || ''; minutos.addEventListener('change', () => { const actual = estadosAsistencia.get(j.id); actual.minutos_retraso = Math.min(180, Math.max(1, Number(minutos.value || 1))); estadosAsistencia.set(j.id, actual); actualizarResumenAsistencia(); }); extra.appendChild(minutos); controles.appendChild(extra); }
+    if (estado.estado === 'ausente') { const extra = document.createElement('div'); extra.className = 'asistencia-extra'; const label = document.createElement('label'); label.className = 'justificada-control'; const check = document.createElement('input'); check.type = 'checkbox'; check.checked = estado.justificada; check.addEventListener('change', () => { const actual = estadosAsistencia.get(j.id); actual.justificada = check.checked; estadosAsistencia.set(j.id, actual); }); label.append(check, document.createTextNode('Justificada')); extra.appendChild(label); controles.appendChild(extra); }
     fila.append(nombre, controles); cont.appendChild(fila);
-  }); actualizarContadorAsistencia();
+  }); actualizarResumenAsistencia();
 }
-function actualizarContadorAsistencia() {
+function actualizarResumenAsistencia() {
   let presentes = 0, ausentes = 0, retrasos = 0;
   estadosAsistencia.forEach(a => { if (a.estado === 'presente') presentes++; else if (a.estado === 'ausente') ausentes++; else retrasos++; });
   const resumen = `${presentes} presentes · ${retrasos} retrasos · ${ausentes} ausentes`;
-  $('contadorAsistencia').textContent = `${presentes}P · ${retrasos}R · ${ausentes}A`; $('resumenAsistencia').textContent = resumen; actualizarEstadoAsistencia();
+  $('resumenAsistencia').textContent = resumen; actualizarEstadoAsistencia();
 }
 function actualizarEstadoAsistencia() {
   const confirmado = Boolean(sesionActual?.asistencia_confirmada || $('asistenciaConfirmada')?.checked);
@@ -40,7 +37,7 @@ async function guardarAsistencia() {
     if (filas.length) { const { error } = await supabaseClient.from('entrenamientos_asistencia').upsert(filas, { onConflict: 'sesion_id,jugador_id' }); if (error) throw error; }
     const confirmado = $('asistenciaConfirmada').checked;
     const { error: errorSesion } = await supabaseClient.from('entrenamientos_sesiones').update({ asistencia_confirmada: confirmado }).eq('id', sesionActual.id); if (errorSesion) throw errorSesion;
-    sesionActual.asistencia_confirmada = confirmado; actualizarEstadoAsistencia(); await cargarSemana(); mostrarNotificacion('Asistencia guardada.', 'exito');
+    sesionActual.asistencia_confirmada = confirmado; actualizarEstadoAsistencia(); if ($('fechaSemana')) await cargarSemana(); mostrarNotificacion('Asistencia guardada.', 'exito');
   } catch (error) { console.error(error); mostrarNotificacion('No se pudo guardar la asistencia. Revisa Supabase.', 'error'); }
   finally { btn.disabled = false; btn.textContent = 'Guardar asistencia'; }
 }

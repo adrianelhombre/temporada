@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<link href="../manifest.json" rel="manifest"/>
+<meta content="#ffcc00" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="Balsas" name="apple-mobile-web-app-title"/>
+<link href="../icons/icon-192.png" rel="apple-touch-icon"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport"/>
+<title>Balsas - Editor de ejercicio</title>
+<link href="../css/styles.css" rel="stylesheet"/>
+<link href="../css/entrenamientos.css" rel="stylesheet"/>
+</head>
+<body data-pagina-entrenamientos="ejercicio">
+<header class="cabecera-app">
+<a href="biblioteca-ejercicios.html" aria-label="Volver a biblioteca de ejercicios"><img alt="Volver" class="icono-cabecera" src="../assets/volver.svg"/></a>
+<h1>Editor de ejercicio</h1>
+</header>
+<main class="contenedor entrenamientos-app"><div class="editor-ejercicio-pagina" id="formularioEditorEjercicio">
+<div class="modal-titulo">
+<h2 id="tituloModalEjercicio">Nuevo ejercicio</h2>
+</div>
+<input id="ejercicioId" type="hidden"/>
+<label for="ejercicioNombre">Nombre del ejercicio</label><input id="ejercicioNombre" maxlength="120" placeholder="Ej. Rondo 6 contra 3" required=""/>
+<div class="grid-formulario">
+<div><label for="ejercicioCategoria">Categoría</label><select id="ejercicioCategoria">
+<option>Posesiones</option>
+<option>Finalizaciones</option>
+<option>Transiciones</option>
+<option>Defensa</option>
+<option>Físico</option>
+<option>Partidos</option>
+<option>Técnica</option>
+<option>Otros</option>
+</select></div>
+<div><label for="ejercicioDuracion">Duración (min)</label><input id="ejercicioDuracion" max="120" min="1" type="number" value="12"/></div>
+</div>
+<label for="ejercicioObjetivo">Objetivo</label><textarea id="ejercicioObjetivo" placeholder="Conducta o principio que se trabaja" rows="2"></textarea>
+<label for="ejercicioDescripcion">Descripción y desarrollo</label><textarea id="ejercicioDescripcion" placeholder="Organización, reglas, puntuación y correcciones…" rows="4"></textarea>
+<label for="ejercicioMaterial">Material</label><input id="ejercicioMaterial" placeholder="Conos, petos, balones…"/>
+<div class="editor-grafico-ejercicio">
+<div class="editor-grafico-cabecera">
+<div>
+<h3>Campo del ejercicio</h3>
+<p class="texto-secundario">Para crear una zona, mantén pulsado y arrastra. Selecciona una línea, flecha o
+              zona para cambiar sus ajustes; usa los puntos de control para editar su forma.</p>
+</div><select aria-label="Tipo de campo" id="graficoTipoCampo">
+<option value="entero">Campo entero</option>
+<option value="medio">Medio campo</option>
+</select>
+</div>
+<div aria-label="Herramientas del campo" class="herramientas-grafico" role="toolbar">
+<button class="herramienta-grafico activa" data-herramienta="seleccionar" type="button">Mover /
+            editar</button><button class="herramienta-grafico" data-herramienta="jugadorA" type="button">Equipo
+            A</button><button class="herramienta-grafico" data-herramienta="jugadorB" type="button">Equipo
+            B</button><button class="herramienta-grafico" data-herramienta="jugadorC" type="button">Equipo
+            C</button><button class="herramienta-grafico" data-herramienta="comodin" type="button">Comodín</button>
+<button class="herramienta-grafico" data-herramienta="portero" type="button">Portero</button>
+<button class="herramienta-grafico" data-herramienta="pelota" type="button">Pelota</button>
+<button class="herramienta-grafico" data-herramienta="flecha" type="button">Flecha</button><button class="herramienta-grafico" data-herramienta="linea" type="button">Línea</button><button class="herramienta-grafico" data-herramienta="cono" type="button">Cono</button><button class="herramienta-grafico" data-herramienta="porteria" type="button">Portería</button><button class="herramienta-grafico" data-herramienta="zona" type="button">Zona</button><button class="herramienta-grafico herramienta-borrar" data-herramienta="borrar" type="button">Borrar elemento</button>
+</div>
+<div aria-label="Estilo de líneas y zonas" class="ajustes-grafico">
+<label for="graficoColor">Color</label><input aria-label="Color de línea o zona" id="graficoColor" type="color" value="#facc15"/>
+<label class="ajuste-discontinua" for="graficoDiscontinua"><input id="graficoDiscontinua" type="checkbox"/>
+            Línea discontinua</label>
+<label class="oculto" for="graficoEtiquetaJugador" id="graficoEtiquetaJugadorLabel">Número del
+            jugador</label><input aria-label="Número o etiqueta del jugador" autocomplete="off" class="oculto" id="graficoEtiquetaJugador" maxlength="3" placeholder="N.º" type="text"/>
+<span class="ayuda-elemento-seleccionado" id="ayudaElementoSeleccionado">Selecciona una línea, flecha o zona
+            para editarla. Para cambiar el número, selecciona un jugador.</span>
+</div>
+<div class="lienzo-campo" id="lienzoCampo"><svg aria-label="Editor gráfico del ejercicio" id="graficoCampo" role="img" viewbox="0 0 1000 700"></svg></div>
+<div class="pie-editor-grafico"><span id="estadoHerramienta">Herramienta: Mover / editar</span><button class="boton-mini" id="btnLimpiarGrafico" type="button">Limpiar campo</button></div>
+</div>
+<div class="fila-botones botones-modal-entrenamiento"><button class="primario ancho" id="btnGuardarEjercicio">Guardar ejercicio</button><a class="boton-cancelar-ejercicio ancho" href="biblioteca-ejercicios.html" id="btnCancelarEjercicio">Cancelar</a></div>
+</div></main>
+<div aria-live="polite" class="notificaciones" id="notificaciones"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabaseClient.js"></script>
+<script src="../js/comun.js"></script>
+<script src="../js/entrenamientos/grafico.js"></script>
+<script src="../js/entrenamientos/asistencia.js"></script>
+<script src="../js/entrenamientos/ejercicios.js"></script>
+<script src="../js/entrenamientos/sesiones.js"></script>
+<script src="../js/entrenamientos.js"></script>
+</body>
+</html>

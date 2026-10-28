@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <link href="../manifest.json" rel="manifest" />
+  <meta content="#ffcc00" name="theme-color" />
+  <meta content="yes" name="apple-mobile-web-app-capable" />
+  <meta content="Balsas" name="apple-mobile-web-app-title" />
+  <link href="../icons/icon-192.png" rel="apple-touch-icon" />
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport" />
+  <title>Balsas - Entrenamiento</title>
+  <link href="../css/styles.css" rel="stylesheet" />
+  <link href="../css/entrenamientos.css" rel="stylesheet" />
+</head>
+
+<body data-pagina-entrenamientos="sesion">
+  <header class="cabecera-app">
+    <a href="entrenamientos.html" aria-label="Volver a planificación"><img alt="Volver" class="icono-cabecera"
+        src="../assets/volver.svg" /></a>
+    <h1>Entrenamiento</h1>
+  </header>
+  <main class="contenedor entrenamientos-app">
+    <section class="detalle-sesion-pagina" id="vista-detalle-sesion">
+      <div class="detalle-barra-superior"><span class="pildora pendiente" id="detalleEstadoAsistencia">Asistencia
+          pendiente</span></div>
+      <div class="detalle-titulo">
+        <h2 id="detalleTituloCabecera">Entrenamiento</h2>
+        <p class="texto-secundario" id="detalleFechaEtiqueta"></p>
+      </div>
+      <section class="bloque-detalle bloque-detalles-entrenamiento" data-panel-seccion="">
+        <button aria-controls="panelDetallesEntrenamiento" aria-expanded="false" class="cabecera-panel-plegable"
+          data-control-seccion="" data-panel-plegable="" id="btnAlternarDetallesEntrenamiento" type="button">
+          <span class="cabecera-panel-plegable-texto"><strong>Detalles del entrenamiento</strong></span>
+          <span aria-hidden="true" class="icono-panel-plegable">+</span>
+        </button>
+        <div class="panel-seccion-plegable oculto" id="panelDetallesEntrenamiento">
+          <div class="detalle-datos">
+            <div class="grid-formulario" id="gridDetallesEntrenamiento">
+              <div><label for="detalleTitulo">Nombre de la sesión</label><input id="detalleTitulo" maxlength="100" />
+              </div>
+              <div><label for="detalleFecha">Fecha</label><input id="detalleFecha" type="date" /></div>
+              <div><label for="detalleDuracion">Duración prevista (min)</label><input id="detalleDuracion" max="240"
+                  min="1" type="number" /></div>
+              <div><label for="detalleDuracionReal">Duración real (min)</label><input id="detalleDuracionReal" max="300"
+                  min="0" placeholder="Sin registrar" type="number" /></div>
+              <div><label for="detalleObjetivo">Objetivo principal</label><textarea id="detalleObjetivo"
+                  placeholder="¿Qué queremos mejorar hoy?" rows="2"></textarea></div>
+              <div><label for="detalleObservaciones">Observaciones de la sesión</label><textarea
+                  id="detalleObservaciones" placeholder="Notas para el cuerpo técnico" rows="2"></textarea></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="bloque-detalle bloque-ejercicios-sesion" data-panel-seccion="">
+        <button aria-controls="panelAnadirEjercicios" aria-expanded="false" class="cabecera-panel-plegable"
+          data-control-seccion="" data-panel-plegable="" id="btnAlternarAnadirEjercicios" type="button">
+          <span class="cabecera-panel-plegable-texto"><strong>Añadir ejercicios</strong></span>
+          <span aria-hidden="true" class="icono-panel-plegable">+</span>
+        </button>
+        <div class="panel-seccion-plegable oculto" id="panelAnadirEjercicios">
+          <div class="anadir-ejercicio-sesion">
+            <div class="selector-ejercicio-disponibles">
+              <div class="selector-ejercicio-contenido" id="selectorEjerciciosDisponibles">
+                <div class="selector-ejercicio-buscable">
+                  <input aria-label="Buscar ejercicio para añadir" id="buscarEjercicioSesion"
+                    placeholder="Buscar por nombre, categoría u objetivo…" type="search" />
+                  <div aria-label="Resultados de ejercicios" class="resultados-ejercicios-sesion"
+                    id="resultadosEjerciciosSesion" role="listbox"></div>
+                </div>
+              </div>
+              <button class="secundario boton-crear-ejercicio-sesion" id="btnCrearEjercicioDesdeSesion" type="button">＋
+                Crear ejercicio</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="bloque-detalle bloque-equipos-seccion" data-panel-seccion="">
+        <button aria-controls="panelEquiposEntrenamiento" aria-expanded="false" class="cabecera-panel-plegable"
+          data-control-seccion="" data-panel-plegable="" id="btnAlternarEquipos" type="button">
+          <span class="cabecera-panel-plegable-texto"><strong>Equipos</strong></span>
+          <span aria-hidden="true" class="icono-panel-plegable">+</span>
+        </button>
+        <div class="panel-seccion-plegable oculto" id="panelEquiposEntrenamiento">
+          <div class="bloque-equipos-sesion">
+            <div class="opciones-equipos-sesion">
+              <label><input checked="" disabled="" id="usarDosEquipos" type="checkbox" /> Dos equipos</label>
+              <label><input id="usarTresEquipos" type="checkbox" />Tres equipos</label>
+            </div>
+            <div class="distribuciones-equipos">
+              <div class="distribucion-equipos distribucion-dos-equipos">
+                <div class="cabecera-distribucion-equipos">
+                  <h4>Dos equipos</h4>
+                  <button aria-controls="contenidoDistribucionDos" aria-expanded="false"
+                    class="boton-alternar-distribucion" data-panel-plegable="" type="button">
+                    <span aria-hidden="true">+</span>
+                  </button>
+                </div>
+                <div class="columnas-equipos columnas-dos oculto" id="contenidoDistribucionDos">
+                  <label class="campo-equipo"><span>Equipo A</span>
+                    <textarea id="jugadoresEquipoA" placeholder="Escribe los nombres de los jugadores…"
+                      rows="6"></textarea>
+                  </label>
+                  <label class="campo-equipo"><span>Equipo B</span>
+                    <textarea id="jugadoresEquipoB" placeholder="Escribe los nombres de los jugadores…"
+                      rows="6"></textarea>
+                  </label>
+                  <label class="campo-equipo comodines"><span>Comodines</span>
+                    <textarea id="jugadoresComodines" placeholder="Nombres de los comodines…" rows="6"></textarea>
+                  </label>
+                </div>
+              </div>
+              <div class="distribucion-equipos distribucion-tres-equipos oculto" id="distribucionTresEquipos">
+                <div class="cabecera-distribucion-equipos">
+                  <h4>Tres equipos</h4>
+                  <button aria-controls="contenidoDistribucionTres" aria-expanded="false"
+                    class="boton-alternar-distribucion" data-panel-plegable="" type="button">
+                    <span aria-hidden="true">+</span>
+                  </button>
+                </div>
+                <div class="columnas-equipos columnas-tres oculto" id="contenidoDistribucionTres">
+                  <label class="campo-equipo"><span>Equipo A</span>
+                    <textarea id="jugadoresEquipo3A" placeholder="Nombres…" rows="6"></textarea>
+                  </label>
+                  <label class="campo-equipo"><span>Equipo B</span>
+                    <textarea id="jugadoresEquipo3B" placeholder="Nombres…" rows="6"></textarea>
+                  </label>
+                  <label class="campo-equipo"><span>Equipo C</span>
+                    <textarea id="jugadoresEquipo3C" placeholder="Nombres…" rows="6"></textarea>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <button class="primario" id="btnGuardarEquipos" type="button">Guardar equipos</button>
+          </div>
+        </div>
+      </section>
+      <section class="bloque-detalle bloque-entrenamiento-seccion" data-panel-seccion="">
+        <button aria-controls="panelEntrenamiento" aria-expanded="false" class="cabecera-panel-plegable"
+          data-control-seccion="" data-panel-plegable="" id="btnAlternarEntrenamiento" type="button">
+          <span class="cabecera-panel-plegable-texto"><strong>Entrenamiento</strong><small
+              id="resumenEjercicios">Cargando ejercicios…</small></span>
+          <span aria-hidden="true" class="icono-panel-plegable">+</span>
+        </button>
+        <div class="panel-seccion-plegable oculto" id="panelEntrenamiento">
+          <div class="ejercicios-de-sesion" id="ejerciciosDeSesion">
+            <p class="texto-secundario">Cargando ejercicios…</p>
+          </div>
+        </div>
+      </section>
+      <section class="bloque-detalle bloque-asistencia" data-panel-seccion="">
+        <button aria-controls="panelAsistencia" aria-expanded="false" class="cabecera-panel-plegable"
+          data-control-seccion="" data-panel-plegable="" id="btnAlternarAsistencia" type="button">
+          <span class="cabecera-panel-plegable-texto"><strong>Asistencia</strong><small id="resumenAsistencia">Cargando
+              resumen…</small></span>
+          <span aria-hidden="true" class="icono-panel-plegable">+</span>
+        </button>
+        <div class="panel-seccion-plegable panel-asistencia oculto" id="panelAsistencia">
+          <div class="lista-asistencia" id="listaAsistencia">
+            <p class="texto-secundario">Cargando plantilla…</p>
+          </div>
+          <div class="estado-asistencia">
+            <label>
+              <input id="asistenciaConfirmada" type="checkbox" />
+              He revisado y confirmado la asistencia
+            </label>
+          </div>
+          <button class="primario ancho" id="btnGuardarAsistencia" type="button">Guardar asistencia</button>
+        </div>
+      </section>
+      <div class="detalle-acciones-inferiores">
+        <button class="primario" id="btnGuardarDetalleAbajo" type="button">Guardar cambios</button>
+      </div>
+    </section>
+  </main>
+  <div aria-live="polite" class="notificaciones" id="notificaciones"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabaseClient.js"></script>
+  <script src="../js/comun.js"></script>
+  <script src="../js/entrenamientos/grafico.js"></script>
+  <script src="../js/entrenamientos/asistencia.js"></script>
+  <script src="../js/entrenamientos/ejercicios.js"></script>
+  <script src="../js/entrenamientos/sesiones.js"></script>
+  <script src="../js/entrenamientos.js"></script>
+</body>
+
+</html>
