@@ -35,7 +35,7 @@
   display: flex;
   justify-content: space-between;
   align-items: end;
-  gap: 12px;
+  gap: 2rem;
 }
 
 .cabecera-semana>div {
@@ -1733,13 +1733,14 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: 8px;
 }
 .selector-semana-contenedor select {
   display: block;
   width: 100%;
-  margin-top: 5px;
   min-width: 0;
+  margin: 0;
   border: 1px solid var(--borde);
   border-radius: 8px;
   padding: 10px 12px;
@@ -1760,24 +1761,31 @@
 }
 
 .acciones-semana {
-  display: flex;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between  ;
   gap: 8px;
   flex-wrap: wrap;
+}
+.acciones-semana button {
+  font-family: inherit;
+  text-transform: none;
+  letter-spacing: 0;
 }
 .botones-acciones-semana {
   display: flex;
   gap: 8px;
 }
 .botones-acciones-semana button {
-  padding: 0;
+  width: 100%;
 }
 @media(max-width: 650px) {
   .cabecera-planificacion {
     align-items: stretch;
   }
   .acciones-semana {
+    display: flex;
     flex-direction: column;
     align-items: stretch;
   }

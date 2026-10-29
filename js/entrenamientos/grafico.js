@@ -405,10 +405,8 @@ function dibujarElemento(e, interactivo) {
     return `<g ${data}
       transform="translate(${x} ${y})"
       class="${interactivo ? 'elemento-arrastrable' : ''}">
-      <path d="M -15 13 L 0 -18 L 15 13 Z"
-        fill="#f97316" stroke="#7c2d12" stroke-width="2"/>
-      <ellipse cx="0" cy="13" rx="17" ry="5"
-        fill="#fdba74" stroke="#7c2d12" stroke-width="2"/>
+      <path d="M -9 8 L 0 -10 L 9 8 Z"
+        fill="#f97316" stroke="#7c2d12" stroke-width="1.6" stroke-linejoin="round"/>
     </g>`;
   }
 
@@ -549,17 +547,20 @@ function manejarPulsacionCampo(evento) {
   const svg = $('graficoCampo');
   const grupo = evento.target.closest('[data-elemento-id]');
 
-  // SELECCIONAR O EMPEZAR A MOVER UN ELEMENTO
-  if (herramientaGrafico === 'seleccionar' && grupo) {
+  // SELECCIONAR O EMPEZAR A MOVER UN ELEMENTO EXISTENTE.
+  // Los jugadores se pueden arrastrar desde cualquier herramienta de creación;
+  // al pulsar sobre uno no se crea otro encima por accidente.
+  if (grupo) {
     const id = grupo.getAttribute('data-elemento-id');
-
     const el = graficoActual.elementos.find(
       x => String(x.id) === id
     );
 
-    if (!el) return;
+    const puedeMover = herramientaGrafico === 'seleccionar' ||
+      (el?.tipo === 'jugador' && herramientaGrafico !== 'borrar');
 
-    const handlePunto = evento.target.closest('[data-punto-linea]');
+    if (el && puedeMover) {
+      const handlePunto = evento.target.closest('[data-punto-linea]');
     const handleZona = evento.target.closest('[data-resize-zona]');
 
     elementoGraficoSeleccionado = id;
@@ -593,11 +594,12 @@ function manejarPulsacionCampo(evento) {
       };
     }
 
-    svg.setPointerCapture?.(evento.pointerId);
-    svg.style.cursor = 'grabbing';
-    evento.preventDefault();
-    renderizarGraficoCampo();
-    return;
+      svg.setPointerCapture?.(evento.pointerId);
+      svg.style.cursor = 'grabbing';
+      evento.preventDefault();
+      renderizarGraficoCampo();
+      return;
+    }
   }
 
   const punto = coordenadasCampo(evento);
