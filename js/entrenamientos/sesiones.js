@@ -14,6 +14,7 @@ async function cargarJugadores() {
 async function cargarSemanas() {
   const selector = $('selectorSemana');
   if (!selector || !temporadaEntrenamientosId) return;
+  const semanaSeleccionadaAntes = selector.value;
   selector.innerHTML = '<option value="">Cargando semanas…</option>';
   const { data, error } = await supabaseClient.from('entrenamientos_semanas')
     .select('*').eq('temporada_id', temporadaEntrenamientosId).order('fecha_inicio', { ascending: true });
@@ -38,7 +39,10 @@ async function cargarSemanas() {
   });
   const hoy = fechaISO(lunesDe(new Date()));
   const actual = semanasEntrenamiento.find(semana => semana.fecha_inicio <= hoy && semana.fecha_fin >= hoy);
-  selector.value = actual?.id || semanasEntrenamiento[0].id;
+  const seleccionAnteriorSigueExistiendo = semanasEntrenamiento.some(semana => String(semana.id) === String(semanaSeleccionadaAntes));
+  selector.value = seleccionAnteriorSigueExistiendo
+    ? semanaSeleccionadaAntes
+    : (actual?.id || semanasEntrenamiento[0].id);
   await cargarSemana();
 }
 

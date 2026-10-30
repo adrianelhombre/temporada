@@ -1,3 +1,4 @@
+
 // Punto de entrada de Entrenamientos: estado compartido, inicio y utilidades comunes.
 
 let temporadaEntrenamientosId = null;
@@ -203,7 +204,9 @@ function iniciarRealtimeEntrenamientos(pagina, id = null) {
       console.warn('La sincronización en tiempo real no está disponible:', status);
     }
   });
+
   window.addEventListener('beforeunload', () => {
+    clearTimeout(temporizadorRealtimeEntrenamientos);
     if (canalRealtimeEntrenamientos === canal) supabaseClient.removeChannel(canal);
   }, { once: true });
 }
