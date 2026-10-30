@@ -3,7 +3,7 @@
 function normalizarGrafico(grafico) {
   let g = grafico;
 
-  if (typeof g === 'string') {
+  if (typeof g === "string") {
     try {
       g = JSON.parse(g);
     } catch {
@@ -11,22 +11,21 @@ function normalizarGrafico(grafico) {
     }
   }
 
-  if (!g || typeof g !== 'object') {
-    g = { version: 1, campo: 'entero', elementos: [] };
+  if (!g || typeof g !== "object") {
+    g = { version: 1, campo: "entero", elementos: [] };
   }
 
   return {
     version: 1,
-    campo: g.campo === 'medio' ? 'medio' : 'entero',
+    campo: g.campo === "medio" ? "medio" : "entero",
     elementos: Array.isArray(g.elementos)
       ? g.elementos.map((e, i) => ({
-        ...e,
-        id: e.id || `el-${i}-${Math.round((Number(e.x) || 0) * 10)}`
-      }))
-      : []
+          ...e,
+          id: e.id || `el-${i}-${Math.round((Number(e.x) || 0) * 10)}`,
+        }))
+      : [],
   };
 }
-
 
 function seleccionarHerramienta(herramienta) {
   herramientaGrafico = herramienta;
@@ -35,78 +34,98 @@ function seleccionarHerramienta(herramienta) {
   creandoZonaGrafico = null;
   zonaPrevisualizacionGrafico = null;
 
-  document.querySelectorAll('[data-herramienta]').forEach(btn => {
-    btn.classList.toggle(
-      'activa',
-      btn.dataset.herramienta === herramienta
-    );
+  document.querySelectorAll("[data-herramienta]").forEach((btn) => {
+    btn.classList.toggle("activa", btn.dataset.herramienta === herramienta);
   });
 
-  $('estadoHerramienta').textContent =
+  $("estadoHerramienta").textContent =
     `Herramienta: ${NOMBRES_HERRAMIENTAS[herramienta] || herramienta}`;
 
-  $('graficoCampo').style.cursor =
-    herramienta === 'seleccionar'
-      ? 'grab'
-      : herramienta === 'borrar'
-        ? 'not-allowed'
-        : 'crosshair';
+  $("graficoCampo").style.cursor =
+    herramienta === "seleccionar"
+      ? "grab"
+      : herramienta === "borrar"
+        ? "not-allowed"
+        : "crosshair";
 }
 
+let esMovilGrafico = window.matchMedia("(max-width: 768px)").matches;
+
+// Actualizar el tamaño de los elementos al cambiar de dispositivo
+// o modificar la orientación de la pantalla.
+const mediaQueryMovilGrafico = window.matchMedia("(max-width: 768px)");
+
+mediaQueryMovilGrafico.addEventListener("change", (evento) => {
+  esMovilGrafico = evento.matches;
+  renderizarGraficoCampo();
+});
+
+// También actualizar cuando cambie el tamaño de la ventana.
+window.addEventListener("resize", () => {
+  const nuevoEstadoMovil = window.matchMedia("(max-width: 768px)").matches;
+
+  if (nuevoEstadoMovil !== esMovilGrafico) {
+    esMovilGrafico = nuevoEstadoMovil;
+    renderizarGraficoCampo();
+  }
+});
 
 function renderizarGraficoCampo() {
-  const svg = $('graficoCampo');
+  const svg = $("graficoCampo");
   if (!svg) return;
 
-  let preview = '';
+  let preview = "";
 
   if (puntoInicialGrafico && puntoPrevisualizacionGrafico) {
-    preview += dibujarElemento({
-      id: 'previsualizacion',
-      tipo: herramientaGrafico,
-      x: puntoInicialGrafico.x,
-      y: puntoInicialGrafico.y,
-      puntos: [
-        puntoInicialGrafico,
-        puntoPrevisualizacionGrafico
-      ],
-      color: $('graficoColor')?.value || '#facc15',
-      discontinua: $('graficoDiscontinua')?.checked
-    }, false).replace('<g ', '<g opacity=".65" ');
+    preview += dibujarElemento(
+      {
+        id: "previsualizacion",
+        tipo: herramientaGrafico,
+        x: puntoInicialGrafico.x,
+        y: puntoInicialGrafico.y,
+        puntos: [puntoInicialGrafico, puntoPrevisualizacionGrafico],
+        color: $("graficoColor")?.value || "#facc15",
+        discontinua: $("graficoDiscontinua")?.checked,
+      },
+      false,
+    ).replace("<g ", '<g opacity=".65" ');
   }
 
   if (creandoZonaGrafico && zonaPrevisualizacionGrafico) {
     const a = creandoZonaGrafico;
     const b = zonaPrevisualizacionGrafico;
 
-    preview += dibujarElemento({
-      id: 'zona-preview',
-      tipo: 'zona',
-      x: (a.x + b.x) / 2,
-      y: (a.y + b.y) / 2,
-      w: Math.max(30, Math.abs(b.x - a.x)),
-      h: Math.max(30, Math.abs(b.y - a.y)),
-      color: $('graficoColor')?.value || '#facc15',
-      discontinua: $('graficoDiscontinua')?.checked,
-      etiqueta: 'Zona'
-    }, false).replace('<g ', '<g opacity=".65" ');
+    preview += dibujarElemento(
+      {
+        id: "zona-preview",
+        tipo: "zona",
+        x: (a.x + b.x) / 2,
+        y: (a.y + b.y) / 2,
+        w: Math.max(30, Math.abs(b.x - a.x)),
+        h: Math.max(30, Math.abs(b.y - a.y)),
+        color: $("graficoColor")?.value || "#facc15",
+        discontinua: $("graficoDiscontinua")?.checked,
+        etiqueta: "Zona",
+      },
+      false,
+    ).replace("<g ", '<g opacity=".65" ');
   }
 
   svg.innerHTML =
     dibujoBaseCampo(graficoActual.campo) +
     graficoActual.elementos
-      .map(elemento => dibujarElemento(elemento, true))
-      .join('') +
+      .map((elemento) => dibujarElemento(elemento, true))
+      .join("") +
     preview;
 
   const selected = graficoActual.elementos.find(
-    e => String(e.id) === String(elementoGraficoSeleccionado)
+    (e) => String(e.id) === String(elementoGraficoSeleccionado),
   );
 
-  if (selected && ['linea', 'flecha', 'zona'].includes(selected.tipo)) {
-    let handles = '';
+  if (selected && ["linea", "flecha", "zona"].includes(selected.tipo)) {
+    let handles = "";
 
-    if (selected.tipo === 'zona') {
+    if (selected.tipo === "zona") {
       const w = Number(selected.w) || 150;
       const h = Number(selected.h) || 110;
 
@@ -150,15 +169,14 @@ function renderizarGraficoCampo() {
     }
 
     svg.insertAdjacentHTML(
-      'beforeend',
+      "beforeend",
       `<g data-elemento-id="${escaparHTML(selected.id)}"
-          class="controles-elemento-seleccionado">${handles}</g>`
+          class="controles-elemento-seleccionado">${handles}</g>`,
     );
   }
 }
 
-
-function crearSVGGrafico(grafico, sufijo = 'preview') {
+function crearSVGGrafico(grafico, sufijo = "preview") {
   const g = normalizarGrafico(grafico);
 
   return `
@@ -169,11 +187,10 @@ function crearSVGGrafico(grafico, sufijo = 'preview') {
       aria-label="Campo gráfico del ejercicio ${escaparHTML(sufijo)}"
     >
       ${dibujoBaseCampo(g.campo)}
-      ${g.elementos.map(e => dibujarElemento(e, false)).join('')}
+      ${g.elementos.map((e) => dibujarElemento(e, false)).join("")}
     </svg>
   `;
 }
-
 
 // =====================================================
 // DIBUJO DEL CAMPO: 1000 × 700
@@ -191,7 +208,7 @@ function dibujoBaseCampo(tipo) {
     />
   `;
 
-  let franjas = '';
+  let franjas = "";
 
   for (let i = 0; i < 10; i++) {
     franjas += `
@@ -200,13 +217,13 @@ function dibujoBaseCampo(tipo) {
         y="0"
         width="100"
         height="700"
-        fill="${i % 2 ? '#438b42' : '#4b9849'}"
+        fill="${i % 2 ? "#438b42" : "#4b9849"}"
       />
     `;
   }
 
   // MEDIO CAMPO
-  if (tipo === 'medio') {
+  if (tipo === "medio") {
     return `
       ${base}
       ${franjas}
@@ -327,68 +344,73 @@ function dibujoBaseCampo(tipo) {
   `;
 }
 
-
 // =====================================================
 // DIBUJAR ELEMENTOS
 // =====================================================
 
 function dibujarElemento(e, interactivo) {
-  const id = escaparHTML(e.id || '');
+  const id = escaparHTML(e.id || "");
 
   const x = clamp(Number(e.x) || 0, 0, 1000);
   const y = clamp(Number(e.y) || 0, 0, 700);
 
-  const data = interactivo
-    ? `data-elemento-id="${id}"`
-    : '';
+  const data = interactivo ? `data-elemento-id="${id}"` : "";
 
   // JUGADORES, TERCER EQUIPO, COMODINES Y PORTERO
-  if (e.tipo === 'jugador') {
-    const equipoB = e.equipo === 'B';
-    const equipoC = e.equipo === 'C' && e.etiqueta !== 'C';
-    const comodin = e.equipo === 'COMODIN' ||
-      (e.equipo === 'C' && e.etiqueta === 'C');
-    const portero = e.equipo === 'P';
+  if (e.tipo === "jugador") {
+    const equipoB = e.equipo === "B";
+    const equipoC = e.equipo === "C" && e.etiqueta !== "C";
+    const comodin =
+      e.equipo === "COMODIN" || (e.equipo === "C" && e.etiqueta === "C");
+    const portero = e.equipo === "P";
 
     const fill = portero
-      ? '#86efac'
+      ? "#86efac"
       : comodin
-        ? '#38bdf8'
+        ? "#38bdf8"
         : equipoC
-          ? '#f87171'
+          ? "#f87171"
           : equipoB
-            ? '#f8fafc'
-            : '#facc15';
+            ? "#f8fafc"
+            : "#facc15";
 
     const stroke = portero
-      ? '#166534'
+      ? "#166534"
       : comodin
-        ? '#075985'
+        ? "#075985"
         : equipoC
-          ? '#991b1b'
+          ? "#991b1b"
           : equipoB
-            ? '#1f2937'
-            : '#111827';
+            ? "#1f2937"
+            : "#111827";
 
-    const etiqueta = e.etiqueta || (
-      portero ? 'P' :
-        comodin ? 'C' :
-          ''
-    );
+    const etiqueta = e.etiqueta || (portero ? "P" : comodin ? "C" : "");
 
-    return `<g ${data} transform="translate(${x} ${y})" class="${interactivo ? 'elemento-arrastrable' : ''}">
-      <circle r="21" fill="${fill}" stroke="${stroke}" stroke-width="3"/>
-      <text x="0" y="1" text-anchor="middle" dominant-baseline="middle"
-        font-size="${String(etiqueta).length > 2 ? 12 : 16}"
-        font-weight="800" fill="#111827" pointer-events="none">${escaparHTML(etiqueta)}</text>
-    </g>`;
+    const esMovil = esMovilGrafico;
+
+    const radio = esMovil ? 24 : 15;
+    const grosorBorde = esMovil ? 3.5 : 3;
+    const tamanoTexto = esMovil
+      ? String(etiqueta).length > 2
+        ? 18
+        : 24
+      : String(etiqueta).length > 2
+        ? 12
+        : 16;
+
+    return `<g ${data} transform="translate(${x} ${y})" class="${interactivo ? "elemento-arrastrable" : ""}">
+  <circle r="${radio}" fill="${fill}" stroke="${stroke}" stroke-width="${grosorBorde}"/>
+  <text x="0" y="1" text-anchor="middle" dominant-baseline="middle"
+    font-size="${tamanoTexto}"
+    font-weight="800" fill="#111827" pointer-events="none">${escaparHTML(etiqueta)}</text>
+</g>`;
   }
 
   // PELOTA
-  if (e.tipo === 'pelota') {
+  if (e.tipo === "pelota") {
     return `<g ${data}
       transform="translate(${x} ${y})"
-      class="${interactivo ? 'elemento-arrastrable' : ''}">
+      class="${interactivo ? "elemento-arrastrable" : ""}">
       <circle cx="0" cy="0" r="11" fill="#ffffff" stroke="#111827" stroke-width="2"/>
       <path d="M0 -5.2 L4.9 -1.6 L3 4.2 L-3 4.2 L-4.9 -1.6 Z"
         fill="#111827" stroke="#111827" stroke-width="0.8" stroke-linejoin="round"/>
@@ -401,20 +423,20 @@ function dibujarElemento(e, interactivo) {
   }
 
   // CONOS
-  if (e.tipo === 'cono') {
+  if (e.tipo === "cono") {
     return `<g ${data}
       transform="translate(${x} ${y})"
-      class="${interactivo ? 'elemento-arrastrable' : ''}">
+      class="${interactivo ? "elemento-arrastrable" : ""}">
       <path d="M -9 8 L 0 -10 L 9 8 Z"
         fill="#f97316" stroke="#7c2d12" stroke-width="1.6" stroke-linejoin="round"/>
     </g>`;
   }
 
   // PORTERÍAS
-  if (e.tipo === 'porteria') {
+  if (e.tipo === "porteria") {
     return `<g ${data}
       transform="translate(${x} ${y})"
-      class="${interactivo ? 'elemento-arrastrable' : ''}"
+      class="${interactivo ? "elemento-arrastrable" : ""}"
       fill="none" stroke="#fff" stroke-width="4">
       <path d="M-34 18 L-34 -20 Q-34 -25 -29 -25 L29 -25 Q34 -25 34 -20 L34 18"
         stroke="#111827" stroke-width="8" opacity=".35"/>
@@ -426,48 +448,47 @@ function dibujarElemento(e, interactivo) {
   }
 
   // ZONAS
-  if (e.tipo === 'zona') {
+  if (e.tipo === "zona") {
     const w = Number(e.w) || 150;
     const h = Number(e.h) || 110;
 
-    return `<g ${data} class="${interactivo ? 'elemento-arrastrable' : ''}">
+    return `<g ${data} class="${interactivo ? "elemento-arrastrable" : ""}">
       <rect
         x="${x - w / 2}" y="${y - h / 2}"
         width="${w}" height="${h}"
-        fill="${escaparHTML(e.color || '#facc15')}"
+        fill="${escaparHTML(e.color || "#facc15")}"
         fill-opacity=".18"
-        stroke="${escaparHTML(e.color || '#facc15')}"
+        stroke="${escaparHTML(e.color || "#facc15")}"
         stroke-width="3"
-        stroke-dasharray="${e.discontinua === false ? 'none' : '8 5'}"
+        stroke-dasharray="${e.discontinua === false ? "none" : "8 5"}"
       />
     </g>`;
   }
 
   // FLECHAS Y LÍNEAS
-  if (e.tipo === 'flecha' || e.tipo === 'linea') {
-    const p = Array.isArray(e.puntos) && e.puntos.length >= 2
-      ? e.puntos
-      : [
-          { x, y },
-          { x: Math.min(1000, x + 100), y }
-        ];
+  if (e.tipo === "flecha" || e.tipo === "linea") {
+    const p =
+      Array.isArray(e.puntos) && e.puntos.length >= 2
+        ? e.puntos
+        : [
+            { x, y },
+            { x: Math.min(1000, x + 100), y },
+          ];
 
     const p1 = p[0];
     const p2 = p[1];
 
-    const color = e.color ||
-      (e.equipo === 'B' ? '#ffffff' : '#facc15');
+    const color = e.color || (e.equipo === "B" ? "#ffffff" : "#facc15");
 
-    const marcador = e.tipo === 'flecha'
-      ? `marker-end="url(#flecha-${id})"`
-      : '';
+    const marcador =
+      e.tipo === "flecha" ? `marker-end="url(#flecha-${id})"` : "";
 
     const x1 = clamp(Number(p1.x) || 0, 0, 1000);
     const y1 = clamp(Number(p1.y) || 0, 0, 700);
     const x2 = clamp(Number(p2.x) || 0, 0, 1000);
     const y2 = clamp(Number(p2.y) || 0, 0, 700);
 
-    return `<g ${data} class="${interactivo ? 'elemento-arrastrable' : ''}">
+    return `<g ${data} class="${interactivo ? "elemento-arrastrable" : ""}">
       <defs>
         <marker id="flecha-${id}" markerWidth="8" markerHeight="8"
           refX="5" refY="3" orient="auto">
@@ -476,9 +497,9 @@ function dibujarElemento(e, interactivo) {
       </defs>
 
       <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
-        stroke="${escaparHTML(color)}" stroke-width="6"
+        stroke="${escaparHTML(color)}" stroke-width="4"
         stroke-linecap="round"
-        ${e.discontinua ? 'stroke-dasharray="12 9"' : ''}
+        ${e.discontinua ? 'stroke-dasharray="12 9"' : ""}
         ${marcador}/>
 
       <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
@@ -486,9 +507,8 @@ function dibujarElemento(e, interactivo) {
     </g>`;
   }
 
-  return '';
+  return "";
 }
-
 
 // =====================================================
 // ESTILO DE LOS ELEMENTOS SELECCIONADOS
@@ -496,19 +516,18 @@ function dibujarElemento(e, interactivo) {
 
 function actualizarEstiloSeleccionadoEnVivo() {
   const el = graficoActual.elementos.find(
-    e => String(e.id) === String(elementoGraficoSeleccionado)
+    (e) => String(e.id) === String(elementoGraficoSeleccionado),
   );
 
-  if (!el || !['linea', 'flecha', 'zona'].includes(el.tipo)) {
+  if (!el || !["linea", "flecha", "zona"].includes(el.tipo)) {
     return;
   }
 
-  el.color = $('graficoColor').value || '#facc21';
-  el.discontinua = $('graficoDiscontinua').checked;
+  el.color = $("graficoColor").value || "#facc21";
+  el.discontinua = $("graficoDiscontinua").checked;
 
   renderizarGraficoCampo();
 }
-
 
 // =====================================================
 // COORDENADAS DEL CAMPO: 1000 × 700
@@ -518,84 +537,73 @@ function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
 
-
 function coordenadasCampo(evento) {
-  const svg = $('graficoCampo');
+  const svg = $("graficoCampo");
   const rect = svg.getBoundingClientRect();
 
   return {
-    x: clamp(
-      (evento.clientX - rect.left) / rect.width * 1000,
-      0,
-      1000
-    ),
+    x: clamp(((evento.clientX - rect.left) / rect.width) * 1000, 0, 1000),
 
-    y: clamp(
-      (evento.clientY - rect.top) / rect.height * 700,
-      0,
-      700
-    )
+    y: clamp(((evento.clientY - rect.top) / rect.height) * 700, 0, 700),
   };
 }
-
 
 // =====================================================
 // CREAR, SELECCIONAR Y ELIMINAR ELEMENTOS
 // =====================================================
 
 function manejarPulsacionCampo(evento) {
-  const svg = $('graficoCampo');
-  const grupo = evento.target.closest('[data-elemento-id]');
+  const svg = $("graficoCampo");
+  const grupo = evento.target.closest("[data-elemento-id]");
 
   // SELECCIONAR O EMPEZAR A MOVER UN ELEMENTO EXISTENTE.
   // Los jugadores se pueden arrastrar desde cualquier herramienta de creación;
   // al pulsar sobre uno no se crea otro encima por accidente.
   if (grupo) {
-    const id = grupo.getAttribute('data-elemento-id');
-    const el = graficoActual.elementos.find(
-      x => String(x.id) === id
-    );
+    const id = grupo.getAttribute("data-elemento-id");
+    const el = graficoActual.elementos.find((x) => String(x.id) === id);
 
-    const puedeMover = herramientaGrafico === 'seleccionar' ||
-      (el?.tipo === 'jugador' && herramientaGrafico !== 'borrar');
+    const puedeMover =
+      herramientaGrafico === "seleccionar" ||
+      (el?.tipo === "jugador" && herramientaGrafico !== "borrar");
 
     if (el && puedeMover) {
-      const handlePunto = evento.target.closest('[data-punto-linea]');
-    const handleZona = evento.target.closest('[data-resize-zona]');
+      const handlePunto = evento.target.closest("[data-punto-linea]");
+      const handleZona = evento.target.closest("[data-resize-zona]");
 
-    elementoGraficoSeleccionado = id;
-    cargarControlesElemento(el);
+      elementoGraficoSeleccionado = id;
+      cargarControlesElemento(el);
 
-    if (el.tipo === 'jugador' && evento.detail >= 2) {
-      $('graficoEtiquetaJugador').focus();
-      $('graficoEtiquetaJugador').select();
-      return;
-    }
+      if (el.tipo === "jugador" && evento.detail >= 2) {
+        $("graficoEtiquetaJugador").focus();
+        $("graficoEtiquetaJugador").select();
+        return;
+      }
 
-    if (handlePunto) {
-      arrastreGrafico = {
-        id,
-        modo: 'punto',
-        indice: Number(handlePunto.dataset.puntoLinea),
-        pointerId: evento.pointerId
-      };
-    } else if (handleZona) {
-      arrastreGrafico = {
-        id,
-        modo: 'resize-zona',
-        pointerId: evento.pointerId
-      };
-    } else {
-      arrastreGrafico = {
-        id,
-        modo: 'mover',
-        pointerId: evento.pointerId,
-        ultimo: coordenadasCampo(evento)
-      };
-    }
+      if (handlePunto) {
+        arrastreGrafico = {
+          id,
+          modo: "punto",
+          indice: Number(handlePunto.dataset.puntoLinea),
+          pointerId: evento.pointerId,
+        };
+      } else if (handleZona) {
+        arrastreGrafico = {
+          id,
+          modo: "resize-zona",
+          pointerId: evento.pointerId,
+        };
+      } else {
+        arrastreGrafico = {
+          id,
+          modo: "mover",
+          pointerId: evento.pointerId,
+          ultimo: coordenadasCampo(evento),
+        };
+      }
 
       svg.setPointerCapture?.(evento.pointerId);
-      svg.style.cursor = 'grabbing';
+      svg.style.cursor = "grabbing";
       evento.preventDefault();
       renderizarGraficoCampo();
       return;
@@ -605,7 +613,7 @@ function manejarPulsacionCampo(evento) {
   const punto = coordenadasCampo(evento);
 
   // DESELECCIONAR
-  if (herramientaGrafico === 'seleccionar') {
+  if (herramientaGrafico === "seleccionar") {
     elementoGraficoSeleccionado = null;
     actualizarAyudaElemento();
     renderizarGraficoCampo();
@@ -613,12 +621,12 @@ function manejarPulsacionCampo(evento) {
   }
 
   // ELIMINAR
-  if (herramientaGrafico === 'borrar') {
+  if (herramientaGrafico === "borrar") {
     if (grupo) {
-      const id = grupo.getAttribute('data-elemento-id');
+      const id = grupo.getAttribute("data-elemento-id");
 
       graficoActual.elementos = graficoActual.elementos.filter(
-        e => String(e.id) !== id
+        (e) => String(e.id) !== id,
       );
 
       if (String(elementoGraficoSeleccionado) === String(id)) {
@@ -632,15 +640,12 @@ function manejarPulsacionCampo(evento) {
   }
 
   // CREAR LÍNEAS Y FLECHAS
-  if (
-    herramientaGrafico === 'flecha' ||
-    herramientaGrafico === 'linea'
-  ) {
+  if (herramientaGrafico === "flecha" || herramientaGrafico === "linea") {
     if (!puntoInicialGrafico) {
       puntoInicialGrafico = punto;
       puntoPrevisualizacionGrafico = punto;
 
-      $('estadoHerramienta').textContent =
+      $("estadoHerramienta").textContent =
         `Herramienta: ${NOMBRES_HERRAMIENTAS[herramientaGrafico]} · marca el punto final`;
 
       renderizarGraficoCampo();
@@ -652,12 +657,9 @@ function manejarPulsacionCampo(evento) {
       tipo: herramientaGrafico,
       x: puntoInicialGrafico.x,
       y: puntoInicialGrafico.y,
-      puntos: [
-        puntoInicialGrafico,
-        punto
-      ],
-      color: $('graficoColor').value || '#facc15',
-      discontinua: $('graficoDiscontinua').checked
+      puntos: [puntoInicialGrafico, punto],
+      color: $("graficoColor").value || "#facc15",
+      discontinua: $("graficoDiscontinua").checked,
     };
 
     graficoActual.elementos.push(nuevo);
@@ -667,17 +669,17 @@ function manejarPulsacionCampo(evento) {
     puntoPrevisualizacionGrafico = null;
 
     cargarControlesElemento(nuevo);
-    seleccionarHerramienta('seleccionar');
+    seleccionarHerramienta("seleccionar");
     renderizarGraficoCampo();
 
-    $('estadoHerramienta').textContent =
-      'Elemento creado. Arrastra sus extremos para ajustar la línea.';
+    $("estadoHerramienta").textContent =
+      "Elemento creado. Arrastra sus extremos para ajustar la línea.";
 
     return;
   }
 
   // INICIAR CREACIÓN DE ZONA
-  if (herramientaGrafico === 'zona') {
+  if (herramientaGrafico === "zona") {
     creandoZonaGrafico = punto;
     zonaPrevisualizacionGrafico = punto;
 
@@ -688,70 +690,64 @@ function manejarPulsacionCampo(evento) {
 
   // CREAR JUGADORES, COMODINES Y PORTERO
   if (
-    herramientaGrafico === 'jugadorA' ||
-    herramientaGrafico === 'jugadorB' ||
-    herramientaGrafico === 'jugadorC' ||
-    herramientaGrafico === 'comodin' ||
-    herramientaGrafico === 'portero'
+    herramientaGrafico === "jugadorA" ||
+    herramientaGrafico === "jugadorB" ||
+    herramientaGrafico === "jugadorC" ||
+    herramientaGrafico === "comodin" ||
+    herramientaGrafico === "portero"
   ) {
     const equipo =
-      herramientaGrafico === 'jugadorA'
-        ? 'A'
-        : herramientaGrafico === 'jugadorB'
-          ? 'B'
-          : herramientaGrafico === 'jugadorC'
-            ? 'C'
-            : herramientaGrafico === 'portero'
-              ? 'P'
-              : 'COMODIN';
+      herramientaGrafico === "jugadorA"
+        ? "A"
+        : herramientaGrafico === "jugadorB"
+          ? "B"
+          : herramientaGrafico === "jugadorC"
+            ? "C"
+            : herramientaGrafico === "portero"
+              ? "P"
+              : "COMODIN";
 
-    const etiqueta =
-      equipo === 'COMODIN'
-        ? 'C'
-        : equipo === 'P'
-          ? 'P'
-          : '';
+    const etiqueta = equipo === "COMODIN" ? "C" : equipo === "P" ? "P" : "";
 
     graficoActual.elementos.push({
       id: crearIdGrafico(),
-      tipo: 'jugador',
+      tipo: "jugador",
       equipo,
       x: punto.x,
       y: punto.y,
-      etiqueta
+      etiqueta,
     });
 
-  // CREAR PELOTA
-  } else if (herramientaGrafico === 'pelota') {
+    // CREAR PELOTA
+  } else if (herramientaGrafico === "pelota") {
     graficoActual.elementos.push({
       id: crearIdGrafico(),
-      tipo: 'pelota',
+      tipo: "pelota",
       x: punto.x,
-      y: punto.y
+      y: punto.y,
     });
 
-  // CREAR CONOS
-  } else if (herramientaGrafico === 'cono') {
+    // CREAR CONOS
+  } else if (herramientaGrafico === "cono") {
     graficoActual.elementos.push({
       id: crearIdGrafico(),
-      tipo: 'cono',
+      tipo: "cono",
       x: punto.x,
-      y: punto.y
+      y: punto.y,
     });
 
-  // CREAR PORTERÍAS
-  } else if (herramientaGrafico === 'porteria') {
+    // CREAR PORTERÍAS
+  } else if (herramientaGrafico === "porteria") {
     graficoActual.elementos.push({
       id: crearIdGrafico(),
-      tipo: 'porteria',
+      tipo: "porteria",
       x: punto.x,
-      y: punto.y
+      y: punto.y,
     });
   }
 
   renderizarGraficoCampo();
 }
-
 
 // =====================================================
 // CREACIÓN Y REDIMENSIONAMIENTO DE ZONAS
@@ -768,14 +764,14 @@ function finalizarCreacionZona(evento) {
 
   const nueva = {
     id: crearIdGrafico(),
-    tipo: 'zona',
+    tipo: "zona",
     x: (inicio.x + fin.x) / 2,
     y: (inicio.y + fin.y) / 2,
     w: clamp(w, 30, 950),
     h: clamp(h, 30, 650),
-    etiqueta: '',
-    color: $('graficoColor')?.value || '#facc21',
-    discontinua: $('graficoDiscontinua')?.checked
+    etiqueta: "",
+    color: $("graficoColor")?.value || "#facc21",
+    discontinua: $("graficoDiscontinua")?.checked,
   };
 
   graficoActual.elementos.push(nueva);
@@ -786,13 +782,12 @@ function finalizarCreacionZona(evento) {
   zonaPrevisualizacionGrafico = null;
 
   cargarControlesElemento(nueva);
-  seleccionarHerramienta('seleccionar');
+  seleccionarHerramienta("seleccionar");
   renderizarGraficoCampo();
 
-  $('estadoHerramienta').textContent =
-    'Zona creada. Arrastra la esquina para cambiar el tamaño.';
+  $("estadoHerramienta").textContent =
+    "Zona creada. Arrastra la esquina para cambiar el tamaño.";
 }
-
 
 // =====================================================
 // CONTROLES DE LOS ELEMENTOS
@@ -800,76 +795,63 @@ function finalizarCreacionZona(evento) {
 
 function cargarControlesElemento(el) {
   if (el.color) {
-    $('graficoColor').value = el.color;
+    $("graficoColor").value = el.color;
   }
 
-  $('graficoDiscontinua').checked = !!el.discontinua;
+  $("graficoDiscontinua").checked = !!el.discontinua;
 
-  const esJugador = el.tipo === 'jugador';
+  const esJugador = el.tipo === "jugador";
 
-  $('graficoEtiquetaJugador').classList.toggle(
-    'oculto',
-    !esJugador
-  );
+  $("graficoEtiquetaJugador").classList.toggle("oculto", !esJugador);
 
-  $('graficoEtiquetaJugadorLabel').classList.toggle(
-    'oculto',
-    !esJugador
-  );
+  $("graficoEtiquetaJugadorLabel").classList.toggle("oculto", !esJugador);
 
   if (esJugador) {
-    $('graficoEtiquetaJugador').value = el.etiqueta || '';
+    $("graficoEtiquetaJugador").value = el.etiqueta || "";
   }
 
   actualizarAyudaElemento(el);
 }
 
-
 function actualizarEtiquetaJugadorSeleccionado() {
   const el = graficoActual.elementos.find(
-    e => String(e.id) === String(elementoGraficoSeleccionado)
+    (e) => String(e.id) === String(elementoGraficoSeleccionado),
   );
 
-  if (!el || el.tipo !== 'jugador') return;
+  if (!el || el.tipo !== "jugador") return;
 
-  el.etiqueta = $('graficoEtiquetaJugador').value.trim().slice(0, 3);
+  el.etiqueta = $("graficoEtiquetaJugador").value.trim().slice(0, 3);
 
   renderizarGraficoCampo();
 }
 
-
 function actualizarAyudaElemento(el) {
-  el = el || graficoActual.elementos.find(
-    e => String(e.id) === String(elementoGraficoSeleccionado)
-  );
+  el =
+    el ||
+    graficoActual.elementos.find(
+      (e) => String(e.id) === String(elementoGraficoSeleccionado),
+    );
 
-  const ayuda = $('ayudaElementoSeleccionado');
+  const ayuda = $("ayudaElementoSeleccionado");
 
   if (!ayuda) return;
 
-  const esJugador = el?.tipo === 'jugador';
+  const esJugador = el?.tipo === "jugador";
 
-  $('graficoEtiquetaJugador').classList.toggle(
-    'oculto',
-    !esJugador
-  );
+  $("graficoEtiquetaJugador").classList.toggle("oculto", !esJugador);
 
-  $('graficoEtiquetaJugadorLabel').classList.toggle(
-    'oculto',
-    !esJugador
-  );
+  $("graficoEtiquetaJugadorLabel").classList.toggle("oculto", !esJugador);
 
   ayuda.textContent = !el
-    ? 'Selecciona una línea, flecha o zona para editarla. Para cambiar el número, selecciona un jugador.'
-    : el.tipo === 'jugador'
-      ? 'Jugador seleccionado: cambia su número o etiqueta en el campo de texto.'
-      : el.tipo === 'zona'
-        ? 'Zona seleccionada: arrastra la esquina para cambiar el tamaño; color y estilo se actualizan automáticamente.'
-        : ['linea', 'flecha'].includes(el.tipo)
-          ? `${el.tipo === 'flecha' ? 'Flecha' : 'Línea'} seleccionada: arrastra los extremos para editar su recorrido; color y estilo se actualizan automáticamente.`
-          : 'Elemento seleccionado.';
+    ? "Selecciona una línea, flecha o zona para editarla. Para cambiar el número, selecciona un jugador."
+    : el.tipo === "jugador"
+      ? "Jugador seleccionado: cambia su número o etiqueta en el campo de texto."
+      : el.tipo === "zona"
+        ? "Zona seleccionada: arrastra la esquina para cambiar el tamaño; color y estilo se actualizan automáticamente."
+        : ["linea", "flecha"].includes(el.tipo)
+          ? `${el.tipo === "flecha" ? "Flecha" : "Línea"} seleccionada: arrastra los extremos para editar su recorrido; color y estilo se actualizan automáticamente.`
+          : "Elemento seleccionado.";
 }
-
 
 // =====================================================
 // MOVER Y REDIMENSIONAR ELEMENTOS
@@ -881,40 +863,29 @@ function moverElementoGrafico(evento) {
   const punto = coordenadasCampo(evento);
 
   const el = graficoActual.elementos.find(
-    x => String(x.id) === String(arrastreGrafico.id)
+    (x) => String(x.id) === String(arrastreGrafico.id),
   );
 
   if (!el) return;
 
   // MOVER EXTREMOS DE LÍNEAS Y FLECHAS
   if (
-    arrastreGrafico.modo === 'punto' &&
-    (el.tipo === 'flecha' || el.tipo === 'linea')
+    arrastreGrafico.modo === "punto" &&
+    (el.tipo === "flecha" || el.tipo === "linea")
   ) {
     el.puntos[arrastreGrafico.indice] = {
       x: punto.x,
-      y: punto.y
+      y: punto.y,
     };
 
     el.x = el.puntos[0].x;
     el.y = el.puntos[0].y;
 
     // REDIMENSIONAR ZONAS
-  } else if (
-    arrastreGrafico.modo === 'resize-zona' &&
-    el.tipo === 'zona'
-  ) {
-    el.w = clamp(
-      Math.abs(punto.x - el.x) * 2,
-      30,
-      950
-    );
+  } else if (arrastreGrafico.modo === "resize-zona" && el.tipo === "zona") {
+    el.w = clamp(Math.abs(punto.x - el.x) * 2, 30, 950);
 
-    el.h = clamp(
-      Math.abs(punto.y - el.y) * 2,
-      30,
-      650
-    );
+    el.h = clamp(Math.abs(punto.y - el.y) * 2, 30, 650);
 
     // MOVER CUALQUIER ELEMENTO
   } else {
@@ -923,23 +894,15 @@ function moverElementoGrafico(evento) {
     const dx = punto.x - anterior.x;
     const dy = punto.y - anterior.y;
 
-    el.x = clamp(
-      (Number(el.x) || 0) + dx,
-      0,
-      1000
-    );
+    el.x = clamp((Number(el.x) || 0) + dx, 0, 1000);
 
-    el.y = clamp(
-      (Number(el.y) || 0) + dy,
-      0,
-      700
-    );
+    el.y = clamp((Number(el.y) || 0) + dy, 0, 700);
 
     // Desplazar las líneas y flechas completas
-    if (el.tipo === 'flecha' || el.tipo === 'linea') {
-      el.puntos = (el.puntos || []).map(p => ({
+    if (el.tipo === "flecha" || el.tipo === "linea") {
+      el.puntos = (el.puntos || []).map((p) => ({
         x: clamp(Number(p.x) + dx, 0, 1000),
-        y: clamp(Number(p.y) + dy, 0, 700)
+        y: clamp(Number(p.y) + dy, 0, 700),
       }));
     }
 
@@ -951,7 +914,6 @@ function moverElementoGrafico(evento) {
   renderizarGraficoCampo();
 }
 
-
 // =====================================================
 // FINALIZAR ARRASTRE E IDENTIFICADORES
 // =====================================================
@@ -960,13 +922,10 @@ function terminarArrastreGrafico() {
   if (arrastreGrafico) {
     arrastreGrafico = null;
 
-    $('graficoCampo').style.cursor =
-      herramientaGrafico === 'seleccionar'
-        ? 'grab'
-        : 'crosshair';
+    $("graficoCampo").style.cursor =
+      herramientaGrafico === "seleccionar" ? "grab" : "crosshair";
   }
 }
-
 
 function crearIdGrafico() {
   return `g-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;

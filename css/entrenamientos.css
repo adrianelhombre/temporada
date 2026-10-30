@@ -383,6 +383,7 @@
 
 .botones-modal-entrenamiento {
   margin-top: 18px;
+  flex-wrap: nowrap;
 }
 
 @media(min-width:650px) {
