@@ -182,7 +182,7 @@ async function abrirDetalleSesion(sesion) {
   estadoContraidoEjerciciosSesion = estadoGuardadoEjercicios && typeof estadoGuardadoEjercicios === 'object' ? estadoGuardadoEjercicios : {};
   ejerciciosContraidos.clear();
   Object.entries(estadoContraidoEjerciciosSesion).forEach(([id, contraido]) => { if (contraido) ejerciciosContraidos.add(String(id)); });
-  estadosAsistencia = new Map(); ejerciciosSesion = [];
+  estadosAsistencia = new Map(); asistenciaLocalModificada = false; ejerciciosSesion = [];
   $('ejerciciosDeSesion').innerHTML = '<p class="texto-secundario">Cargando ejercicios…</p>'; $('listaAsistencia').innerHTML = '<p class="texto-secundario">Cargando plantilla…</p>';
   const [itemsRes, asistenciaRes] = await Promise.all([
     supabaseClient.from('entrenamientos_sesion_ejercicios').select('*').eq('sesion_id', sesion.id).order('orden'),

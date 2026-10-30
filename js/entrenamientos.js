@@ -17,6 +17,9 @@ let arrastreGrafico = null;
 let ejercicioArrastradoId = null;
 let creandoZonaGrafico = null;
 let zonaPrevisualizacionGrafico = null;
+let canalRealtimeEntrenamientos = null;
+let temporizadorRealtimeEntrenamientos = null;
+let asistenciaLocalModificada = false;
 
 const $ = (id) => document.getElementById(id);
 const CATEGORIAS_EJERCICIOS = ['Posesiones', 'Finalizaciones', 'Transiciones', 'Defensa', 'Físico', 'Partidos', 'Técnica', 'Otros'];
@@ -41,11 +44,13 @@ const NOMBRES_HERRAMIENTAS = { seleccionar: 'Mover / editar', jugadorA: 'Añadir
       document.querySelectorAll('[data-cerrar]').forEach(btn => btn.addEventListener('click', () => cerrarModal(btn.dataset.cerrar)));
       document.querySelectorAll('.superposicion').forEach(modal => modal.addEventListener('click', e => { if (e.target === modal) cerrarModal(modal.id); }));
       await cargarSemanas();
+      iniciarRealtimeEntrenamientos(pagina);
     } else if (pagina === 'biblioteca') {
       $('buscarEjercicio').addEventListener('input', renderizarEjercicios);
       $('filtroCategoria').addEventListener('change', renderizarEjercicios);
       $('btnNuevoEjercicio').addEventListener('click', () => { window.location.href = 'ejercicio.html?return=biblioteca-ejercicios.html'; });
       await cargarEjercicios();
+      iniciarRealtimeEntrenamientos(pagina);
     } else if (pagina === 'sesion') {
       await Promise.all([cargarJugadores(), cargarEjercicios()]);
       $('btnGuardarDetalleAbajo').addEventListener('click', guardarDetalleSesion);
@@ -72,6 +77,7 @@ const NOMBRES_HERRAMIENTAS = { seleccionar: 'Mover / editar', jugadorA: 'Añadir
       const { data, error } = await supabaseClient.from('entrenamientos_sesiones').select('*').eq('id', idSesion).single();
       if (error || !data) throw error || new Error('No se encuentra la sesión.');
       await abrirDetalleSesion(data);
+      iniciarRealtimeEntrenamientos(pagina, idSesion);
     } else if (pagina === 'ejercicio') {
       vincularEditorGrafico();
       $('btnGuardarEjercicio').addEventListener('click', guardarEjercicio);
@@ -81,6 +87,7 @@ const NOMBRES_HERRAMIENTAS = { seleccionar: 'Mover / editar', jugadorA: 'Añadir
         if (error || !data) throw error || new Error('No se encuentra el ejercicio.');
         prepararEditorEjercicio(data);
       } else prepararEditorEjercicio();
+      iniciarRealtimeEntrenamientos(pagina, idEjercicio);
       const cancel = $('btnCancelarEjercicio');
       if (cancel) {
         const destino = 'biblioteca-ejercicios.html';
@@ -93,6 +100,113 @@ const NOMBRES_HERRAMIENTAS = { seleccionar: 'Mover / editar', jugadorA: 'Añadir
     mostrarNotificacion('No se pudo iniciar Entrenamientos. Comprueba que has ejecutado el SQL de configuración.', 'error');
   }
 })();
+
+
+// Sincronización entre dispositivos mediante Supabase Realtime.
+function iniciarRealtimeEntrenamientos(pagina, id = null) {
+  if (canalRealtimeEntrenamientos) supabaseClient.removeChannel(canalRealtimeEntrenamientos);
+  const canal = supabaseClient.channel(`balsas-entrenamientos-${pagina}-${id || 'general'}-${Math.random().toString(36).slice(2, 8)}`);
+  const escuchar = (tabla, callback, filtro = null) => {
+    const config = { event: '*', schema: 'public', table: tabla };
+    if (filtro) config.filter = filtro;
+    canal.on('postgres_changes', config, callback);
+  };
+  const programar = (accion, espera = 350) => {
+    clearTimeout(temporizadorRealtimeEntrenamientos);
+    temporizadorRealtimeEntrenamientos = setTimeout(() => {
+      Promise.resolve(accion()).catch(error => console.error('Error al sincronizar entrenamientos:', error));
+    }, espera);
+  };
+
+  if (pagina === 'planificacion') {
+    escuchar('entrenamientos_semanas', () => programar(async () => {
+      const seleccionada = $('selectorSemana')?.value;
+      await cargarSemanas();
+      if (seleccionada && semanasEntrenamiento.some(s => String(s.id) === String(seleccionada))) {
+        $('selectorSemana').value = seleccionada;
+        await cargarSemana();
+      }
+    }));
+    escuchar('entrenamientos_sesiones', () => programar(() => cargarSemana()));
+  } else if (pagina === 'biblioteca') {
+    escuchar('entrenamientos_ejercicios', () => programar(() => cargarEjercicios()));
+  } else if (pagina === 'sesion' && id) {
+    escuchar('entrenamientos_sesiones', payload => {
+      if (String(payload.new?.id || payload.old?.id) !== String(id)) return;
+      programar(async () => {
+        const { data, error } = await supabaseClient.from('entrenamientos_sesiones').select('*').eq('id', id).maybeSingle();
+        if (error) throw error;
+        if (!data || !sesionActual) return;
+        const campos = {
+          titulo: 'detalleTitulo', fecha: 'detalleFecha', duracion_prevista: 'detalleDuracion',
+          duracion_real: 'detalleDuracionReal', objetivo: 'detalleObjetivo', observaciones: 'detalleObservaciones'
+        };
+        Object.entries(campos).forEach(([campo, elementoId]) => {
+          const elemento = $(elementoId);
+          if (elemento && document.activeElement !== elemento) elemento.value = data[campo] ?? (campo.startsWith('duracion') ? '' : '');
+        });
+        $('detalleTituloCabecera').textContent = data.titulo || 'Entrenamiento';
+        $('detalleFechaEtiqueta').textContent = formatearFecha(data.fecha, { day: 'numeric', month: 'long', year: 'numeric' });
+        if (document.activeElement !== $('asistenciaConfirmada')) $('asistenciaConfirmada').checked = Boolean(data.asistencia_confirmada);
+        if (document.activeElement !== $('usarTresEquipos') &&
+            !['jugadoresEquipoA','jugadoresEquipoB','jugadoresComodines','jugadoresEquipo3A','jugadoresEquipo3B','jugadoresEquipo3C'].some(campo => document.activeElement === $(campo))) {
+          cargarEquiposSesion(data);
+        }
+        sesionActual = { ...sesionActual, ...data };
+      });
+    }, `id=eq.${id}`);
+    escuchar('entrenamientos_sesion_ejercicios', () => programar(async () => {
+      const { data, error } = await supabaseClient.from('entrenamientos_sesion_ejercicios').select('*').eq('sesion_id', id).order('orden');
+      if (error) throw error;
+      ejerciciosSesion = data || [];
+      renderizarEjerciciosSesion();
+    }), `sesion_id=eq.${id}`);
+    escuchar('entrenamientos_asistencia', () => programar(async () => {
+      if (asistenciaLocalModificada || document.activeElement?.closest?.('#listaAsistencia')) return;
+      const { data, error } = await supabaseClient.from('entrenamientos_asistencia').select('*').eq('sesion_id', id);
+      if (error) throw error;
+      estadosAsistencia = new Map();
+      (data || []).forEach(a => estadosAsistencia.set(a.jugador_id, {
+        estado: a.estado || 'presente', justificada: Boolean(a.justificada), minutos_retraso: Number(a.minutos_retraso || 0)
+      }));
+      jugadoresEntrenamiento.forEach(j => {
+        if (!estadosAsistencia.has(j.id)) estadosAsistencia.set(j.id, { estado: 'presente', justificada: false, minutos_retraso: 0 });
+      });
+      renderizarAsistencia();
+      if (sesionActual) sesionActual.asistencia_confirmada = Boolean($('asistenciaConfirmada').checked);
+      actualizarEstadoAsistencia();
+    }), `sesion_id=eq.${id}`);
+  } else if (pagina === 'ejercicio' && id) {
+    escuchar('entrenamientos_ejercicios', payload => {
+      if (String(payload.new?.id || payload.old?.id) !== String(id)) return;
+      programar(async () => {
+        const { data, error } = await supabaseClient.from('entrenamientos_ejercicios').select('*').eq('id', id).maybeSingle();
+        if (error) throw error;
+        if (!data) return;
+        const mapa = { nombre: 'ejercicioNombre', categoria: 'ejercicioCategoria', duracion_min: 'ejercicioDuracion', objetivo: 'ejercicioObjetivo', descripcion: 'ejercicioDescripcion', material: 'ejercicioMaterial' };
+        Object.entries(mapa).forEach(([campo, elementoId]) => {
+          const elemento = $(elementoId);
+          if (elemento && document.activeElement !== elemento) elemento.value = data[campo] ?? '';
+        });
+        if (!arrastreGrafico && !puntoInicialGrafico && !creandoZonaGrafico && document.activeElement !== $('graficoCampo')) {
+          graficoActual = normalizarGrafico(data.grafico_json);
+          $('graficoTipoCampo').value = graficoActual.campo;
+          renderizarGraficoCampo();
+        }
+      });
+    }, `id=eq.${id}`);
+  }
+
+  canalRealtimeEntrenamientos = canal;
+  canal.subscribe(status => {
+    if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+      console.warn('La sincronización en tiempo real no está disponible:', status);
+    }
+  });
+  window.addEventListener('beforeunload', () => {
+    if (canalRealtimeEntrenamientos === canal) supabaseClient.removeChannel(canal);
+  }, { once: true });
+}
 
 function vincularEditorGrafico() {
   ['graficoColor','graficoDiscontinua'].forEach(id => { $(id).addEventListener('input', actualizarEstiloSeleccionadoEnVivo); $(id).addEventListener('change', actualizarEstiloSeleccionadoEnVivo); });
